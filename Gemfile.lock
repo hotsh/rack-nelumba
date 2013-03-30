@@ -1,0 +1,67 @@
+GIT
+  remote: git://github.com/hotsh/lotus.git
+  revision: 9660313d77afd411fab37856c26da8b195e31ad3
+  specs:
+    lotus (0.0.12)
+      nokogiri
+      ratom (~> 0.7.2)
+      ruby-hmac
+
+GIT
+  remote: git://github.com/hotsh/redfinger.git
+  revision: b73861b87c7d0bd8d3669c49134a5d416f5ac9f3
+  specs:
+    redfinger (0.1.1)
+      hashie
+      nokogiri (>= 1.4.0)
+      rest-client (>= 1.5.0)
+
+PATH
+  remote: .
+  specs:
+    rack-lotus (0.0.1)
+      sinatra
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ansi (1.4.3)
+    awesome_print (1.1.0)
+    hashie (2.0.3)
+    libxml-ruby (2.3.3)
+    metaclass (0.0.1)
+    mime-types (1.21)
+    minitest (4.7.0)
+    mocha (0.13.3)
+      metaclass (~> 0.0.1)
+    nokogiri (1.5.9)
+    rack (1.5.2)
+    rack-protection (1.5.0)
+      rack
+    rake (10.0.4)
+    ratom (0.7.2)
+      libxml-ruby (~> 2.3.2)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    ruby-hmac (0.4.0)
+    sinatra (1.4.2)
+      rack (~> 1.5, >= 1.5.2)
+      rack-protection (~> 1.4)
+      tilt (~> 1.3, >= 1.3.4)
+    tilt (1.3.6)
+    turn (0.9.6)
+      ansi
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ansi
+  awesome_print
+  lotus!
+  minitest
+  mocha
+  rack-lotus!
+  rake
+  redfinger!
+  turn
