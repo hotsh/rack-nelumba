@@ -6,7 +6,7 @@ module Rack
   end
 end
 
-require 'rack-lotus/subscriptions'
-require 'rack-lotus/activities'
-require 'rack-lotus/people'
-require 'rack-lotus/feeds'
+require 'rack/lotus/subscriptions'
+require 'rack/lotus/activities'
+require 'rack/lotus/people'
+require 'rack/lotus/feeds'
