@@ -1,6 +1,4 @@
 module Rack
-  require 'sinatra'
-
   class Lotus < Sinatra::Base
     # Retrieve the public activity.
     get '/activities/:id' do

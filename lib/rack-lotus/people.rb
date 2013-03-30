@@ -1,6 +1,4 @@
 module Rack
-  require 'sinatra'
-
   class Lotus < Sinatra::Base
     # Get the public profile for this person.
     get '/people/:id' do

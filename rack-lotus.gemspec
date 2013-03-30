@@ -1,10 +1,9 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "rack-lotus/version"
 
 Gem::Specification.new do |s|
   s.name        = "rack-lotus"
-  s.version     = Rack::Lotus::VERSION
+  s.version     = "0.0.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Hackers of the Severed Hand']
   s.email       = ['hotsh@xomb.org']

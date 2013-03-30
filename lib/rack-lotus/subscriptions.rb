@@ -1,6 +1,4 @@
 module Rack
-  require 'sinatra'
-
   # Contains the Rack application responsible for federation routing.
   class Lotus < Sinatra::Base
     require 'lotus/subscription'
