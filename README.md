@@ -38,8 +38,11 @@ The minimum API that all Lotus applications will have:
 ### People and the Social Graph
 
 `GET  /people/:id` - The profile for the person with the given id. (HTML)
+
 `GET  /people/:id/feed` - The outbox for activities performed by this person. (Atom/JSON)
+
 `POST /people/:id/inbox` - The inbox for activities POST'd by those this person follows. (Atom/JSON)
+
 `POST /people/:id/direct` - The place where activities can be POST'd by those this person does not know. (Atom/JSON)
 
 ### Low-Level Subscriptions
@@ -49,20 +52,25 @@ The minimum API that all Lotus applications will have:
 ### Activities
 
 `GET  /activities/:id` - Retrieve the given activity. (Atom/JSON)
+
 `PUT  /activities/:id` - Update the given activity if you are the author. (Atom/JSON)
 
 ### Feeds
 
 `GET  /feeds/:id` - Retrieve the given feed. (Atom/JSON)
+
 `POST /feeds/:id` - Post new content to this feed. (Atom/JSON)
 
 ### Authors
 
 `GET  /authors/:id` - Retrieve the given author. (Atom/JSON)
+
 `PUT  /authors/:id` - Update the given author if you are the owner. (Atom/JSON)
 
 ### OAuth 1.0
 
 `GET  /oauth/request_token` - Acquire OAuth request token
+
 `POST /oauth/authorize`     - Authorize OAuth request token
+
 `GET  /oauth/access_token`  - Turn a request token into an access token
