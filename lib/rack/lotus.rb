@@ -10,3 +10,5 @@ require 'rack/lotus/subscriptions'
 require 'rack/lotus/activities'
 require 'rack/lotus/people'
 require 'rack/lotus/feeds'
+
+Dir[File.join(File.dirname(__FILE__), "lotus", "models", '*.rb')].each {|file| require file }
