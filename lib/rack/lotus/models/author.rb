@@ -34,10 +34,13 @@ class Author
 
   # Discover an author by the given feed location or account.
   def self.discover!(author_identifier)
-    author = Lotus.discover_author(author_identifier)
+    identity = Lotus.discover_identity(author_identifier)
+    return false unless identity
+    author = Lotus.discover_author(identity)
     return false unless author
 
     self.create!(author)
+    Identity.create!(identity.merge(:author => author))
   end
 
   def self.sanitize_params(params)
