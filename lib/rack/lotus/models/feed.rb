@@ -43,6 +43,14 @@ class Feed
     super arg, *args
   end
 
+  # Discover a feed by the given feed location or account.
+  def self.discover!(feed_identifier)
+    feed = Lotus.discover_feed(feed_identifier)
+    return false unless feed
+
+    self.create!(feed)
+  end
+
   # Adds activity to the feed.
   def post!(activity)
     activity.feed = self
