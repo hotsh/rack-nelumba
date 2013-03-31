@@ -36,11 +36,13 @@ class Author
   def self.discover!(author_identifier)
     identity = Lotus.discover_identity(author_identifier)
     return false unless identity
-    author = Lotus.discover_author(identity)
-    return false unless author
 
-    self.create!(author)
-    Identity.create!(identity.merge(:author => author))
+    feed = Lotus.discover_feed(identity)
+    return false unless feed
+
+    saved_feed = Feed.create!(feed)
+    Identity.create!(identity.merge(:outbox => saved_feed,
+                                    :author => saved_feed.authors.first))
   end
 
   def self.sanitize_params(params)
