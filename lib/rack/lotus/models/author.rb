@@ -3,6 +3,8 @@
 class Author
   include MongoMapper::Document
 
+  belongs_to :identity
+
   key :id
   key :nickname
   key :extended_name
@@ -43,6 +45,11 @@ class Author
     saved_feed = Feed.create!(feed)
     Identity.create!(identity.merge(:outbox => saved_feed,
                                     :author => saved_feed.authors.first))
+  end
+
+  # Discover and populate the associated activity feed for this author.
+  def discover_feed!
+    feed = Lotus.discover_feed(self.identity.to_lotus)
   end
 
   def self.sanitize_params(params)

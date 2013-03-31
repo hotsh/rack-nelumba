@@ -4,6 +4,8 @@
 class Identity
   include MongoMapper::Document
 
+  one :author
+
   key :username
   key :domain
 
@@ -14,7 +16,6 @@ class Identity
   key :activity_outbox_endpoint
   key :profile_page
 
-  key :author, :class_name => 'Author'
   key :outbox, :class_name => 'Feed'
 
   timestamps!
@@ -47,5 +48,9 @@ class Identity
     return false unless identity
 
     self.create!(identity)
+  end
+
+  # Creates an immutable Lotus::Identity representation.
+  def to_lotus
   end
 end

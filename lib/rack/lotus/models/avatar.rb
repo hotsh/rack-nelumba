@@ -1,4 +1,6 @@
 class Avatar
+  require 'mm-attach-it'
+
   include MongoMapper::Document
   plugin  AttachIt
 
