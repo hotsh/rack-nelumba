@@ -19,6 +19,16 @@ class Identity
 
   timestamps!
 
+  # Create a new Identity from a Hash of values or a Lotus::Identity.
+  def self.create!(arg, *args)
+    if arg.is_a? Lotus::Identity
+      arg = arg.to_hash
+    end
+
+    super arg, *args
+  end
+
+  # Ensure params has only valid keys
   def self.sanitize_params(params)
     # Delete unknown keys
     params.keys.each do |k|
@@ -29,5 +39,13 @@ class Identity
 
     # Delete immutable fields
     params.delete("_id")
+  end
+
+  # Discover an identity from the given user identifier.
+  def self.discover!(account)
+    identity = Lotus.discover_identity(account)
+    return false unless identity
+
+    self.create!(identity)
   end
 end
