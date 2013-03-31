@@ -19,4 +19,24 @@ class Activity
   one :feed
 
   timestamps!
+
+  # Create a new Activity from a Hash of values or a Lotus::Activity.
+  def self.create!(arg, *args)
+    if arg.is_a? Lotus::Activity
+      arg = arg.to_hash
+
+      arg.delete :author
+      arg.delete :in_reply_to
+    end
+
+    super arg, *args
+  end
+
+  # Discover a feed by the given activity location.
+  def self.discover!(activity_identifier)
+    activity = Lotus.discover_activity(activity_identifier)
+    return false unless activity
+
+    self.create!(activity)
+  end
 end
