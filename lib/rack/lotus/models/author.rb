@@ -25,7 +25,27 @@ class Author
 
   timestamps!
 
-  # Create a new Feed from a Hash of values or a Lotus::Author.
+  # Create a new Author if the given Author is not found by its id.
+  def self.find_or_create_by_id!(arg, *args)
+    if arg.is_a? ::Lotus::Author
+      id = arg.id
+    else
+      id = arg[:id]
+    end
+
+    author = self.find(:id => id)
+    return author if author
+
+    begin
+      author = create!(arg, *args)
+    rescue
+      author = self.find(:id => id) or raise
+    end
+
+    author
+  end
+
+  # Create a new Author from a Hash of values or a Lotus::Author.
   def self.create!(arg, *args)
     if arg.is_a? Lotus::Author
       arg = arg.to_hash
@@ -34,7 +54,7 @@ class Author
     super arg, *args
   end
 
-  # Discover an author by the given feed location or account.
+  # Discover an Author by the given feed location or account.
   def self.discover!(author_identifier)
     identity = Lotus.discover_identity(author_identifier)
     return false unless identity

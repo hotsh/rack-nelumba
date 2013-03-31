@@ -20,6 +20,26 @@ class Activity
 
   timestamps!
 
+  # Create a new Activity if the given Activity is not found by its id.
+  def self.find_or_create_by_id!(arg, *args)
+    if arg.is_a? ::Lotus::Activity
+      id = arg.id
+    else
+      id = arg[:id]
+    end
+
+    activity = self.find(:id => id)
+    return activity if author
+
+    begin
+      activity = create!(arg, *args)
+    rescue
+      activity = self.find(:id => id) or raise
+    end
+
+    activity
+  end
+
   # Create a new Activity from a Hash of values or a Lotus::Activity.
   def self.create!(arg, *args)
     if arg.is_a? Lotus::Activity

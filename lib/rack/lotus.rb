@@ -3,6 +3,8 @@ require 'sinatra'
 module Rack
   # Contains the various routes used by the federation.
   class Lotus < Sinatra::Base
+    require 'lotus'
+    require 'mongo_mapper'
   end
 end
 

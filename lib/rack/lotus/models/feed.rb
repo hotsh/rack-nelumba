@@ -31,13 +31,42 @@ class Feed
 
   timestamps!
 
+  # Create a new Feed if the given Feed is not found by its id.
+  def self.find_or_create_by_id!(arg, *args)
+    if arg.is_a? ::Lotus::Feed
+      id = arg.id
+    else
+      id = arg[:id]
+    end
+
+    feed = self.find(:id => id)
+    return feed if author
+
+    begin
+      feed = create!(arg, *args)
+    rescue
+      feed = self.find(:id => id) or raise
+    end
+
+    feed
+  end
+
   # Create a new Feed from a Hash of values or a Lotus::Feed.
   def self.create!(arg, *args)
-    if arg.is_a? Lotus::Feed
+    if arg.is_a? ::Lotus::Feed
       arg = arg.to_hash
 
-      arg.delete :entries
-      arg.delete :authors
+      arg[:authors].map! do |a|
+        Author.find_or_create_by_id!(a, :safe => true)
+      end
+
+      arg[:contributors].map! do |a|
+        Author.find_or_create_by_id!(a, :safe => true)
+      end
+
+      arg[:entries].map! do |a|
+        Activity.find_or_create_by_id!(a, :safe => true)
+      end
     end
 
     super arg, *args
@@ -45,7 +74,7 @@ class Feed
 
   # Discover a feed by the given feed location or account.
   def self.discover!(feed_identifier)
-    feed = Lotus.discover_feed(feed_identifier)
+    feed = ::Lotus.discover_feed(feed_identifier)
     return false unless feed
 
     self.create!(feed)
