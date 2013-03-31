@@ -23,6 +23,23 @@ class Author
 
   timestamps!
 
+  # Create a new Feed from a Hash of values or a Lotus::Author.
+  def self.create!(arg, *args)
+    if arg.is_a? Lotus::Author
+      arg = arg.to_hash
+    end
+
+    super arg, *args
+  end
+
+  # Discover an author by the given feed location or account.
+  def self.discover!(author_identifier)
+    author = Lotus.discover_author(author_identifier)
+    return false unless author
+
+    self.create!(author)
+  end
+
   def self.sanitize_params(params)
     # Delete unknown subkeys
     if params["extended_name"]
