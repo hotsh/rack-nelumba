@@ -3,6 +3,8 @@
 # Author to generate Activities on this server.
 class Authorization
   require 'bcrypt'
+  require 'json'
+  require 'nokogiri'
 
   include MongoMapper::Document
 
@@ -23,6 +25,86 @@ class Authorization
   validates_presence_of :hashed_password
 
   timestamps!
+
+  # Generate a Hash containing this person's LRDD meta info.
+  def self.lrdd(username)
+    username = params[:acct].match /(?:acct\:)?([^@]+)(?:@([^@]+))?$/
+    username = username[1] if username
+    if username.nil?
+      return nil
+    end
+
+    # Find the person
+    auth = Authorization.find_by_username(/#{Regexp.escape(username)}/i)
+    if auth.nil?
+      return nil
+    end
+
+    url       = "http#{auth.identity.ssl ? "s" : ""}://#{auth.identity.domain}"
+    feed_id   = auth.identity.outbox._id
+    person_id = auth.person._id
+
+    {
+      :subject => "acct:#{username}@#{domain}",
+      :expires => "#{(Time.now.utc.to_date >> 1).xmlschema}Z",
+      :aliases => [
+        "#{url}/profile/#{username}",
+        "#{url}/feeds/#{feed_id}"
+      ],
+      :links => [
+        {:rel  => "http://webfinger.net/rel/profile-page",
+         :href => "#{url}/profile/#{username}"},
+        {:rel  => "http://schemas.google.com/g/2010#updates-from",
+         :href => "#{url}/feeds/#{feed_id}"},
+        {:rel  => "salmon",
+         :href => "#{url}/people/#{person_id}/salmon"},
+        {:rel  => "http://salmon-protocol.org/ns/salmon-replies",
+         :href => "#{url}/people/#{person_id}/salmon"},
+        {:rel  => "http://salmon-protocol.org/ns/salmon-replies",
+         :href =>"#{url}/people/#{person_id}/salmon"},
+        {:rel  => "magic-public-key",
+         :href => "data:application/magic-public-key,#{identity.public_key}"}
+
+        # TODO: ostatus subscribe
+        #{:rel      => "http://ostatus.org/schema/1.0/subscribe",
+        # :template => "#{url}/subscriptions?url={uri}&_method=post"}
+      ]
+    }
+  end
+
+  # Generate a String containing the json representation of this person's LRDD.
+  def self.jrd(username)
+    lrdd = self.lrdd(username)
+    return nil if lrdd.nil?
+
+    lrdd.to_json
+  end
+
+  # Generate a String containing the XML representaton of this person's LRDD.
+  def self.xrd(username)
+    lrdd = self.lrdd(username)
+    return nil if lrdd.nil?
+
+    # Build xml
+    builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
+      xml.XRD("xmlns"     => 'http://docs.oasis-open.org/ns/xri/xrd-1.0',
+              "xmlns:xsi" => 'http://www.w3.org/2001/XMLSchema-instance') do
+        xml.Subject lrdd[:subject]
+        xml.Expires lrdd[:expires]
+
+        lrdd[:aliases].each do |alias_name|
+          xml.Alias alias_name
+        end
+
+        lrdd[:links].each do |link|
+          xml.Link link
+        end
+      end
+    end
+
+    # Output
+    builder.to_xml
+  end
 
   # Create a hash of the password.
   def self.hash_password(password)

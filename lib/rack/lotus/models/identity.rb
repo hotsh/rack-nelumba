@@ -7,6 +7,7 @@ class Identity
   one :author
 
   key :username
+  key :ssl
   key :domain
 
   key :public_key
