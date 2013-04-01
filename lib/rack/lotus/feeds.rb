@@ -1,5 +1,5 @@
 module Rack
-  class Lotus < Sinatra::Base
+  class Lotus
     # Retrieve the public feed.
     get '/feeds/:id' do
       feed = Feed.find_by_id(params[:id])

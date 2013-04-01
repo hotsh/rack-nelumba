@@ -1,5 +1,5 @@
 module Rack
-  class Lotus < Sinatra::Base
+  class Lotus
     require 'json'
     require 'date'
     require 'nokogiri'

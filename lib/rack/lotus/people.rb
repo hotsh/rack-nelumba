@@ -1,5 +1,5 @@
 module Rack
-  class Lotus < Sinatra::Base
+  class Lotus
     # Get the public profile for this person.
     get '/people/:id' do
       person = Person.find_by_id(params[:id])

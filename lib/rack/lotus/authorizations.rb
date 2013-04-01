@@ -1,5 +1,5 @@
 module Rack
-  class Lotus < Sinatra::Base
+  class Lotus
     # Login form
     get '/login' do
       haml :"authorizations/login"

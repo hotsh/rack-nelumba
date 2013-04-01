@@ -1,5 +1,5 @@
 module Rack
-  class Lotus < Sinatra::Base
+  class Lotus
     # Retrieve the public activity.
     get '/activities/:id' do
       activity = Activity.find_by_id(params[:id])
