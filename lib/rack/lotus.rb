@@ -8,6 +8,7 @@ module Rack
   end
 end
 
+require 'rack/lotus/authorizations'
 require 'rack/lotus/subscriptions'
 require 'rack/lotus/activities'
 require 'rack/lotus/people'
