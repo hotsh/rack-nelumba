@@ -149,6 +149,8 @@ class Authorization
                                           :author => params["author"],
                                           :public_key => "foo")
 
+    params["person"] = Person.create!
+
     authorization = super(params)
 
     authorization.author.update_attributes!(:id  => "/authorizations/#{authorization.id}",
