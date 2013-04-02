@@ -8,15 +8,12 @@ class Authorization
 
   include MongoMapper::Document
 
-  key :username,        String
-
+  # An Authorization involves a Person.
   one :person
 
+  key :username,        String
   key :identity,        Identity
-  key :author,          Author
-
   key :private_key,     String
-
   key :hashed_password, String
 
   validates_presence_of :username
@@ -140,14 +137,15 @@ class Authorization
     params.delete("password")
 
     params["person"] = Person.create!
-    person_id = params["person"].id
 
-    params["author"] = Author.create!(:uri => "/people/#{person_id}",
-                                      :id => "/people/#{person_id}",
-                                      :nickname => params["username"],
-                                      :name => params["username"],
-                                      :display_name => params["username"],
-                                      :preferred_username => params["username"])
+    params["person"].author = Author.create!(:uri => "/people/#{person_id}",
+                                             :id => "/people/#{person_id}",
+                                             :nickname => params["username"],
+                                               :name => params["username"],
+                                               :display_name => params["username"],
+                                               :preferred_username => params["username"])
+
+    params["person"].save!
 
     params["identity"] = Identity.create!(:username => params["username"],
                                           :domain => "www.example.com",

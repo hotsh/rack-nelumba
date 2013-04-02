@@ -2,8 +2,13 @@ module Rack
   class Lotus
     # Get the public profile for this person.
     get '/people/:id' do
-      person = Person.find_by_id(params[:id])
-      status 404 and return if person.nil?
+      @person = Person.find_by_id(params[:id])
+      status 404 and return if @person.nil?
+
+      @author = @person.author
+      status 404 and return if @author.nil?
+
+      haml :"people/show"
     end
 
     # External delivery of our own stream.

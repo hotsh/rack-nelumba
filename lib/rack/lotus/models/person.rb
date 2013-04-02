@@ -5,7 +5,11 @@
 class Person
   include MongoMapper::Document
 
+  # A Person can be Authorized to use this system.
   belongs_to :authorization
+
+  # A Person has an associated Author. (However, not every Author has a Person)
+  one :author
 
   # Our contributions.
   key :activities,    Aggregate
