@@ -4,71 +4,73 @@ module Rack
     require 'date'
     require 'nokogiri'
 
-    # Retrieves a Hash of all routes on the system as URI templates. Keys
-    # indicate standard rels and values are URI templates.
-    def self.routes
-      {
-        :lrdd             => "/api/lrdd/{uri}",
-        :subscription_url => "/subscriptions"
-      }
-    end
-
-    # Retrieve a hash representing the host JRD. Use to_json to yield a string.
-    def self.jrd
-      links = []
-
-      routes = self.routes
-      routes.keys.each do |k|
-        links << {:rel => k, :template => routes[k]}
+    module API
+      # Retrieves a Hash of all routes on the system as URI templates. Keys
+      # indicate standard rels and values are URI templates.
+      def self.routes
+        {
+          :lrdd             => "/api/lrdd/{uri}",
+          :subscription_url => "/subscriptions"
+        }
       end
 
-      routes = {:links => links}
+      # Retrieve a hash representing the host JRD. Use to_json to yield a string.
+      def self.jrd
+        links = []
 
-      # Get the domain from the first authorized account
-      # It is a strange way to not have to provide the host name
-      # I don't know how much I like it. :)
-      identity = Authorization.first.identity
+        routes = self.routes
+        routes.keys.each do |k|
+          links << {:rel => k, :template => routes[k]}
+        end
 
-      routes[:subject] = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
-      routes[:host]    = identity.domain
-      routes[:expires] = "#{(Time.now.utc.to_date >> 1).xmlschema}Z"
+        routes = {:links => links}
 
-      routes
-    end
+        # Get the domain from the first authorized account
+        # It is a strange way to not have to provide the host name
+        # I don't know how much I like it. :)
+        identity = Authorization.first.identity
 
-    # Retrieve a String containing XML conforming to the host-meta xrd
-    # specification.
-    def self.xrd
-      routes = self.jrd
+        routes[:subject] = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
+        routes[:host]    = identity.domain
+        routes[:expires] = "#{(Time.now.utc.to_date >> 1).xmlschema}Z"
 
-      # Build xml
-      builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
-        xml.XRD("xmlns"     => 'http://docs.oasis-open.org/ns/xri/xrd-1.0',
-                "xmlns:xsi" => 'http://www.w3.org/2001/XMLSchema-instance',
-                "xmlns:hm"  => 'http://host-meta.net/ns/1.0') do
-          xml.Subject routes[:subject]
-          xml['hm'].Host routes[:host]
-          xml.Expires routes[:expires]
+        routes
+      end
 
-          routes[:links].each do |link|
-            xml.Link link
+      # Retrieve a String containing XML conforming to the host-meta xrd
+      # specification.
+      def self.xrd
+        routes = self.jrd
+
+        # Build xml
+        builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
+          xml.XRD("xmlns"     => 'http://docs.oasis-open.org/ns/xri/xrd-1.0',
+                  "xmlns:xsi" => 'http://www.w3.org/2001/XMLSchema-instance',
+                  "xmlns:hm"  => 'http://host-meta.net/ns/1.0') do
+            xml.Subject routes[:subject]
+            xml['hm'].Host routes[:host]
+            xml.Expires routes[:expires]
+
+            routes[:links].each do |link|
+              xml.Link link
+            end
           end
         end
-      end
 
-      # Output
-      builder.to_xml
+        # Output
+        builder.to_xml
+      end
     end
 
     # Report a listing of all lotus routes.
     get '/api' do
       if request.accept?('application/json+jrd')
         content_type 'application/jrd+json'
-        self.jrd.to_json
+        API.jrd.to_json
       elsif request.accept?('application/xrd+xml')||
             request.accept?('application/xml')
         content_type 'application/xrd+xml'
-        self.xrd
+        API.xrd
       else
         Lotus.routes.to_json
       end
@@ -95,9 +97,9 @@ module Rack
     get '/.well-known/host-meta' do
       if request.accept?('application/json+jrd') ||
          request.accept?('application/json')
-        self.jrd.to_json
+        API.jrd.to_json
       else
-        self.xrd
+        API.xrd
       end
     end
   end
