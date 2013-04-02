@@ -123,4 +123,19 @@ class Author
 
     params
   end
+
+  # Determines the name to use to refer to this Author in a view.
+  def short_name
+    if self.display_name
+      self.display_name
+    elsif self.name
+      self.name
+    elsif self.preferred_username
+      self.preferred_username
+    elsif self.nickname
+      self.nickname
+    else
+      self.id
+    end
+  end
 end
