@@ -5,14 +5,14 @@ module Rack
   class Lotus < Sinatra::Base
     require 'lotus'
     require 'mongo_mapper'
+
+    # Use the application directory as root
+    set :app_file => '.'
+
+    # Use HTML5
+    set :haml, :format => :html5
   end
 end
 
-require 'rack/lotus/authorizations'
-require 'rack/lotus/subscriptions'
-require 'rack/lotus/activities'
-require 'rack/lotus/people'
-require 'rack/lotus/feeds'
-require 'rack/lotus/api'
-
-Dir[File.join(File.dirname(__FILE__), "lotus", "models", '*.rb')].each {|file| require file }
+Dir[File.join(File.dirname(__FILE__), "lotus", "*.rb")].each {|file| require file }
+Dir[File.join(File.dirname(__FILE__), "lotus", "models", "*.rb")].each {|file| require file }
