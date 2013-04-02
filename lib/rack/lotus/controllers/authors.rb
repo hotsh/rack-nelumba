@@ -52,7 +52,7 @@ module Rack
     # Update a known Author
     post '/authors/:id' do
       @author = Author.find_by_id(params[:id])
-      if @author.nil? || current_user.nil? || (@author._id != current_user.author._id)
+      if @author.nil? || current_person.nil? || (@author._id != current_person.author._id)
         # Do not allow creation
         status 404
       else
