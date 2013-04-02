@@ -16,6 +16,8 @@ Gem::Specification.new do |s|
   s.add_dependency "bson_ext"     # Database
   s.add_dependency "mongo_mapper" # Database
   s.add_dependency "bcrypt-ruby"  # Basic Authentication
+  s.add_dependency "tilt"         # Preferred template interface
+  s.add_dependency "haml"         # Preferred HTML template language
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
