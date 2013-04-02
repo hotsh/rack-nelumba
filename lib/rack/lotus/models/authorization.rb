@@ -135,13 +135,18 @@ class Authorization
   end
 
   # Create a new Authorization.
-  def self.create!(params)
+  def self.create!(params, *args)
     params["hashed_password"] = self.hash_password(params["password"])
     params.delete("password")
 
-    params["author"] = Author.create!(:uri => "/authorizations/:id",
-                                      :id => "/authorizations/:id",
+    params["person"] = Person.create!
+    person_id = params["person"].id
+
+    params["author"] = Author.create!(:uri => "/people/#{person_id}",
+                                      :id => "/people/#{person_id}",
                                       :nickname => params["username"],
+                                      :name => params["username"],
+                                      :display_name => params["username"],
                                       :preferred_username => params["username"])
 
     params["identity"] = Identity.create!(:username => params["username"],
@@ -149,19 +154,12 @@ class Authorization
                                           :author => params["author"],
                                           :public_key => "foo")
 
-    params["person"] = Person.create!
+    params["salmon_endpoint"]          = "/people/#{person_id}/salmon"
+    params["dialback_endpoint"]        = "/people/#{person_id}/dialback"
+    params["activity_inbox_endpoint"]  = "/people/#{person_id}/activity_inbox"
+    params["activity_outbox_endpoint"] = "/people/#{person_id}/activity_outbox"
+    params["profile_page"]             = "/people/#{person_id}"
 
-    authorization = super(params)
-
-    authorization.author.update_attributes!(:id  => "/authorizations/#{authorization.id}",
-                                            :uri => "/authorizations/#{authorization.id}")
-
-    authorization.identity.update_attributes!(:salmon_endpoint => "/authorizations/#{authorization.id}/salmon",
-                                              :dialback_endpoint => "/authorizations/#{authorization.id}/dialback",
-                                              :activity_inbox_endpoint => "/authorizations/#{authorization.id}/activity_inbox",
-                                              :activity_outbox_endpoint => "/authorizations/#{authorization.id}/activity_outbox",
-                                              :profile_page => "/authorizations/#{authorization.id}")
-
-    authorization
+    super(params, *args)
   end
 end
