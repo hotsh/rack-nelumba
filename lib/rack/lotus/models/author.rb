@@ -21,7 +21,7 @@ class Author
   key :birthday
   key :anniversary
 
-  one :embedded_avatar
+  one :avatar
 
   timestamps!
 
