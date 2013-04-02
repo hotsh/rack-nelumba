@@ -15,4 +15,5 @@ module Rack
 end
 
 Dir[File.join(File.dirname(__FILE__), "lotus", "*.rb")].each {|file| require file }
+Dir[File.join(File.dirname(__FILE__), "lotus", "controllers", "*.rb")].each {|file| require file }
 Dir[File.join(File.dirname(__FILE__), "lotus", "models", "*.rb")].each {|file| require file }
