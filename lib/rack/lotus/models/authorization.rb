@@ -11,16 +11,27 @@ class Authorization
   # An Authorization involves a Person.
   one :person
 
-  key :username,        String
+  # An Authorization involves an Identity.
   key :identity,        Identity
+
+  # You authorize with a username
+  key :username,        String
+
+  # A private key can verify that external information originated with this
+  # account.
   key :private_key,     String
+
+  # A password can authenticate you if you are manually signing in as a human
+  # being. The password is hashed to prevent information leaking.
   key :hashed_password, String
 
+  # You must have enough credentials to be able to log into the system:
   validates_presence_of :username
   validates_presence_of :identity
   validates_presence_of :author
   validates_presence_of :hashed_password
 
+  # Log modification
   timestamps!
 
   # Generate a Hash containing this person's LRDD meta info.
