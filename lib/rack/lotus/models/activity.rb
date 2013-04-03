@@ -2,22 +2,51 @@
 class Activity
   include MongoMapper::Document
 
-  key :id
-  key :object
-  key :type
-  key :verb
-  key :target
-  key :title
-  key :actor
-  key :content
-  key :content_type
-  key :url
-  key :source
-  key :in_reply_to
-
-  # One feed is the original feed
+  # All Activities originate from one particular Feed.
   one :feed
 
+  # Unique id for this Activity.
+  key :id
+
+  # Unique url for this activity that can be used to retrieve a representation
+  # of this Activity.
+  key :url
+
+  # Determines what type of object this Activity represents. Standard types
+  # include:
+  #   :article, :audio, :bookmark, :comment, :file, :folder, :group,
+  #   :list, :note, :person, :photo, :"photo-album", :place, :playlist,
+  #   :product, :review, :service, :status, :video
+  key :type
+
+  # Determines the action this Activity represents. Standard types include:
+  #   :favorite, :follow, :like, :"make-friend", :join, :play,
+  #   :post, :save, :share, :tag, :update
+  key :verb
+
+  # Determines what is acting.
+  key :actor
+
+  # Determines what the action is acting upon.
+  key :target
+
+  # The title of the Activity.
+  key :title
+
+  # The content of the Activity.
+  key :content
+
+  # Determines what representation the content is in. (e.g. "html")
+  key :content_type
+
+  # Contains the source of this Activity if it is a repost or otherwise copied
+  # from another Feed.
+  key :source, :class_name => 'Feed'
+
+  # Contains the Activity this Activity is a response of.
+  key :in_reply_to, :class_name => 'Activity'
+
+  # Log modification
   timestamps!
 
   # Create a new Activity if the given Activity is not found by its id.
