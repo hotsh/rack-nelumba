@@ -3,25 +3,90 @@
 class Author
   include MongoMapper::Document
 
+  # Every Author has a representation of their central Identity.
   belongs_to :identity
 
-  key :id
-  key :nickname
-  key :extended_name
-  key :uri
-  key :email
-  key :name
-  key :organization
-  key :address
-  key :account
-  key :gender
-  key :note
-  key :display_name
-  key :preferred_username
-  key :birthday
-  key :anniversary
-
+  # Each Author has an Avatar icon that identifies them.
   one :avatar
+
+  # A unique identifier for this author.
+  key :id
+
+  # A nickname for this author.
+  key :nickname
+
+  # A Hash containing a representation of (typically) the Author's real name:
+  #   :formatted         => The full name of the contact
+  #   :family_name       => The family name. "Last name" in Western contexts.
+  #   :given_name        => The given name. "First name" in Western contexts.
+  #   :middle_name       => The middle name.
+  #   :honorific_prefix  => "Title" in Western contexts. (e.g. "Mr." "Mrs.")
+  #   :honorific_suffix  => "Suffix" in Western contexts. (e.g. "Esq.")
+  key :extended_name
+
+  # A URI that identifies this author and can be used to access a
+  # canonical representation of this structure.
+  key :uri
+
+  # The email for this Author.
+  key :email
+
+  # The name for this Author.
+  key :name
+
+  # A Hash containing information about the organization this Author
+  # represents:
+  #   :name        => The name of the organization (e.g. company, school,
+  #                   etc) This field is required. Will be used for sorting.
+  #   :department  => The department within the organization.
+  #   :title       => The title or role within the organization.
+  #   :type        => The type of organization. Canonical values include
+  #                   "job" or "school"
+  #   :start_date  => A DateTime representing when the contact joined
+  #                   the organization.
+  #   :end_date    => A DateTime representing when the contact left the
+  #                   organization.
+  #   :location    => The physical location of this organization.
+  #   :description => A free-text description of the role this contact
+  #                   played in this organization.
+  key :organization
+
+  # A Hash containing the location of this Author:
+  #   :formatted      => A formatted representating of the address. May
+  #                     contain newlines.
+  #   :street_address => The full street address. May contain newlines.
+  #   :locality       => The city or locality component.
+  #   :region         => The state or region component.
+  #   :postal_code    => The zipcode or postal code component.
+  #   :country        => The country name component.
+  key :address
+
+  # A Hash containing the account information for this Author:
+  #   :domain   => The top-most authoriative domain for this account. (e.g.
+  #                "twitter.com") This is the primary field. Is required.
+  #                Used for sorting.
+  #   :username => An alphanumeric username, typically chosen by the user.
+  #   :userid   => A user id, typically assigned, that uniquely refers to
+  #                the user.
+  key :account
+
+  # The Author's gender.
+  key :gender
+
+  # A biographical note.
+  key :note
+
+  # The name the Author wishes to be used in display.
+  key :display_name
+
+  # The preferred username for the Author.
+  key :preferred_username
+
+  # A Date indicating the Author's birthday.
+  key :birthday
+
+  # A Date indicating an anniversary.
+  key :anniversary
 
   timestamps!
 
