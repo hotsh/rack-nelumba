@@ -17,6 +17,16 @@ class Aggregate
   key  :followers_ids, Array
   many :followers,     :in => :followers_ids, :class_name => 'Feed'
 
+  # Subscription status.
+  # Since subscriptions are done by the server, we only need to share one
+  # secret/token pair for all users that follow this feed on the server.
+  # This is done at the Feed level since people may want to follow your
+  # "timeline", or your "favorites". Or People who use Lotus will ignore
+  # the Person aggregate class and go with their own thing.
+  key :subscription_secret
+  key :verification_token
+
+  # Log modification
   timestamps!
 
   # Follow the given feed. When a new post is placed in this feed, it

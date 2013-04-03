@@ -53,18 +53,10 @@ class Feed
   # Feeds may have an image they use as a logo.
   #key :logo, :class_name => 'Photo'
 
-  # Subscription status.
-  # Since subscriptions are done by the server, we only need to share one
-  # secret/token pair for all users that follow this feed on the server.
-  # This is done at the Feed level since people may want to follow your
-  # "timeline", or your "favorites". Or People who use Lotus will ignore
-  # the Person aggregate class and go with their own thing.
-  key :subscription_secret
-  key :verification_token
-
   # TODO: Normalize the first 100 or so activities. I dunno.
   key :normalized
 
+  # Log modification
   timestamps!
 
   # Create a new Feed if the given Feed is not found by its id.
