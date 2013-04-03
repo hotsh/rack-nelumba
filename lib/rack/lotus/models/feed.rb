@@ -2,6 +2,9 @@
 class Feed
   include MongoMapper::Document
 
+  # An Aggregate handles subscriptions to this Feed.
+  belongs_to :aggregate
+
   # A unique identifier for this Feed.
   key :id
 

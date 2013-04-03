@@ -6,8 +6,8 @@
 class Aggregate
   include MongoMapper::Document
 
-  # The content of this aggregate.
-  key  :feed,          Feed
+  # The content of this aggregate is a Feed.
+  one :feed
 
   # The external feeds being aggregated.
   key  :following_ids, Array
