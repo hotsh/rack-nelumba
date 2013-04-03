@@ -6,6 +6,10 @@ module Rack
     require 'lotus'
     require 'mongo_mapper'
 
+    use Rack::Session::Cookie, :key => 'rack.session',
+                               :path => '/',
+                               :secret => 'foobar'
+
     # Use the application directory as root
     set :app_file => '.'
 
