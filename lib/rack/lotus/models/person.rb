@@ -9,7 +9,7 @@ class Person
   belongs_to :authorization
 
   # A Person has an associated Author. (However, not every Author has a Person)
-  one :author
+  belongs_to :author
 
   # Our contributions.
   key :activities,    Aggregate
