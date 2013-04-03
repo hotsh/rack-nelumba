@@ -49,7 +49,7 @@ module Rack
       session[:person_id] = authorization.person._id
 
       # Allow user to edit author
-      @author = authorization.author
+      @author = authorization.person.author
       haml :"authors/edit"
     end
   end

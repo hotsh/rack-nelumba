@@ -1,5 +1,5 @@
 # This represents how a Person can authenticate to act on our server.
-# This is attached to an Identity and an Author. Use this to allow an
+# This is attached to an Identity and a Person. Use this to allow an
 # Author to generate Activities on this server.
 class Authorization
   require 'bcrypt'
@@ -28,7 +28,6 @@ class Authorization
   # You must have enough credentials to be able to log into the system:
   validates_presence_of :username
   validates_presence_of :identity
-  validates_presence_of :author
   validates_presence_of :hashed_password
 
   # Log modification
@@ -148,19 +147,20 @@ class Authorization
     params.delete("password")
 
     params["person"] = Person.create!
+    person_id = params["person"]._id
 
     params["person"].author = Author.create!(:uri => "/people/#{person_id}",
                                              :id => "/people/#{person_id}",
                                              :nickname => params["username"],
-                                               :name => params["username"],
-                                               :display_name => params["username"],
-                                               :preferred_username => params["username"])
+                                             :name => params["username"],
+                                             :display_name => params["username"],
+                                             :preferred_username => params["username"])
 
     params["person"].save!
 
     params["identity"] = Identity.create!(:username => params["username"],
                                           :domain => "www.example.com",
-                                          :author => params["author"],
+                                          :author => params["person"].author,
                                           :public_key => "foo")
 
     params["salmon_endpoint"]          = "/people/#{person_id}/salmon"

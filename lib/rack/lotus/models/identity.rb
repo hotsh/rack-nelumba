@@ -4,7 +4,8 @@
 class Identity
   include MongoMapper::Document
 
-  one :author
+  belongs_to :author
+  key :author_id, ObjectId
 
   key :username
   key :ssl
