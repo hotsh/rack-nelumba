@@ -2,27 +2,63 @@
 class Feed
   include MongoMapper::Document
 
+  # A unique identifier for this Feed.
   key :id
+
+  # A URL for this Feed that can be used to retrieve a representation.
   key :url
+
   key :categories,   :default => []
+
+  # The type of rights one has to this feed generally for human display.
   key :rights
+
+  # The title of this feed.
   key :title
+
+  # The representation of the title. (e.g. "html")
   key :title_type
+
+  # The subtitle of the feed.
   key :subtitle
+
+  # The representation of the subtitle. (e.g. "html")
   key :subtitle_type
-  key :icon
-  key :logo
-  key :generator
-  key :contributors, Array, :default => []
-  key :authors,      Array, :default => []
+
+  # An array of Authors that contributed to this Feed.
+  key  :contributors_ids, Array, :default => []
+  many :contributors,     :class_name => 'Author', :in => :contributors_ids
+
+  # An Array of Authors that create the content in this Feed.
+  key  :authors_ids,  Array, :default => []
+  many :authors,      :class_name => 'Author', :in => :authors_ids
+
+  # An Array of Activities that are contained in this Feed.
   key :entries_ids,  Array
-  many :entries,      :class_name => 'Activity', :in => :entries_ids
+  many :entries,     :class_name => 'Activity', :in => :entries_ids
+
+  # An Array of hubs that are used to balance subscriptions to this Feed.
   key :hubs,         Array, :default => []
+
+  # A salmon url for this Feed.
   key :salmon_url
+
+  # A Hash containing information about the entity that is generating content
+  # for this Feed when it isn't a person.
+  key :generator
+
+  # Feeds may have an icon to represent them.
+  key :icon, :class_name => 'Avatar'
+
+  # Feeds may have an image they use as a logo.
+  #key :logo, :class_name => 'Photo'
 
   # Subscription status.
   # Since subscriptions are done by the server, we only need to share one
   # secret/token pair for all users that follow this feed on the server.
+  # This is done at the Feed level since people may want to follow your
+  # "timeline", or your "favorites". Or People who use Lotus will ignore
+  # the Person aggregate class and go with their own thing.
   key :subscription_secret
   key :verification_token
 
