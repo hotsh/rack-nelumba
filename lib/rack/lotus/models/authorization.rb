@@ -131,7 +131,7 @@ class Authorization
   def self.sanitize_params(params)
     # Delete unknown keys
     params.keys.each do |k|
-      unless self.keys.keys.map.include?(k) and !(k == "password")
+      unless self.keys.keys.map.include?(k) or (k == "password" || k == :password)
         params.delete(k)
       end
     end
