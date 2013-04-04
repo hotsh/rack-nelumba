@@ -2,8 +2,11 @@ module Rack
   class Lotus
     # Retrieve the public feed.
     get '/feeds/:id' do
-      feed = Feed.find_by_id(params[:id])
-      status 404 and return if feed.nil?
+      @feed = Feed.find_by_id(params[:id])
+      @activities = @feed.entries
+      status 404 and return if @feed.nil?
+
+      haml :"feeds/show"
     end
 
     # Add an activity to the given feed if you own it.
@@ -16,7 +19,7 @@ module Rack
 
       p.activities.feed.create_activity!(:type => params["type"],
                                          :verb => :post,
-                                         :actor => p.activities.feed.author,
+                                         :actor => p.author,
                                          :title => "New Post",
                                          :content => params["content"],
                                          :content_type => "text")
