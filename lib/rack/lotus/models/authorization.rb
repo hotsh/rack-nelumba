@@ -158,16 +158,17 @@ class Authorization
 
     params["person"].author.save!
 
-    params["identity"] = Identity.create!(:username => params["username"],
-                                          :domain => "www.example.com",
-                                          :author => params["person"].author,
-                                          :public_key => "foo")
-
-    params["salmon_endpoint"]          = "/people/#{person_id}/salmon"
-    params["dialback_endpoint"]        = "/people/#{person_id}/dialback"
-    params["activity_inbox_endpoint"]  = "/people/#{person_id}/activity_inbox"
-    params["activity_outbox_endpoint"] = "/people/#{person_id}/activity_outbox"
-    params["profile_page"]             = "/people/#{person_id}"
+    params["identity"] = Identity.create!(
+      :username => params["username"],
+      :domain => "www.example.com",
+      :author => params["person"].author,
+      :public_key => "foo",
+      :salmon_endpoint => "/people/#{person_id}/salmon",
+      :dialback_endpoint => "/people/#{person_id}/dialback",
+      :activity_inbox_endpoint => "/people/#{person_id}/activity_inbox",
+      :activity_outbox_endpoint => "/people/#{person_id}/activity_outbox",
+      :profile_page => "/people/#{person_id}"
+    )
 
     super(params, *args)
   end

@@ -154,4 +154,13 @@ class Feed
       puts "PING #{h}"
     end
   end
+
+  def create_activity!(params)
+    a = Activity.new
+    a.update_attributes(params)
+    a.uid = "/activities/#{a.id}"
+    a.url = "/activities/#{a.id}"
+    a.feed_id = self.id
+    a.save
+  end
 end

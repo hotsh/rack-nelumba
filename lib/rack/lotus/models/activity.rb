@@ -3,7 +3,8 @@ class Activity
   include MongoMapper::Document
 
   # All Activities originate from one particular Feed.
-  one :feed
+  key :feed_id, ObjectId
+  belongs_to :feed, :class_name => 'Feed'
 
   # Unique id for this Activity.
   key :uid

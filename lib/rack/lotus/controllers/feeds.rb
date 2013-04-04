@@ -9,13 +9,17 @@ module Rack
     # Add an activity to the given feed if you own it.
     post '/feeds/:id' do
       p = Person.find_by_id(session[:person_id])
-      if p.nil? || p.activities.feed.id != params[:id]
+      if p.nil? || p.activities.feed.id.to_s != params[:id]
         status 404
         return
       end
 
-      puts "Place activity"
-      puts params["content"]
+      p.activities.feed.create_activity!(:type => params["type"],
+                                         :verb => :post,
+                                         :actor => p.activities.feed.author,
+                                         :title => "New Post",
+                                         :content => params["content"],
+                                         :content_type => "text")
     end
   end
 end

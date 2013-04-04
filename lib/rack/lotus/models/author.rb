@@ -4,7 +4,10 @@ class Author
   include MongoMapper::Document
 
   # Every Author has a representation of their central Identity.
-  belongs_to :identity
+  one :identity
+
+  # Local accounts have a Person, but remote Authors will not.
+  one :person
 
   # Each Author has an Avatar icon that identifies them.
   one :avatar
