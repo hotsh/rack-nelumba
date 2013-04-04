@@ -162,5 +162,8 @@ class Feed
     a.url = "/activities/#{a.id}"
     a.feed_id = self.id
     a.save
+
+    self.entries << a
+    self.save
   end
 end
