@@ -123,6 +123,10 @@ class Person
 
   # Post a new Activity.
   def post!(activity)
+    if activity.is_a? Hash
+      # Create a new activity
+      activity = Activity.create!(activity)
+    end
     self.activities.post! activity
     self.timeline.repost! activity
   end

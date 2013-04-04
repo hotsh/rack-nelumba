@@ -17,6 +17,19 @@ module Rack
       haml :"people/show"
     end
 
+    # Creates a new activity.
+    post '/people/:id/outbox' do
+      p = Person.find_by_id(session[:person_id])
+      status 404 and return unless p
+
+      p.post!(:type => params["type"],
+              :verb => :post,
+              :actor => p.author,
+              :title => "New Post",
+              :content => params["content"],
+              :content_type => "text")
+    end
+
     # External delivery of our own stream.
     post '/people/:id/feed' do
       person = Person.find_by_id(params[:id])

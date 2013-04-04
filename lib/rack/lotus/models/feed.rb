@@ -117,7 +117,7 @@ class Feed
 
   # Adds activity to the feed.
   def post!(activity)
-    activity.feed = self
+    activity.feed_id = self.id
     activity.save
 
     self.entries << activity
