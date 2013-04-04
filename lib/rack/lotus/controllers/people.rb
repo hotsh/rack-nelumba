@@ -1,5 +1,11 @@
 module Rack
   class Lotus
+    # Get a listing of the people on this server.
+    get '/people' do
+      @people = Person.all
+      haml :"people/index"
+    end
+
     # Get the public profile for this person.
     get '/people/:id' do
       @person = Person.find_by_id(params[:id])

@@ -6,10 +6,12 @@ module Rack
       haml :"authors/index"
     end
 
+    # Get a field to discover a new Author.
     get '/authors/discover' do
       haml :"authors/discover"
     end
 
+    # Discover a new Author.
     post '/authors/discover' do
       author = nil
       if params["account"]
