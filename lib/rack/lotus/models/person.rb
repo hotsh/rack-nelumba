@@ -6,10 +6,12 @@ class Person
   include MongoMapper::Document
 
   # A Person can be Authorized to use this system.
-  belongs_to :authorization
+  key :authorization_id, ObjectId
+  belongs_to :authorization, :class_name => 'Authorization'
 
   # A Person has an associated Author. (However, not every Author has a Person)
-  belongs_to :author
+  key :author_id, ObjectId
+  belongs_to :author, :class_name => 'Author'
 
   # Our contributions.
   key :activities,    Aggregate

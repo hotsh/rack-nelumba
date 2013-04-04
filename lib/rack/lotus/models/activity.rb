@@ -6,7 +6,7 @@ class Activity
   one :feed
 
   # Unique id for this Activity.
-  key :id
+  key :uid
 
   # Unique url for this activity that can be used to retrieve a representation
   # of this Activity.
@@ -50,20 +50,20 @@ class Activity
   timestamps!
 
   # Create a new Activity if the given Activity is not found by its id.
-  def self.find_or_create_by_id!(arg, *args)
+  def self.find_or_create_by_uid!(arg, *args)
     if arg.is_a? ::Lotus::Activity
-      id = arg.id
+      uid = arg.id
     else
-      id = arg[:id]
+      uid = arg[:uid]
     end
 
-    activity = self.find(:id => id)
+    activity = self.find(:uid => uid)
     return activity if author
 
     begin
       activity = create!(arg, *args)
     rescue
-      activity = self.find(:id => id) or raise
+      activity = self.find(:uid => uid) or raise
     end
 
     activity
@@ -73,6 +73,9 @@ class Activity
   def self.create!(arg, *args)
     if arg.is_a? Lotus::Activity
       arg = arg.to_hash
+
+      arg[:uid] = arg[:id]
+      arg.delete :id
 
       arg.delete :author
       arg.delete :in_reply_to

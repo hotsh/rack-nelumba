@@ -10,7 +10,7 @@ class Author
   one :avatar
 
   # A unique identifier for this author.
-  key :id
+  key :uid
 
   # A nickname for this author.
   key :nickname
@@ -90,21 +90,21 @@ class Author
 
   timestamps!
 
-  # Create a new Author if the given Author is not found by its id.
-  def self.find_or_create_by_id!(arg, *args)
+  # Create a new Author if the given Author is not found by its uid.
+  def self.find_or_create_by_uid!(arg, *args)
     if arg.is_a? ::Lotus::Author
-      id = arg.id
+      uid = arg.id
     else
-      id = arg[:id]
+      uid = arg[:uid]
     end
 
-    author = self.find(:id => id)
+    author = self.find(:uid => uid)
     return author if author
 
     begin
       author = create!(arg, *args)
     rescue
-      author = self.find(:id => id) or raise
+      author = self.find(:uid => uid) or raise
     end
 
     author
@@ -114,6 +114,8 @@ class Author
   def self.create!(arg, *args)
     if arg.is_a? Lotus::Author
       arg = arg.to_hash
+      arg[:uid] = arg[:id]
+      arg.delete :id
     end
 
     super arg, *args
@@ -200,7 +202,7 @@ class Author
     elsif self.nickname
       self.nickname
     else
-      self.id
+      self.uid
     end
   end
 end

@@ -65,18 +65,18 @@ class Feed
   # Create a new Feed if the given Feed is not found by its id.
   def self.find_or_create_by_id!(arg, *args)
     if arg.is_a? ::Lotus::Feed
-      id = arg.id
+      uid = arg.id
     else
-      id = arg[:id]
+      uid = arg[:uid]
     end
 
-    feed = self.find(:id => id)
+    feed = self.find(:uid => uid)
     return feed if author
 
     begin
       feed = create!(arg, *args)
     rescue
-      feed = self.find(:id => id) or raise
+      feed = self.find(:uid => uid) or raise
     end
 
     feed
@@ -87,16 +87,19 @@ class Feed
     if arg.is_a? ::Lotus::Feed
       arg = arg.to_hash
 
+      arg[:uid] = arg[:id]
+      arg.delete :id
+
       arg[:authors].map! do |a|
-        Author.find_or_create_by_id!(a, :safe => true)
+        Author.find_or_create_by_uid!(a, :safe => true)
       end
 
       arg[:contributors].map! do |a|
-        Author.find_or_create_by_id!(a, :safe => true)
+        Author.find_or_create_by_uid!(a, :safe => true)
       end
 
       arg[:entries].map! do |a|
-        Activity.find_or_create_by_id!(a, :safe => true)
+        Activity.find_or_create_by_uid!(a, :safe => true)
       end
     end
 

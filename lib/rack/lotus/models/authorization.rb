@@ -12,7 +12,8 @@ class Authorization
   one :person
 
   # An Authorization involves an Identity.
-  key :identity,        Identity
+  key :identity_id, ObjectId
+  belongs_to :identity, :class_name => 'Identity'
 
   # You authorize with a username
   key :username,        String
