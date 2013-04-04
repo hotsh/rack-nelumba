@@ -9,6 +9,10 @@ class Aggregate
   # The content of this aggregate is a Feed.
   one :feed
 
+  # Aggregates generally belong to a person.
+  key :person_id, ObjectId
+  belongs_to :person, :class_name => 'Person'
+
   # The external feeds being aggregated.
   key  :following_ids, Array
   many :following,     :in => :following_ids, :class_name => 'Feed'
@@ -28,6 +32,21 @@ class Aggregate
 
   # Log modification
   timestamps!
+
+  before_create :create_feeds
+
+  private
+
+  def create_feeds
+    feed = Feed.new
+    feed.uid = "/feeds/#{feed.id}"
+    feed.url = "/feeds/#{feed.id}"
+    feed.author = self.person.author if self.person
+    feed.aggregate_id = self.id
+    feed.save
+  end
+
+  public
 
   # Follow the given feed. When a new post is placed in this feed, it
   # will be copied into ours.

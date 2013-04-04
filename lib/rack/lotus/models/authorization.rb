@@ -147,17 +147,16 @@ class Authorization
     params["hashed_password"] = self.hash_password(params["password"])
     params.delete("password")
 
-    params["person"] = Person.create!
-    person_id = params["person"]._id
+    params["person"] = Person.create
+    params["person_id"] = params["person"].id
+    person_id = params["person_id"]
 
-    params["person"].author = Author.create!(:uri => "/people/#{person_id}",
-                                             :uid => "/people/#{person_id}",
-                                             :nickname => params["username"],
-                                             :name => params["username"],
-                                             :display_name => params["username"],
-                                             :preferred_username => params["username"])
+    params["person"].author.update_attributes(:nickname => params["username"],
+                                              :name => params["username"],
+                                              :display_name => params["username"],
+                                              :preferred_username => params["username"])
 
-    params["person"].save!
+    params["person"].author.save!
 
     params["identity"] = Identity.create!(:username => params["username"],
                                           :domain => "www.example.com",

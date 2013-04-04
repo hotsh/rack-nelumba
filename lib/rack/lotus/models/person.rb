@@ -14,19 +14,24 @@ class Person
   belongs_to :author, :class_name => 'Author'
 
   # Our contributions.
-  key :activities,    Aggregate
+  key :activities_id,    ObjectId
+  belongs_to :activities, :class_name => 'Aggregate'
 
   # The combined contributions of ourself and others we follow.
-  key :timeline,      Aggregate
+  key :timeline_d,      ObjectId
+  belongs_to :timeline, :class_name => 'Aggregate'
 
   # The things we like.
-  key :favorites,     Aggregate
+  key :favorites_id,     ObjectId
+  belongs_to :favorites, :class_name => 'Aggregate'
 
   # Replies to our stuff.
-  key :replies,       Aggregate
+  key :replies_id,       ObjectId
+  belongs_to :replies, :class_name => 'Aggregate'
 
   # Stuff that mentions us.
-  key :mentions,      Aggregate
+  key :mentions_id,      ObjectId
+  belongs_to :mentions, :class_name => 'Aggregate'
 
   # The people that follow us.
   key  :following_ids, Array
@@ -35,6 +40,33 @@ class Person
   # Who is aggregating this feed.
   key  :followers_ids, Array
   many :followers,     :in => :followers_ids, :class_name => 'Author'
+
+  before_create :create_aggregates
+  after_create :update_author
+
+  private
+
+  def create_aggregates
+    self.author     = Author.create
+
+    self.activities = create_aggregate
+    self.timeline   = create_aggregate
+    self.favorites  = create_aggregate
+    self.replies    = create_aggregate
+    self.mentions   = create_aggregate
+  end
+
+  def create_aggregate
+    Aggregate.create(:person_id => self.id)
+  end
+
+  def update_author
+    self.author.update_attributes(:uri => "/people/#{self.id}",
+                                  :uid => "/people/#{self.id}")
+    self.author.save
+  end
+
+  public
 
   # Updates so that we now follow the given Author.
   def follow!(person)

@@ -3,10 +3,11 @@ class Feed
   include MongoMapper::Document
 
   # An Aggregate handles subscriptions to this Feed.
-  belongs_to :aggregate
+  key :aggregate_id, ObjectId
+  belongs_to :aggregate, :class_name => 'Aggregate'
 
   # A unique identifier for this Feed.
-  key :id
+  key :uid
 
   # A URL for this Feed that can be used to retrieve a representation.
   key :url
