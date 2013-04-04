@@ -127,6 +127,7 @@ class Person
       # Create a new activity
       activity = Activity.create!(activity)
     end
+
     self.activities.post! activity
     self.timeline.repost! activity
   end

@@ -117,6 +117,11 @@ class Feed
 
   # Adds activity to the feed.
   def post!(activity)
+    if activity.is_a? Hash
+      # Create a new activity
+      activity = Activity.create!(activity)
+    end
+
     activity.feed_id = self.id
     activity.save
 
