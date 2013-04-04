@@ -26,10 +26,12 @@ class Activity
   key :verb
 
   # Determines what is acting.
-  key :actor
+  key :actor_id, ObjectId
+  key :actor_type, String
 
   # Determines what the action is acting upon.
-  key :target
+  key :target_id, ObjectId
+  key :target_type, String
 
   # The title of the Activity.
   key :title
@@ -49,6 +51,18 @@ class Activity
 
   # Log modification
   timestamps!
+
+  # Set the actor.
+  def actor=(obj)
+    self.actor_id   = obj.id
+    self.actor_type = obj.class.to_s
+  end
+
+  # Get the actor.
+  def actor
+    klass = Kernel.const_get(self.actor_type.class) if self.actor_type
+    klass.first_by_id(self.actor_id) if klass && self.actor_id
+  end
 
   # Create a new Activity if the given Activity is not found by its id.
   def self.find_or_create_by_uid!(arg, *args)
