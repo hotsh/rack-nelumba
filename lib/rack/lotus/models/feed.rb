@@ -39,7 +39,8 @@ class Feed
 
   # An Array of Activities that are contained in this Feed.
   key :entries_ids,  Array
-  many :entries,     :class_name => 'Activity', :in => :entries_ids
+  many :entries,     :class_name => 'Activity', :in => :entries_ids,
+                     :order      => :created_at.desc
 
   # An Array of hubs that are used to balance subscriptions to this Feed.
   key :hubs,         Array, :default => []
@@ -160,6 +161,7 @@ class Feed
     end
   end
 
+  # Post the given activity to the feed.
   def create_activity!(params)
     a = Activity.new
     a.update_attributes(params)
@@ -170,5 +172,10 @@ class Feed
 
     self.entries << a
     self.save
+  end
+
+  # Retrieve the feed's activities with the most recent first.
+  def ordered
+    Activity.where(:id => self.entries_ids).order(:created_at => :desc)
   end
 end

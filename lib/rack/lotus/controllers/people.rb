@@ -14,6 +14,7 @@ module Rack
       @author = @person.author
       status 404 and return if @author.nil?
 
+      @timeline = @person.activities.feed.ordered
       haml :"people/show"
     end
 
