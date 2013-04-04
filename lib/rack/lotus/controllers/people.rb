@@ -28,6 +28,8 @@ module Rack
               :title => "New Post",
               :content => params["content"],
               :content_type => "text")
+
+      redirect '/'
     end
 
     # External delivery of our own stream.
