@@ -151,7 +151,7 @@ class Authorization
     person_id = params["person"]._id
 
     params["person"].author = Author.create!(:uri => "/people/#{person_id}",
-                                             :id => "/people/#{person_id}",
+                                             :uid => "/people/#{person_id}",
                                              :nickname => params["username"],
                                              :name => params["username"],
                                              :display_name => params["username"],
