@@ -34,7 +34,8 @@ class Activity
   key :target_type, String
 
   # Can attach an external object to this Activity.
-  key :object_id, ObjectId
+  # It has a weird name because it complains if I use object_id
+  key :object_uid, ObjectId
   key :object_type, String
 
   # The title of the Activity.
