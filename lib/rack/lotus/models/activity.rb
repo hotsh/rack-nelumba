@@ -140,17 +140,21 @@ class Activity
     end
 
     verb = "did something to"
+    self_distinction = "their own"
     case self.verb
     when :favorite
       verb = "favorited"
     when :follow
       verb = "followed"
+      self_distinction = "themselves"
     when :"stop-following"
       verb = "stopped following"
+      self_distinction = "themselves"
     when :unfavorite
       verb = "unfavorited"
     when :post
       verb = "posted"
+      self_distinction = "a"
     end
 
     object = "something"
@@ -167,7 +171,6 @@ class Activity
     object_author = nil
     unless object.is_a? Author
       object_author = Author.find_by_id(activity.actor_id) if activity.actor_type == 'Author'
-      object_author = activity.feed.authors.first unless object_author
       object_author = object_author.short_name if object_author
     end
 
@@ -182,10 +185,11 @@ class Activity
       end
     end
 
-    if object_author
+    if object_author != actor
       sentence = "#{actor} #{verb} #{object_author}'s #{object}"
     else
-      sentence = "#{actor} #{verb} #{object}"
+      # Correct self_distinction if needed
+      sentence = "#{actor} #{verb} #{self_distinction} #{object}"
     end
 
     {
