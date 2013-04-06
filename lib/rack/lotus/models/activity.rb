@@ -149,6 +149,8 @@ class Activity
       verb = "stopped following"
     when :unfavorite
       verb = "unfavorited"
+    when :post
+      verb = "posted"
     end
 
     object = "something"
