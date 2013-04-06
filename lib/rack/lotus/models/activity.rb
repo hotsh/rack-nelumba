@@ -175,9 +175,13 @@ class Activity
       else
         object = activity.type.to_s
       end
-
-      sentence = "#{actor} #{verb} #{object_author}'s #{object}"
     elsif object.is_a? Author
+      object = object.short_name
+    end
+
+    if object_author
+      sentence = "#{actor} #{verb} #{object_author}'s #{object}"
+    else
       sentence = "#{actor} #{verb} #{object}"
     end
 
