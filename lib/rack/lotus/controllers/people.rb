@@ -44,9 +44,7 @@ module Rack
 
     # Creates a new activity.
     post '/people/:id/outbox' do
-      if current_person.id != params["id"]
-        status 404 and return unless p
-      end
+      status 404 and return unless current_person.id.to_s == params["id"]
 
       if params["activity_id"]
         # Repost
@@ -57,7 +55,7 @@ module Rack
         # New
         current_person.post!(:type => params["type"],
                              :verb => :post,
-                             :actor => p.author,
+                             :actor => current_person.author,
                              :title => "New Post",
                              :content => params["content"],
                              :content_type => "text")
