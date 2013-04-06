@@ -157,10 +157,10 @@ class Activity
     activity = self
     case self.object_type
     when 'Activity'
-      embedded_activity = Activity.find_by_id(self.object_id)
+      embedded_activity = Activity.find_by_id(self.object_uid)
       activity = embedded_activity if embedded_activity
     when 'Author'
-      embedded_author = Author.find_by_id(self.object_id)
+      embedded_author = Author.find_by_id(self.object_uid)
       object = embedded_author if embedded_author
     end
 

@@ -80,7 +80,7 @@ class Person
     self.activities.post!(:verb => :follow,
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_id => person.id,
+                          :object_uid => person.id,
                           :object_type => 'Author')
   end
 
@@ -96,7 +96,7 @@ class Person
     self.activities.post!(:verb => :"stop-following",
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_id => person.id,
+                          :object_uid => person.id,
                           :object_type => 'Author')
   end
 
@@ -127,7 +127,7 @@ class Person
     self.activities.post!(:verb => :favorite,
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_id => activity.id,
+                          :object_uid => activity.id,
                           :object_type => 'Activity')
   end
 
@@ -138,7 +138,7 @@ class Person
     self.activities.post!(:verb => :unfavorite,
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_id => activity.id,
+                          :object_uid => activity.id,
                           :object_type => 'Activity')
   end
 
@@ -177,7 +177,7 @@ class Person
     self.activities.post!(:verb => :share,
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_id => activity.id,
+                          :object_uid => activity.id,
                           :object_type => 'Activity')
   end
 
