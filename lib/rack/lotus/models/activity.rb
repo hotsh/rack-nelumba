@@ -166,17 +166,18 @@ class Activity
     unless object.is_a? Author
       object_author = Author.find_by_id(activity.actor_id) if activity.actor_type == 'Author'
       object_author = activity.feed.authors.first unless object_author
+      object_author = object_author.short_name if object_author
     end
 
-    if activity.type
+    if object.is_a? Author
+      object = object.short_name
+    elsif activity.type
       case activity.type
       when :note
         object = "status"
       else
         object = activity.type.to_s
       end
-    elsif object.is_a? Author
-      object = object.short_name
     end
 
     if object_author
