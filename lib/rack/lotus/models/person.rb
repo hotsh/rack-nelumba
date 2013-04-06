@@ -108,17 +108,17 @@ class Person
 
   # Add the given Activity to our list of favorites.
   def favorite!(activity)
-    self.favorites.post! activity
+    self.favorites.repost! activity
   end
 
   # Add the given Activity to our list of those that mention us.
   def mentioned_by!(activity)
-    self.mentions.post! activity
+    self.mentions.repost! activity
   end
 
   # Add the given Activity to our list of those that are replies to our posts.
   def replied_by!(activity)
-    self.replies.post! activity
+    self.replies.repost! activity
   end
 
   # Post a new Activity.
@@ -130,6 +130,12 @@ class Person
 
     self.activities.post! activity
     self.timeline.repost! activity
+  end
+
+  # Repost an existing Activity.
+  def repost!(activity)
+    self.activities.repost! activity
+    self.timeline.repost!   activity
   end
 
   # Deliver an external Activity from somebody we follow.
