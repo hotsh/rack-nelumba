@@ -75,6 +75,13 @@ class Person
 
     # determine the feed to subscribe to
     self.timeline.follow! person
+
+    # Add the activity
+    self.activities.post!(:verb => :follow,
+                          :actor_id => self.author.id,
+                          :actor_type => 'Author',
+                          :object_id => person.id,
+                          :object_type => 'Author')
   end
 
   # Updates so that we do not follow the given Author.
@@ -84,6 +91,13 @@ class Person
 
     # unfollow their timeline feed
     self.timeline.unfollow! person
+
+    # Add the activity
+    self.activities.post!(:verb => :"stop-following",
+                          :actor_id => self.author.id,
+                          :actor_type => 'Author',
+                          :object_id => person.id,
+                          :object_type => 'Author')
   end
 
   # Updates to show we are now followed by the given Author.
@@ -109,6 +123,23 @@ class Person
   # Add the given Activity to our list of favorites.
   def favorite!(activity)
     self.favorites.repost! activity
+
+    self.activities.post!(:verb => :favorite,
+                          :actor_id => self.author.id,
+                          :actor_type => 'Author',
+                          :object_id => activity.id,
+                          :object_type => 'Activity')
+  end
+
+  # Remove the given Activity from our list of favorites.
+  def unfavorite!(activity)
+    self.favorites.repost! activity
+
+    self.activities.post!(:verb => :unfavorite,
+                          :actor_id => self.author.id,
+                          :actor_type => 'Author',
+                          :object_id => activity.id,
+                          :object_type => 'Activity')
   end
 
   # Add the given Activity to our list of those that mention us.
@@ -124,6 +155,9 @@ class Person
   # Post a new Activity.
   def post!(activity)
     if activity.is_a? Hash
+      activity["actor_id"] = self.author_id
+      activity["actor_type"] = 'Author'
+
       # Create a new activity
       activity = Activity.create!(activity)
     end
@@ -136,6 +170,12 @@ class Person
   def repost!(activity)
     self.activities.repost! activity
     self.timeline.repost!   activity
+
+    self.activities.post!(:verb => :share,
+                          :actor_id => self.author.id,
+                          :actor_type => 'Author',
+                          :object_id => activity.id,
+                          :object_type => 'Activity')
   end
 
   # Deliver an external Activity from somebody we follow.

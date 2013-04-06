@@ -33,6 +33,10 @@ class Activity
   key :target_id, ObjectId
   key :target_type, String
 
+  # Can attach an external object to this Activity.
+  key :object_id, ObjectId
+  key :object_type, String
+
   # The title of the Activity.
   key :title
 
@@ -51,6 +55,23 @@ class Activity
 
   # Log modification
   timestamps!
+
+  # Ensure that url and uid for the activity are set
+  before_create :ensure_uid_and_url
+
+  private
+
+  # Ensure uid and url are established. If they don't exist, just use urls
+  # that point to us for the sake of uniqueness.
+  def ensure_id_and_url
+    unless self.uid && self.url
+      self.uid = "/activities/#{self.id}"
+      self.url = "/activities/#{self.id}"
+      self.save
+    end
+  end
+
+  public
 
   # Set the actor.
   def actor=(obj)
@@ -73,7 +94,7 @@ class Activity
     end
 
     activity = self.find(:uid => uid)
-    return activity if author
+    return activity if activity
 
     begin
       activity = create!(arg, *args)
@@ -105,5 +126,67 @@ class Activity
     return false unless activity
 
     self.create!(activity)
+  end
+
+  # Generates components of the description of the action taken by this
+  # activity. This would be a good place for localization efforts.
+  def human_description
+    actor = "someone"
+    case self.actor_type
+    when 'Author'
+      author = Author.find_by_id(self.actor_id)
+      actor = author.short_name if author
+    end
+
+    verb = "did something to"
+    case self.verb
+    when :favorite
+      verb = "favorited"
+    when :follow
+      verb = "followed"
+    when :"stop-following"
+      verb = "stopped following"
+    when :unfavorite
+      verb = "unfavorited"
+    end
+
+    object = "something"
+    activity = self
+    case self.object_type
+    when 'Activity'
+      embedded_activity = Activity.find_by_id(self.object_id)
+      activity = embedded_activity if embedded_activity
+    when 'Author'
+      embedded_author = Author.find_by_id(self.object_id)
+      object = embedded_author if embedded_author
+    end
+
+    object_author = nil
+    unless object.is_a? Author
+      object_author = Author.find_by_id(activity.actor_id) if activity.actor_type == 'Author'
+      object_author = activity.feed.authors.first unless object_author
+    end
+
+    if activity.type
+      case activity.type
+      when :note
+        object = "status"
+      else
+        object = activity.type.to_s
+      end
+
+      sentence = "#{actor} #{verb} #{object_author}'s #{object}"
+    elsif object.is_a? Author
+      sentence = "#{actor} #{verb} #{object}"
+    end
+
+    {
+      :actor         => actor,
+      :verb          => verb,
+      :activity      => activity,
+      :object        => object,
+      :object_author => object_author,
+      :sentence      => sentence
+    }
   end
 end
