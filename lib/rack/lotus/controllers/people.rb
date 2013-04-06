@@ -30,16 +30,16 @@ module Rack
       haml :"people/show_favorites"
     end
 
-    # Get the public feed for somebody's timeline.
-    get '/people/:id/favorites' do
+    # Get the public feed for somebody's feed of shared posts.
+    get '/people/:id/shared' do
       @person = Person.find_by_id(params[:id])
       status 404 and return if @person.nil?
 
       @author = @person.author
       status 404 and return if @author.nil?
 
-      @favorites = @person.favorites.feed.ordered
-      haml :"people/show_favorites"
+      @favorites = @person.shared.feed.ordered
+      haml :"people/show_shared"
     end
 
     # Creates a new activity.
@@ -73,6 +73,17 @@ module Rack
       status 404 and return unless activity
 
       current_person.favorite! activity
+    end
+
+    # Share an activity
+    post '/people/:id/shared' do
+      status 404 and return unless current_person.id.to_s == params["id"]
+
+      activity = Activity.find_by_id(params["activity_id"])
+
+      status 404 and return unless activity
+
+      current_person.share! activity
     end
 
     # External delivery to our own stream.

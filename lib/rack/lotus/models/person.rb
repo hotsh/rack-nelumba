@@ -25,6 +25,10 @@ class Person
   key :favorites_id,     ObjectId
   belongs_to :favorites, :class_name => 'Aggregate'
 
+  # The things we shared.
+  key :shared_id,     ObjectId
+  belongs_to :shared, :class_name => 'Aggregate'
+
   # Replies to our stuff.
   key :replies_id,       ObjectId
   belongs_to :replies, :class_name => 'Aggregate'
@@ -51,6 +55,7 @@ class Person
 
     self.activities = create_aggregate
     self.timeline   = create_aggregate
+    self.shared     = create_aggregate
     self.favorites  = create_aggregate
     self.replies    = create_aggregate
     self.mentions   = create_aggregate
@@ -170,9 +175,9 @@ class Person
   end
 
   # Repost an existing Activity.
-  def repost!(activity)
-    self.activities.repost! activity
+  def share!(activity)
     self.timeline.repost!   activity
+    self.shared.repost!     activity
 
     self.activities.post!(:verb => :share,
                           :actor_id => self.author.id,
