@@ -64,7 +64,7 @@ class Activity
 
   # Ensure uid and url are established. If they don't exist, just use urls
   # that point to us for the sake of uniqueness.
-  def ensure_id_and_url
+  def ensure_uid_and_url
     unless self.uid && self.url
       self.uid = "/activities/#{self.id}"
       self.url = "/activities/#{self.id}"
