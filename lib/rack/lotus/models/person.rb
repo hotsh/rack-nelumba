@@ -158,6 +158,9 @@ class Person
       activity["actor_id"] = self.author_id
       activity["actor_type"] = 'Author'
 
+      activity["verb"] = :post unless activity["verb"]
+      activity["type"] = :note unless activity["type"]
+
       # Create a new activity
       activity = Activity.create!(activity)
     end
