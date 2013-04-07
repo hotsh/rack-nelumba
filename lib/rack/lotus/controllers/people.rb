@@ -64,6 +64,38 @@ module Rack
       redirect '/'
     end
 
+    # Retrieve list of people we follow
+    get '/people/:id/following' do
+      status 404 and return unless current_person
+      status 404 and return unless current_person.id.to_s == params["id"]
+
+      @followers = current_person.followers
+    end
+
+    # Follow a person
+    post '/people/:id/following' do
+      status 404 and return unless current_person
+      status 404 and return unless current_person.id.to_s == params["id"]
+
+      if params["author_id"]
+        author = Author.find_by_id(params["author_id"])
+      elsif params["discover"]
+        author = Author.discover!(params["discover"])
+      end
+
+      status 404 and return unless author
+
+      current_person.follow! author
+    end
+
+    # Unfollow a person
+    delete '/people/:id/following/:followed_id' do
+      status 404 and return unless current_person
+      status 404 and return unless current_person.id.to_s == params["id"]
+
+      current_person.unfollow! params["followed_id"]
+    end
+
     # Favorite an activity
     post '/people/:id/favorites' do
       status 404 and return unless current_person.id.to_s == params["id"]

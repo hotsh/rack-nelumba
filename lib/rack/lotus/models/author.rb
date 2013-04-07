@@ -134,7 +134,7 @@ class Author
 
     saved_feed = Feed.create!(feed)
     Identity.create!(identity.merge(:outbox => saved_feed,
-                                    :author => saved_feed.authors.first))
+                                    :author => saved_feed.authors.first)).author
   end
 
   # Discover and populate the associated activity feed for this author.

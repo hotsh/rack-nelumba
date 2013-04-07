@@ -75,6 +75,10 @@ class Person
 
   # Updates so that we now follow the given Author.
   def follow!(person)
+    if person.is_a? Identity
+      person = person.author
+    end
+
     # add the person from our list of followers
     self.following << person
 
