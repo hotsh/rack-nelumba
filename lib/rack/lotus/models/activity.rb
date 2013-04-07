@@ -152,6 +152,8 @@ class Activity
       self_distinction = "themselves"
     when :unfavorite
       verb = "unfavorited"
+    when :share
+      verb = "shared"
     when :post
       verb = "posted"
       self_distinction = "a"
