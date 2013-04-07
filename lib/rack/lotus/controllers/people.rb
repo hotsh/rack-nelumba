@@ -38,7 +38,7 @@ module Rack
       @author = @person.author
       status 404 and return if @author.nil?
 
-      @favorites = @person.shared.feed.ordered
+      @shared = @person.shared.feed.ordered
       haml :"people/show_shared"
     end
 

@@ -176,8 +176,8 @@ class Person
 
   # Repost an existing Activity.
   def share!(activity)
-    self.timeline.repost!   activity
-    self.shared.repost!     activity
+    self.timeline.repost! activity
+    self.shared.repost!   activity
 
     self.activities.post!(:verb => :share,
                           :actor_id => self.author.id,
