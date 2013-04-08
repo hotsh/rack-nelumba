@@ -82,8 +82,8 @@ class Activity
 
   # Get the actor.
   def actor
-    klass = Kernel.const_get(self.actor_type.class) if self.actor_type
-    klass.first_by_id(self.actor_id) if klass && self.actor_id
+    klass = Kernel.const_get(self.actor_type) if self.actor_type
+    klass.find_by_id(self.actor_id) if klass && self.actor_id
   end
 
   # Create a new Activity if the given Activity is not found by its id.
