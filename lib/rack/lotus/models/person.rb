@@ -73,66 +73,85 @@ class Person
   public
 
   # Updates so that we now follow the given Author.
-  def follow!(person)
-    if person.is_a? Identity
-      person = person.author
+  def follow!(author)
+    if author.is_a? Identity
+      author = author.author
     end
 
-    # add the person from our list of followers
-    self.following << person
+    # add the author from our list of followers
+    self.following << author
     self.save
 
     # determine the feed to subscribe to
-    self.timeline.follow! person
+    self.timeline.follow! author.identity.outbox.feed
 
-    # tell that feed that we are subscribed to it
-    person.identity.outbox.followed_by! self.timeline
+    # tell local users that somebody on this server is following them.
+    unless author.remote
+      author.person.followed_by! self.author
+    end
 
     # Add the activity
     self.activities.post!(:verb => :follow,
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_uid => person.id,
+                          :object_uid => author.id,
                           :object_type => 'Author')
   end
 
   # Updates so that we do not follow the given Author.
-  def unfollow!(person)
+  def unfollow!(author)
+    if author.is_a? Identity
+      author = author.author
+    end
+
     # remove the person from our list of followers
-    self.following_ids.delete(person)
+    self.following_ids.delete(author.id)
     self.save
 
     # unfollow their timeline feed
-    self.timeline.unfollow! person
+    self.timeline.unfollow! author.identity.outbox.feed
+
+    # tell local users that somebody on this server has stopped following them.
+    unless author.remote
+      author.person.unfollowed_by! self.author
+    end
 
     # Add the activity
     self.activities.post!(:verb => :"stop-following",
                           :actor_id => self.author.id,
                           :actor_type => 'Author',
-                          :object_uid => person.id,
+                          :object_uid => author.id,
                           :object_type => 'Author')
   end
 
   # Updates to show we are now followed by the given Author.
-  def followed_by!(person)
+  def followed_by!(author)
+    if author.is_a? Identity
+      author = author.author
+    end
+
     # add them from our list
-    self.followers << person
+    self.followers << author
     self.save
 
     # determine their feed
-
-    # add their feed as a syndicate of our activities
-    self.activities.followed_by! person
+    if author.remote
+    else
+      self.activities.followed_by! author.person.timeline.feed
+    end
   end
 
   # Updates to show we are not followed by the given Author.
-  def unfollowed_by!(person)
+  def unfollowed_by!(author)
     # remove them from our list
-    self.followers_ids.delete(person.id)
+    self.followers_ids.delete(author.id)
     self.save
 
     # remove their feed as a syndicate of our activities
-    self.activities.unfollowed_by! person
+    if author.remote
+    else
+      self.activities.unfollowed_by! author.person.timeline.feed
+    end
   end
 
   # Add the given Activity to our list of favorites.
