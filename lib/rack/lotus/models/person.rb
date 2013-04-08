@@ -51,7 +51,7 @@ class Person
   private
 
   def create_aggregates
-    self.author     = Author.create
+    self.author     = Author.create(:remote => true)
 
     self.activities = create_aggregate
     self.timeline   = create_aggregate
@@ -222,5 +222,10 @@ class Person
   #
   # Generally, will be a mention or reply. Shouldn't go into timeline.
   def receive!(activity)
+  end
+
+  # Deliver an activity from within the server
+  def local_deliver!(activity)
+    self.timeline.repost! activity
   end
 end

@@ -80,21 +80,25 @@ class Aggregate
   def post!(activity)
     feed.post! activity
 
-    # Push to direct followers
-    followers.each do |f|
-      puts "PUSH TO #{f}"
-    end
-
-    # Ping PuSH hubs
-    feed.ping
+    publish(activity)
   end
 
+  # Add a copy to our feed and tell subscribers.
   def repost!(activity)
     feed.repost! activity
 
+    publish(activity)
+  end
+
+  # Publish an activity that is within our feed.
+  def publish(activity)
     # Push to direct followers
-    followers.each do |f|
-      puts "PUSH TO #{f}"
+    followers.each do |author|
+      if author.remote
+        puts "PUSH TO #{author.short_name}"
+      else
+        author.person.local_deliver! activity
+      end
     end
 
     # Ping PuSH hubs

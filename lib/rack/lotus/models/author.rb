@@ -9,6 +9,10 @@ class Author
   # Local accounts have a Person, but remote Authors will not.
   one :person
 
+  # Whether or not this Author is a representation of somebody not generating
+  # content on our server.
+  key :remote
+
   # Each Author has an Avatar icon that identifies them.
   one :avatar
 
