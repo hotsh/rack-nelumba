@@ -66,10 +66,10 @@ module Rack
 
     # Retrieve list of people we follow
     get '/people/:id/following' do
-      status 404 and return unless current_person
-      status 404 and return unless current_person.id.to_s == params["id"]
+      person = Person.find_by_id(params["id"])
+      status 404 and return unless person
 
-      @following = current_person.following
+      @following = person.following
 
       haml :"people/following"
     end
