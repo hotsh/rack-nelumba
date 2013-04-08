@@ -69,7 +69,9 @@ module Rack
       status 404 and return unless current_person
       status 404 and return unless current_person.id.to_s == params["id"]
 
-      @followers = current_person.followers
+      @following = current_person.following
+
+      haml :"people/following"
     end
 
     # Follow a person
