@@ -93,12 +93,8 @@ class Aggregate
   # Publish an activity that is within our feed.
   def publish(activity)
     # Push to direct followers
-    followers.each do |author|
-      if author.local?
-        author.person.local_deliver! activity
-      else
-        puts "PUSH TO #{author.short_name}"
-      end
+    followers.each do |feed|
+      feed.repost! activity
     end
 
     # Ping PuSH hubs
