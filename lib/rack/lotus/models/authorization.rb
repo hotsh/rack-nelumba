@@ -51,7 +51,7 @@ class Authorization
       :activity_inbox_endpoint => "/people/#{person.id}/activity_inbox",
       :activity_outbox_endpoint => "/people/#{person.id}/activity_outbox",
       :profile_page => "/people/#{person.id}",
-      :outbox_id => person.activities_id
+      :outbox_id => person.activities.id
     )
     self.identity_id = self.identity.id
     self.save
