@@ -81,6 +81,7 @@ class Person
 
     # add the person from our list of followers
     self.following << person
+    self.save
 
     # determine the feed to subscribe to
     self.timeline.follow! person
@@ -97,6 +98,7 @@ class Person
   def unfollow!(person)
     # remove the person from our list of followers
     self.following_ids.delete(person)
+    self.save
 
     # unfollow their timeline feed
     self.timeline.unfollow! person
@@ -113,6 +115,7 @@ class Person
   def followed_by!(person)
     # add them from our list
     self.followers << person
+    self.save
 
     # determine their feed
 
@@ -124,6 +127,7 @@ class Person
   def unfollowed_by!(person)
     # remove them from our list
     self.followers_ids.delete(person.id)
+    self.save
 
     # remove their feed as a syndicate of our activities
     self.activities.unfollowed_by! person
