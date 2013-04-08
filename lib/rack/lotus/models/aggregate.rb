@@ -94,10 +94,10 @@ class Aggregate
   def publish(activity)
     # Push to direct followers
     followers.each do |author|
-      if author.remote
-        puts "PUSH TO #{author.short_name}"
-      else
+      if author.local?
         author.person.local_deliver! activity
+      else
+        puts "PUSH TO #{author.short_name}"
       end
     end
 

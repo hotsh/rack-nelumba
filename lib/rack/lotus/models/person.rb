@@ -56,7 +56,7 @@ class Person
   end
 
   def create_aggregates
-    self.author     = Author.create(:remote => true)
+    self.author     = Author.create(:local => true)
 
     self.activities = create_aggregate
     self.timeline   = create_aggregate
@@ -86,7 +86,7 @@ class Person
     self.timeline.follow! author.identity.outbox.feed
 
     # tell local users that somebody on this server is following them.
-    unless author.remote
+    if author.local?
       author.person.followed_by! self.author
     end
 
@@ -112,7 +112,7 @@ class Person
     self.timeline.unfollow! author.identity.outbox.feed
 
     # tell local users that somebody on this server has stopped following them.
-    unless author.remote
+    if author.local?
       author.person.unfollowed_by! self.author
     end
 
@@ -135,8 +135,7 @@ class Person
     self.save
 
     # determine their feed
-    if author.remote
-    else
+    if author.local?
       self.activities.followed_by! author.person.timeline.feed
     end
   end
@@ -148,8 +147,7 @@ class Person
     self.save
 
     # remove their feed as a syndicate of our activities
-    if author.remote
-    else
+    if author.local?
       self.activities.unfollowed_by! author.person.timeline.feed
     end
   end
