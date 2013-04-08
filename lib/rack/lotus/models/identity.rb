@@ -18,7 +18,8 @@ class Identity
   key :activity_outbox_endpoint
   key :profile_page
 
-  key :outbox, :class_name => 'Feed'
+  key  :outbox_id, ObjectId
+  belongs_to :outbox, :class_name => 'Feed'
 
   timestamps!
 

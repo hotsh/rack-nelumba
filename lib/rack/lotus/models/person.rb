@@ -18,7 +18,7 @@ class Person
   belongs_to :activities, :class_name => 'Aggregate'
 
   # The combined contributions of ourself and others we follow.
-  key :timeline_d,      ObjectId
+  key :timeline_id,      ObjectId
   belongs_to :timeline, :class_name => 'Aggregate'
 
   # The things we like.
@@ -84,6 +84,9 @@ class Person
 
     # determine the feed to subscribe to
     self.timeline.follow! person
+
+    # tell that feed that we are subscribed to it
+    person.identity.outbox.followed_by! self.timeline
 
     # Add the activity
     self.activities.post!(:verb => :follow,
