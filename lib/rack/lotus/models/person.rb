@@ -45,10 +45,15 @@ class Person
   key  :followers_ids, Array
   many :followers,     :in => :followers_ids, :class_name => 'Author'
 
+  before_create :create_author
   before_create :create_aggregates
-  after_create :update_author
 
   private
+
+  def create_author
+    self.author = Author.create(:uri => "/people/#{self.id}",
+                                :uid => "/people/#{self.id}")
+  end
 
   def create_aggregates
     self.author     = Author.create(:remote => true)
@@ -63,12 +68,6 @@ class Person
 
   def create_aggregate
     Aggregate.create(:person_id => self.id)
-  end
-
-  def update_author
-    self.author.update_attributes(:uri => "/people/#{self.id}",
-                                  :uid => "/people/#{self.id}")
-    self.author.save
   end
 
   public

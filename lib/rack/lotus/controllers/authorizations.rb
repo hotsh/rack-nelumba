@@ -9,8 +9,8 @@ module Rack
     post '/login' do
       authorization = Authorization.first(:username => /#{Regexp.escape(params["username"])}/i)
       if authorization && authorization.authenticated?(params["password"])
-        session[:user_id]   = authorization._id
-        session[:person_id] = authorization.person._id
+        session[:user_id]   = authorization.id
+        session[:person_id] = authorization.person.id
 
         redirect '/'
       else

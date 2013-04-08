@@ -31,6 +31,35 @@ class Authorization
   validates_presence_of :identity
   validates_presence_of :hashed_password
 
+  private
+
+  def create_person_and_identity
+    person = Person.create(:authorization_id => self.id)
+    person.author.update_attributes(:nickname => username,
+                                    :name => username,
+                                    :display_name => username,
+                                    :preferred_username => username)
+    person.author.save
+
+    self.identity = Identity.create!(
+      :username => self.username,
+      :domain => "www.example.com",
+      :author => person.author,
+      :public_key => "foo",
+      :salmon_endpoint => "/people/#{person.id}/salmon",
+      :dialback_endpoint => "/people/#{person.id}/dialback",
+      :activity_inbox_endpoint => "/people/#{person.id}/activity_inbox",
+      :activity_outbox_endpoint => "/people/#{person.id}/activity_outbox",
+      :profile_page => "/people/#{person.id}"
+    )
+    self.identity_id = self.identity.id
+    self.save
+
+    puts self.identity.id
+  end
+
+  public
+
   # Log modification
   timestamps!
 
@@ -49,8 +78,8 @@ class Authorization
     end
 
     url       = "http#{auth.identity.ssl ? "s" : ""}://#{auth.identity.domain}"
-    feed_id   = auth.identity.outbox._id
-    person_id = auth.person._id
+    feed_id   = auth.identity.outbox.id
+    person_id = auth.person.id
 
     {
       :subject => "acct:#{username}@#{domain}",
@@ -147,29 +176,10 @@ class Authorization
     params["hashed_password"] = self.hash_password(params["password"])
     params.delete("password")
 
-    params["person"] = Person.create
-    params["person_id"] = params["person"].id
-    person_id = params["person_id"]
+    authorization = Authorization.new(params, *args)
+    authorization.send(:create_person_and_identity)
+    authorization.save
 
-    params["person"].author.update_attributes(:nickname => params["username"],
-                                              :name => params["username"],
-                                              :display_name => params["username"],
-                                              :preferred_username => params["username"])
-
-    params["person"].author.save!
-
-    params["identity"] = Identity.create!(
-      :username => params["username"],
-      :domain => "www.example.com",
-      :author => params["person"].author,
-      :public_key => "foo",
-      :salmon_endpoint => "/people/#{person_id}/salmon",
-      :dialback_endpoint => "/people/#{person_id}/dialback",
-      :activity_inbox_endpoint => "/people/#{person_id}/activity_inbox",
-      :activity_outbox_endpoint => "/people/#{person_id}/activity_outbox",
-      :profile_page => "/people/#{person_id}"
-    )
-
-    super(params, *args)
+    authorization
   end
 end
