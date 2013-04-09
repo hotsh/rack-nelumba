@@ -12,10 +12,11 @@ Gem::Specification.new do |s|
   s.description = %q{This gem allows easier implementation and utilization of rack-based web services that are distributed and federated.}
 
   s.add_dependency "sinatra"      # Routes
-  s.add_dependency "mm-attach-it" # Avatar downloading
   s.add_dependency "bson_ext"     # Database
   s.add_dependency "mongo_mapper" # Database
   s.add_dependency "bcrypt-ruby"  # Basic Authentication
+  s.add_dependency "rmagick"      # Used for avatar resizing
+
   s.add_dependency "tilt"         # Preferred template interface
   s.add_dependency "haml"         # Preferred HTML template language
 

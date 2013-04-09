@@ -1,14 +1,91 @@
 class Avatar
-  require 'mm-attach-it'
+  require 'RMagick'
 
   include MongoMapper::Document
-  plugin  AttachIt
 
-  belongs_to :author
+  # The avatar belongs to a particular Author
+  key :author_id, ObjectId
+  belongs_to :author, :class_name => 'Author'
 
-  has_attachment :image, { :storage => 'gridfs',
-                           :styles => { :small  => '48x48',
-                                        :medium => '150x150>' }}
+  # The array of sizes this avatar has stored.
+  key :sizes, Array, :default => []
 
-  validates_attachment_presence :image
+  # Log modification.
+  timestamps!
+
+  # Create a new Avatar from the given url
+  def self.from_url!(author, url, options = {})
+    avatar = Avatar.new(:author_id => author.id,
+                        :sizes     => options[:sizes])
+
+    # Pull image down
+    response = self.pull_url(url, options[:content_type])
+
+    image = Magick::ImageList.new
+    image.from_blob(response.body)
+
+    # Resize the images to fit the given sizes (crop to the aspect ratio)
+    # And store them in the storage backend.
+    options[:sizes] ||= []
+    images = options[:sizes].each do |size|
+      width  = size[0]
+      height = size[1]
+
+      # Resize to maintain aspect ratio
+      resized = image.resize_to_fill(width, height)
+      self.storage_write "avatar_#{avatar.id}_#{width}x#{height}", resized.to_blob
+    end
+
+    avatar.save
+    avatar
+  end
+
+  # Retrieve the avatar image.
+  def read(size = nil)
+    return nil if self.sizes.empty?
+
+    size = self.sizes.first unless size
+    Avatar.storage_read "avatar_#{self.id}_#{size[0]}x#{size[1]}"
+  end
+
+  private
+
+  # :nodoc:
+  def self.pull_url(url, content_type = nil, limit = 10)
+    uri = URI(url)
+    request = Net::HTTP::Get.new(uri.request_uri)
+    request.content_type = content_type if content_type
+
+    http = Net::HTTP.new(uri.hostname, uri.port)
+    if uri.scheme == 'https'
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    end
+
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPRedirection) && limit > 0
+      location = response['location']
+      self.pull_url(location, content_type, limit - 1)
+    else
+      response
+    end
+  end
+
+  # :nodoc:
+  def self.storage
+    @@grid ||= Mongo::Grid.new(MongoMapper.database)
+  end
+
+  # TODO: Add ability to read from filesystem
+  # :nodoc:
+  def self.storage_read(id)
+    self.storage.get id
+  end
+
+  # TODO: Add ability to store on filesystem
+  # :nodoc:
+  def self.storage_write(id, data)
+    self.storage.put(data, :_id => id)
+  end
 end
