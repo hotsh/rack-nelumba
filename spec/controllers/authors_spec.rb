@@ -34,7 +34,7 @@ describe Rack::Lotus do
         acct = "acct:wilkie@rstat.us"
         Lotus.expects(:discover_author).with(acct).returns(nil)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
       end
 
       it "should not create an author when it is already known" do
@@ -46,7 +46,7 @@ describe Rack::Lotus do
 
         Author.expects(:create!).never
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
       end
 
       it "should create an author when it is not known" do
@@ -60,14 +60,14 @@ describe Rack::Lotus do
 
         Author.expects(:create!)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
       end
 
       it "should return 404 when the author is not discovered" do
         acct = "acct:noexists@rstat.us"
         Lotus.stubs(:discover_author).with(acct).returns(nil)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
         last_response.status.must_equal 404
       end
 
@@ -79,7 +79,7 @@ describe Rack::Lotus do
         Lotus.stubs(:discover_author).with(acct).returns(author)
         Author.stubs(:find).returns(author)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
         last_response.status.must_equal 302
       end
 
@@ -91,7 +91,7 @@ describe Rack::Lotus do
         Lotus.stubs(:discover_author).with(acct).returns(author)
         Author.stubs(:find).returns(author)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
         last_response.location.must_equal "http://example.org/authors/ID"
       end
 
@@ -106,7 +106,7 @@ describe Rack::Lotus do
         Author.stubs(:sanitize_params)
         Author.stubs(:create!).returns(author)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
         last_response.status.must_equal 302
       end
 
@@ -121,7 +121,7 @@ describe Rack::Lotus do
         Author.stubs(:sanitize_params)
         Author.stubs(:create!).returns(author)
 
-        post '/authors/discover', params = {"account" => acct}
+        post '/authors/discover', "account" => acct
         last_response.location.must_equal "http://example.org/authors/ID"
       end
     end
@@ -162,7 +162,7 @@ describe Rack::Lotus do
       it "should return 404 when the author is not found" do
         Author.stubs(:find_by_id).returns(nil)
 
-        post '/authors/1234abcd', params = {}
+        post '/authors/1234abcd'
         last_response.status.must_equal 404
       end
 
@@ -176,7 +176,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}", params = {}
+        post "/authors/#{author.id}"
         last_response.status.must_equal 302
       end
 
@@ -190,7 +190,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}", params = {}
+        post "/authors/#{author.id}"
         last_response.location.must_equal "http://example.org/authors/#{author.id}"
       end
 
@@ -205,7 +205,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}", params = {"foobar" => "moo"}
+        post "/authors/#{author.id}", "foobar" => "moo"
       end
 
       it "should return 404 if the author, although exists, isn't logged on" do
@@ -216,7 +216,7 @@ describe Rack::Lotus do
         Author.stubs(:find_by_id).returns(author)
         Author.stubs(:sanitize_params).returns({:id => author.id})
 
-        post "/authors/#{author.id}", params = {}
+        post "/authors/#{author.id}"
         last_response.status.must_equal 404
       end
 
@@ -230,7 +230,7 @@ describe Rack::Lotus do
 
         login_as("intruder")
 
-        post "/authors/#{author.id}", params = {}
+        post "/authors/#{author.id}"
         last_response.status.must_equal 404
       end
     end
@@ -255,7 +255,7 @@ describe Rack::Lotus do
       it "should return 404 when the author is not found" do
         Author.stubs(:find_by_id).returns(nil)
 
-        post '/authors/1234abcd/avatar', params = {}
+        post '/authors/1234abcd/avatar'
         last_response.status.must_equal 404
       end
 
@@ -268,7 +268,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}/avatar", params = {}
+        post "/authors/#{author.id}/avatar"
         last_response.status.must_equal 302
       end
 
@@ -281,7 +281,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}/avatar", params = {}
+        post "/authors/#{author.id}/avatar"
         last_response.location.must_equal "http://example.org/authors/#{author.id}"
       end
 
@@ -295,7 +295,7 @@ describe Rack::Lotus do
 
         login_as("wilkie", author)
 
-        post "/authors/#{author.id}/avatar", params = {"avatar_url" => "AVATAR_URL"}
+        post "/authors/#{author.id}/avatar", "avatar_url" => "AVATAR_URL"
       end
 
       it "should return 404 if the author, although exists, isn't logged on" do
@@ -305,7 +305,7 @@ describe Rack::Lotus do
 
         Author.stubs(:find_by_id).returns(author)
 
-        post "/authors/#{author.id}/avatar", params = {}
+        post "/authors/#{author.id}/avatar"
         last_response.status.must_equal 404
       end
 
@@ -318,7 +318,7 @@ describe Rack::Lotus do
 
         login_as("intruder")
 
-        post "/authors/#{author.id}/avatar", params = {}
+        post "/authors/#{author.id}/avatar"
         last_response.status.must_equal 404
       end
     end
