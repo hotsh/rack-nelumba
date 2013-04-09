@@ -60,7 +60,32 @@ module Rack
       else
         Author.sanitize_params(params)
         @author.update_attributes!(params)
-        haml :"authors/show"
+
+        redirect "/authors/#{params[:id]}"
+      end
+    end
+
+    # Edit the author avatar
+    get '/authors/:id/avatar/edit' do
+      @author = Author.find_by_id(params[:id])
+      if @author.nil?
+        status 404
+      else
+        haml :"authors/edit_avatar"
+      end
+    end
+
+    # Update an avatar for a known Author
+    post '/authors/:id/avatar' do
+      @author = Author.find_by_id(params[:id])
+      if @author.nil? || current_person.nil? || (@author._id != current_person.author._id)
+        # Do not allow creation
+        status 404
+      else
+        url = params["avatar_url"]
+        @author.update_avatar!(url)
+
+        redirect "/authors/#{params[:id]}"
       end
     end
   end

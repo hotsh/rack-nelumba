@@ -220,4 +220,9 @@ class Author
   def local?
     self.local
   end
+
+  # Updates our avatar with the given url.
+  def update_avatar!(url)
+    Avatar.from_url!(self, url, :sizes => [[48, 48]])
+  end
 end
