@@ -15,7 +15,7 @@ module Rack
     post '/authors/discover' do
       author = nil
       if params["account"]
-        author = Lotus::discover_author(params["account"])
+        author = ::Lotus::discover_author(params["account"])
       end
 
       if author
@@ -54,11 +54,11 @@ module Rack
     # Update a known Author
     post '/authors/:id' do
       @author = Author.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author._id != current_person.author._id)
+      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
         # Do not allow creation
         status 404
       else
-        Author.sanitize_params(params)
+        params = Author.sanitize_params(params)
         @author.update_attributes!(params)
 
         redirect "/authors/#{params[:id]}"
@@ -78,7 +78,7 @@ module Rack
     # Update an avatar for a known Author
     post '/authors/:id/avatar' do
       @author = Author.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author._id != current_person.author._id)
+      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
         # Do not allow creation
         status 404
       else
