@@ -11,6 +11,7 @@ group :test do
   gem "mocha"    # stubs
 
   gem "awesome_print"
+  gem "rack-test"
 end
 
 gem "lotus",     :git => "git://github.com/hotsh/lotus.git"
