@@ -10,6 +10,9 @@ class Avatar
   # The array of sizes this avatar has stored.
   key :sizes, Array, :default => []
 
+  # The content type for the image.
+  key :content_type
+
   # Log modification.
   timestamps!
 
@@ -23,6 +26,9 @@ class Avatar
 
     image = Magick::ImageList.new
     image.from_blob(response.body)
+
+    # Store the content_type
+    avatar.content_type = image.mime_type
 
     # Resize the images to fit the given sizes (crop to the aspect ratio)
     # And store them in the storage backend.
@@ -40,12 +46,18 @@ class Avatar
     avatar
   end
 
-  # Retrieve the avatar image.
+  # Retrieve the avatar image as a byte string.
   def read(size = nil)
     return nil if self.sizes.empty?
 
     size = self.sizes.first unless size
     Avatar.storage_read "avatar_#{self.id}_#{size[0]}x#{size[1]}"
+  end
+
+  # Yield a base64 string encoded with the content type
+  def read_base64(size = nil)
+    data = self.read(size)
+    "data:#{self.content_type};base64,#{Base64.encode64(data)}"
   end
 
   private
@@ -80,7 +92,7 @@ class Avatar
   # TODO: Add ability to read from filesystem
   # :nodoc:
   def self.storage_read(id)
-    self.storage.get id
+    self.storage.get(id).read
   end
 
   # TODO: Add ability to store on filesystem
