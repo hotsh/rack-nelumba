@@ -42,6 +42,8 @@ def login_as(username, author = nil)
   person.stubs(:author).returns(author)
 
   Rack::Lotus.any_instance.stubs(:current_person).returns(person)
+
+  person
 end
 
 # Default current_person to nil
@@ -49,6 +51,44 @@ module Rack
   class Lotus
     def current_person
       nil
+    end
+  end
+end
+
+# Add helper to check that render local exists
+module Mocha
+  module ParameterMatchers
+    def has_local(*options)
+      case options.length
+      when 1
+        key, value = options[0].first
+      when 2
+        key, value = options
+      end
+
+      HasLocal.new(key, value)
+    end
+
+    class HasLocal < Base
+      def initialize(key, value)
+        @key, @value = key, value
+      end
+
+      def matches?(available_parameters)
+        parameter = available_parameters.shift
+        return false unless parameter.respond_to?(:keys) &&
+                            parameter.respond_to?(:[])
+
+        return false unless parameter.keys.include? :locals
+
+        parameter = parameter[:locals]
+        matching_keys = parameter.keys.select { |key| @key.to_matcher.matches?([key]) }
+        matching_keys.any? { |key| @value.to_matcher.matches?([parameter[key]]) }
+      end
+
+      def mocha_inspect
+        "has_local(#{@key.mocha_inspect} => #{@value.mocha_inspect})"
+      end
     end
   end
 end
