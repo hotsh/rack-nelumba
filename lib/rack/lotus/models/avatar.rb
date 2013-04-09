@@ -46,6 +46,13 @@ class Avatar
     avatar
   end
 
+  def url(size = nil)
+    return nil if self.sizes.empty?
+
+    size = self.sizes.first unless size
+    "/avatars/#{self.id}/#{size[0]}x#{size[1]}"
+  end
+
   # Retrieve the avatar image as a byte string.
   def read(size = nil)
     return nil if self.sizes.empty?
