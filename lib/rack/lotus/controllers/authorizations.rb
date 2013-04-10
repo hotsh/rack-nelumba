@@ -2,7 +2,7 @@ module Rack
   class Lotus
     # Login form
     get '/login' do
-      haml :"authorizations/login"
+      render :haml, :"authorizations/login"
     end
 
     # Authenticate
@@ -28,15 +28,15 @@ module Rack
 
     # List a form for a new account
     get '/authorizations/new' do
-      haml :"authorizations/new"
+      render :haml, :"authorizations/new"
     end
 
     # Create a new account
     post '/authorizations' do
-      Authorization.sanitize_params(params)
+      username = params["username"]
+      password = params["password"]
 
-      if Authorization.find_by_username(params[:username])
-        puts "#{params[:username]} already taken."
+      if Authorization.find_by_username /^#{Regexp.escape(username)}$/i
         status 404
         return
       end
@@ -45,12 +45,11 @@ module Rack
       authorization = Authorization.create!(params)
 
       # Sign in
-      session[:user_id]   = authorization._id
-      session[:person_id] = authorization.person._id
+      session[:user_id]   = authorization.id
+      session[:person_id] = authorization.person.id
 
       # Allow user to edit author
-      @author = authorization.person.author
-      haml :"authors/edit"
+      redirect "/authors/#{authorization.person.author.id}/edit"
     end
   end
 end

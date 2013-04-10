@@ -174,6 +174,8 @@ class Authorization
 
   # Create a new Authorization.
   def self.create!(params, *args)
+    params = self.sanitize_params(params)
+
     params["hashed_password"] = self.hash_password(params["password"])
     params.delete("password")
 
