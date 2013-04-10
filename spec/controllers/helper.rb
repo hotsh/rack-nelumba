@@ -46,6 +46,16 @@ def login_as(username, author = nil)
   person
 end
 
+# Helper to give back the content type of the response
+def content_type
+  last_response.content_type.match(/([^;]+);?/)[1]
+end
+
+# Helper to set up accept parameter
+def accept(type)
+  header "Accept", type
+end
+
 # Default current_person to nil
 module Rack
   class Lotus
