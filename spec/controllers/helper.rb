@@ -56,11 +56,27 @@ def accept(type)
   header "Accept", type
 end
 
-# Default current_person to nil
 module Rack
   class Lotus
+    # Default current_person to nil
     def current_person
       nil
+    end
+
+    # Helper for session testing
+    def session
+      @helper_session ||= Class.new do
+        # Do not let a session key be set by any means other than
+        # a stub.
+        def self.[]=(key, value)
+          raise "Session key set"
+        end
+
+        # Read bogus value. Stub for more control.
+        def self.[](key)
+          "SESSION_VALUE_#{key}"
+        end
+      end
     end
   end
 end
