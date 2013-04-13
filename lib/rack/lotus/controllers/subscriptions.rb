@@ -11,10 +11,7 @@ module Rack
         feed = Feed.find_by_id(params[:id])
 
         # Don't continue if the feed doesn't exist
-        if feed.nil?
-          status 404
-          return
-        end
+        status 404 and return unless feed
 
         # Build a new subscription manager
         sub = ::Lotus::Subscription.new(:callback_url => request.url,
@@ -30,7 +27,7 @@ module Rack
 
           # Respond
           status response[:status]
-          content_type "text"
+          content_type "text/plain"
           return response[:body]
         end
       end
@@ -42,49 +39,22 @@ module Rack
     post '/subscriptions/:id.atom' do
       # Find the referenced feed
       feed = Feed.find_by_id(params[:id])
+      status 404 and return unless feed
 
-      # Don't continue if the feed doesn't exist
-      if feed.nil?
+      signature = request.env['HTTP_X_HUB_SIGNATURE']
+      sub = ::Lotus::Subscription.new(:callback_url => request.url,
+                                      :feed_url     => feed.url,
+                                      :secret       => feed.secret)
+
+      if sub.verify_content(request.body.read, signature)
+        incoming_feed = ::Lotus.feed_from_string(request.body,
+                                                 "application/atom+xml")
+
+        feed.merge!(incoming_feed)
+
+        status 200
+      else
         status 404
-        return
-      end
-
-      incoming_feed = Lotus.feed_from_string(request.body)
-
-      feed.merge!(incoming_feed)
-
-      status 200
-    end
-
-    # Subscribe (internal action created by a logged in user)
-    post '/subscriptions' do
-      if session[:person_id].nil?
-        status 401
-        return
-      end
-
-      person = Person.find_by_id(session[:person_id])
-
-      feed_url = params[:subscribe_to]
-      feed = Feed.find_by_url(feed_url)
-
-      if feed.nil?
-        feed = Lotus.discover_feed(feed_url)
-        Feed.create!(feed)
-      end
-
-      # Follow the feed
-    end
-
-    # Unsubscribe (internal action created by a logged in user)
-    delete '/subscriptions/:id.atom' do
-      # Find the referenced feed
-      feed = Feed.find_by_id(params[:id])
-
-      # Don't continue if the feed doesn't exist
-      if feed.nil?
-        status 404
-        return
       end
     end
   end

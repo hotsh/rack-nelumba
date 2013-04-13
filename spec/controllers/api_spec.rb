@@ -370,7 +370,7 @@ describe Rack::Lotus do
         accept "application/jrd+json"
         get "/.well-known/host-meta"
 
-        content_type.must_match "application/jrd+json"
+        content_type.must_equal "application/jrd+json"
       end
 
       it "should return JRD+JSON content when accept specifies" do
