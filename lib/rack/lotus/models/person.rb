@@ -51,13 +51,12 @@ class Person
   private
 
   def create_author
-    self.author = Author.create(:uri => "/people/#{self.id}",
-                                :uid => "/people/#{self.id}")
+    self.author = Author.create(:uri   => "/people/#{self.id}",
+                                :uid   => "/people/#{self.id}",
+                                :local => true)
   end
 
   def create_aggregates
-    self.author     = Author.create(:local => true)
-
     self.activities = create_aggregate
     self.timeline   = create_aggregate
     self.shared     = create_aggregate
@@ -165,7 +164,7 @@ class Person
 
   # Remove the given Activity from our list of favorites.
   def unfavorite!(activity)
-    self.favorites.repost! activity
+    self.favorites.delete! activity
 
     self.activities.post!(:verb => :unfavorite,
                           :actor_id => self.author.id,
