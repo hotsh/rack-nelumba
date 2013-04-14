@@ -55,8 +55,6 @@ class Authorization
     )
     self.identity_id = self.identity.id
     self.save
-
-    puts self.identity.id
   end
 
   public
@@ -170,6 +168,8 @@ class Authorization
     # Delete immutable fields
     params.delete("id")
     params.delete("_id")
+
+    params
   end
 
   # Create a new Authorization.
