@@ -99,13 +99,13 @@ class Author
 
   # Create a new Author if the given Author is not found by its uid.
   def self.find_or_create_by_uid!(arg, *args)
-    if arg.is_a? ::Lotus::Author
+    if arg.is_a? Lotus::Author
       uid = arg.id
     else
       uid = arg[:uid]
     end
 
-    author = self.find(:uid => uid)
+    author = self.first(:uid => uid)
     return author if author
 
     begin
