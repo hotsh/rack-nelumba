@@ -1,5 +1,44 @@
 require 'rake/testtask'
 
-Rake::TestTask.new do |t|
-  t.pattern = "spec/**/*_spec.rb"
+task :test do
+  Rake::TestTask.new do |t|
+    t.pattern = "spec/**/*_spec.rb"
+  end
+end
+
+namespace :test do
+  desc "Run all tests (rake test will do this be default)"
+  task :all do
+    Rake::TestTask.new do |t|
+      t.pattern = "spec/**/*_spec.rb"
+    end
+  end
+
+  Dir.foreach("spec") do |dirname|
+    if File.directory?(File.join("spec", dirname))
+      desc "Run #{dirname} tests"
+      task dirname do
+        test_task = Rake::TestTask.new("#{dirname}tests") do |t|
+          t.test_files = Dir.glob(File.join("spec", dirname, "**", "*_spec.rb"))
+        end
+        task("#{dirname}tests").execute
+      end
+    end
+  end
+
+  desc "Run single file"
+  task :file, :file do |task, args|
+    puts "Testing #{args.file}"
+    test_task = Rake::TestTask.new("unittests") do |t|
+      if args.file
+        if args.file.start_with? "spec/"
+          args.file = "spec/#{args.file}"
+        end
+        t.pattern = args.file
+      else
+        t.pattern = "spec/models/*_test.rb"
+      end
+    end
+    task("unittests").execute
+  end
 end
