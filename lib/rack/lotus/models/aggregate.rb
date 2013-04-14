@@ -83,6 +83,11 @@ class Aggregate
     publish(activity)
   end
 
+  # Remove the activity from the feed.
+  def delete!(activity)
+    feed.delete! activity
+  end
+
   # Add a copy to our feed and tell subscribers.
   def repost!(activity)
     feed.repost! activity

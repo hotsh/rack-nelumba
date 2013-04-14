@@ -136,6 +136,9 @@ class Feed
     self.save
   end
 
+  def delete!(activity)
+  end
+
   # Merges the information in the given feed with this one.
   def merge!(feed)
     # Merge metadata
