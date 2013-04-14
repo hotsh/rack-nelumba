@@ -1,11 +1,6 @@
 require_relative 'helper'
 require_model 'person'
 
-module Lotus
-  class Identity; end
-  class Activity; end
-end
-
 describe Person do
   describe "Schema" do
     it "should have an authorization id" do

@@ -5,6 +5,11 @@ def require_model(name)
   require_relative "../../lib/rack/lotus/models/#{name}"
 end
 
+module Lotus
+  class Identity; end
+  class Activity; end
+end
+
 class ObjectId; end
 
 class Collection
@@ -88,6 +93,10 @@ module MongoMapper
         end
 
         class_name ||= args.first.to_s.capitalize
+
+        unless Kernel.constants.include? class_name
+          require_model class_name.downcase
+        end
 
         klass = Kernel.const_get(class_name)
 
