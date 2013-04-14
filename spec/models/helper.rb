@@ -6,8 +6,16 @@ def require_model(name)
 end
 
 module Lotus
-  class Identity; end
-  class Activity; end
+  class Identity;     end
+  class Activity;     end
+  class Author;       end
+  class Subscription; end
+end
+
+class MiniTest::Unit::TestCase
+  def teardown
+    MongoMapper.destroy_all
+  end
 end
 
 class ObjectId; end
@@ -37,12 +45,16 @@ end
 # null MongoMapper DB driver
 # Just define DSL I use... nothing else... drastically speeds up tests
 module MongoMapper
+  def self.add_model(model); @@models ||= []; @@models << model; end
+  def self.destroy_all; (@@models || []).each{|m|m.destroy_all}; end
+
   module Document
     module Includes
       def _next_id; @id ||= 0; @id += 1; end
       def _entries; @entries ||= {}; end
-      def all; self.entries.values; end
+      def all; @entries.values; end
       def validations; @validations ||= {}; end
+      def destroy_all; @entries = {}; end
 
       def find(hash)
         @entries ||= {}
@@ -51,7 +63,7 @@ module MongoMapper
         end
       end
 
-      def first(hash); find(hash).first; end
+      def first(hash); self.find(hash).first; end
 
       def find_by_id(id); @entries ||= {}; @entries[id]; end
 
@@ -202,6 +214,7 @@ module MongoMapper
     end
 
     def self.included(mod)
+      MongoMapper.add_model mod
       mod.class_eval do
         extend Includes
 
