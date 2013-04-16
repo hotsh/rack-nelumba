@@ -18,6 +18,14 @@ TEST_TYPE = :dsl
 if TEST_TYPE == :vanilla
   require 'mongo_mapper'
 
+  require_model 'person'
+  require_model 'identity'
+  require_model 'author'
+  require_model 'feed'
+  require_model 'aggregate'
+  require_model 'avatar'
+  require_model 'activity'
+
   # A "normal" Mongo execution
   MongoMapper.connection = Mongo::Connection.new('localhost')
   MongoMapper.database = "rack-lotus-test"
