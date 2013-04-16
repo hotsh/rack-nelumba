@@ -272,130 +272,130 @@ describe Author do
   describe "sanitize_params" do
     it "should allow extended name" do
       Author.sanitize_params({:extended_name => {}})
-        .keys.must_include :extended_name
+        .keys.must_include "extended_name"
     end
 
     it "should allow extended name's formatted field" do
-      hash = {:extended_name => {:formatted => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:formatted]
+      hash = {"extended_name" => {:formatted => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:formatted]
         .must_equal "foobar"
     end
 
     it "should allow extended name's given_name field" do
-      hash = {:extended_name => {:given_name => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:given_name]
+      hash = {"extended_name" => {:given_name => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:given_name]
         .must_equal "foobar"
     end
 
     it "should allow extended name's family_name field" do
-      hash = {:extended_name => {:family_name => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:family_name]
+      hash = {"extended_name" => {:family_name => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:family_name]
         .must_equal "foobar"
     end
 
     it "should allow extended name's honorific_prefix field" do
-      hash = {:extended_name => {:honorific_prefix => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:honorific_prefix]
+      hash = {"extended_name" => {:honorific_prefix => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:honorific_prefix]
         .must_equal "foobar"
     end
 
     it "should allow extended name's honorific_suffix field" do
-      hash = {:extended_name => {:honorific_suffix => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:honorific_suffix]
+      hash = {"extended_name" => {:honorific_suffix => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:honorific_suffix]
         .must_equal "foobar"
     end
 
     it "should allow extended name's middle_name field" do
-      hash = {:extended_name => {:middle_name => "foobar"}}
-      Author.sanitize_params(hash)[:extended_name][:middle_name]
+      hash = {"extended_name" => {:middle_name => "foobar"}}
+      Author.sanitize_params(hash)["extended_name"][:middle_name]
         .must_equal "foobar"
     end
 
     it "should allow organization" do
-      Author.sanitize_params({:organization => {}})
-        .keys.must_include :organization
+      Author.sanitize_params({"organization" => {}})
+        .keys.must_include "organization"
     end
 
     it "should allow organization's name field" do
-      hash = {:organization => {:name => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:name]
+      hash = {"organization" => {:name => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:name]
         .must_equal "foobar"
     end
 
     it "should allow organization's department field" do
-      hash = {:organization => {:department => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:department]
+      hash = {"organization" => {:department => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:department]
         .must_equal "foobar"
     end
 
     it "should allow organization's title field" do
-      hash = {:organization => {:title => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:title]
+      hash = {"organization" => {:title => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:title]
         .must_equal "foobar"
     end
 
     it "should allow organization's type field" do
-      hash = {:organization => {:type => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:type]
+      hash = {"organization" => {:type => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:type]
         .must_equal "foobar"
     end
 
     it "should allow organization's start_date field" do
-      hash = {:organization => {:start_date => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:start_date]
+      hash = {"organization" => {:start_date => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:start_date]
         .must_equal "foobar"
     end
 
     it "should allow organization's end_date field" do
-      hash = {:organization => {:end_date => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:end_date]
+      hash = {"organization" => {:end_date => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:end_date]
         .must_equal "foobar"
     end
 
     it "should allow organization's description field" do
-      hash = {:organization => {:description => "foobar"}}
-      Author.sanitize_params(hash)[:organization][:description]
+      hash = {"organization" => {:description => "foobar"}}
+      Author.sanitize_params(hash)["organization"][:description]
         .must_equal "foobar"
     end
 
     it "should allow address" do
-      Author.sanitize_params({:address => {}})
-        .keys.must_include :address
+      Author.sanitize_params({"address" => {}})
+        .keys.must_include "address"
     end
 
     it "should allow address's formatted field" do
-      hash = {:address => {:formatted => "foobar"}}
-      Author.sanitize_params(hash)[:address][:formatted]
+      hash = {"address" => {:formatted => "foobar"}}
+      Author.sanitize_params(hash)["address"][:formatted]
         .must_equal "foobar"
     end
 
     it "should allow address's street_address field" do
-      hash = {:address => {:street_address => "foobar"}}
-      Author.sanitize_params(hash)[:address][:street_address]
+      hash = {"address" => {:street_address => "foobar"}}
+      Author.sanitize_params(hash)["address"][:street_address]
         .must_equal "foobar"
     end
 
     it "should allow address's locality field" do
-      hash = {:address => {:locality => "foobar"}}
-      Author.sanitize_params(hash)[:address][:locality]
+      hash = {"address" => {:locality => "foobar"}}
+      Author.sanitize_params(hash)["address"][:locality]
         .must_equal "foobar"
     end
 
     it "should allow address's region field" do
-      hash = {:address => {:region => "foobar"}}
-      Author.sanitize_params(hash)[:address][:region]
+      hash = {"address" => {:region => "foobar"}}
+      Author.sanitize_params(hash)["address"][:region]
         .must_equal "foobar"
     end
 
     it "should allow address's country field" do
-      hash = {:address => {:country => "foobar"}}
-      Author.sanitize_params(hash)[:address][:country]
+      hash = {"address" => {:country => "foobar"}}
+      Author.sanitize_params(hash)["address"][:country]
         .must_equal "foobar"
     end
 
     it "should allow address's postal_code field" do
-      hash = {:address => {:postal_code => "foobar"}}
-      Author.sanitize_params(hash)[:address][:postal_code]
+      hash = {"address" => {:postal_code => "foobar"}}
+      Author.sanitize_params(hash)["address"][:postal_code]
         .must_equal "foobar"
     end
 
@@ -404,6 +404,21 @@ describe Author do
       Author.keys.keys.each do |k|
         next if ["extended_name", "organization", "address", "_id"].include? k
         hash[k] = "foobar"
+      end
+
+      hash = Author.sanitize_params(hash)
+
+      Author.keys.keys.each do |k|
+        next if ["extended_name", "organization", "address", "_id"].include? k
+        hash[k].must_equal "foobar"
+      end
+    end
+
+    it "should convert symbols to strings" do
+      hash = {}
+      Author.keys.keys.each do |k|
+        next if ["extended_name", "organization", "address", "_id"].include? k
+        hash[k.intern] = "foobar"
       end
 
       hash = Author.sanitize_params(hash)

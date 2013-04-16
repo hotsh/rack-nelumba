@@ -166,6 +166,14 @@ class Author
   end
 
   def self.sanitize_params(params)
+    # Convert Symbols to Strings
+    params.keys.each do |k|
+      if k.is_a? Symbol
+        params[k.to_s] = params[k]
+        params.delete k
+      end
+    end
+
     # Delete unknown subkeys
     if params["extended_name"]
       unless params["extended_name"].is_a? Hash
@@ -173,7 +181,7 @@ class Author
       else
         params["extended_name"].keys.each do |k|
           if ["formatted", "given_name", "family_name", "honorific_prefix",
-              "honorific_suffix", "middle_name"].include?(k)
+              "honorific_suffix", "middle_name"].include?(k.to_s)
             params["extended_name"][(k.to_sym rescue k)] =
               params["extended_name"].delete(k)
           else
@@ -189,7 +197,7 @@ class Author
       else
         params["organization"].keys.each do |k|
           if ["name", "department", "title", "type", "start_date", "end_date",
-              "description"].include?(k)
+              "description"].include?(k.to_s)
             params["organization"][(k.to_sym rescue k)] =
               params["organization"].delete(k)
           else
@@ -205,7 +213,7 @@ class Author
       else
         params["address"].keys.each do |k|
           if ["formatted", "street_address", "locality", "region", "country",
-              "postal_code"].include?(k)
+              "postal_code"].include?(k.to_s)
             params["address"][(k.to_sym rescue k)] =
               params["address"].delete(k)
           else
@@ -217,8 +225,7 @@ class Author
 
     # Delete unknown keys
     params.keys.each do |k|
-      unless self.keys.keys.include?(k) ||
-             self.keys.keys.map(&:intern).include?(k)
+      unless self.keys.keys.include?(k)
         params.delete(k)
       end
     end
