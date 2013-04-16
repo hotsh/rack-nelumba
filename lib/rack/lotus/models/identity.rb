@@ -23,11 +23,27 @@ class Identity
 
   timestamps!
 
+  def self.find_by_identifier(identifier)
+    matches  = identifier.match /^(?:.+\:)?([^@]+)@(.+)$/
+
+    username = matches[1].downcase
+    domain   = matches[2].downcase
+
+    Identity.first(:username => username,
+                   :domain => domain)
+  end
+
   # Create a new Identity from a Hash of values or a Lotus::Identity.
   def self.create!(arg, *args)
     if arg.is_a? Lotus::Identity
       arg = arg.to_hash
     end
+
+    arg["username"] = arg["username"].downcase if arg["username"]
+    arg[:username] = arg[:username].downcase if arg[:username]
+
+    arg["domain"] = arg["domain"].downcase if arg["domain"]
+    arg[:domain] = arg[:domain].downcase if arg[:domain]
 
     super arg, *args
   end
