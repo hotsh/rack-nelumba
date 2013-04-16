@@ -69,11 +69,35 @@ elsif TEST_TYPE == :dsl
     end
   end
 
+  module Mongo
+    class Grid
+      def clear
+        @@id = 0
+        @@storage = {}
+      end
+
+      def get(id)
+        @@storage ||= {}
+        @@storage[id]
+      end
+
+      def put(data, options)
+        @@id ||= 0
+        id = options[:_id] || "__#{@@id}"
+        @@id += 1
+        @@storage ||= {}
+        @@storage[id] = data
+      end
+    end
+  end
+
   # null MongoMapper DB driver
   # Just define DSL I use... nothing else... drastically speeds up tests
   module MongoMapper
     def self.add_model(model); @@models ||= []; @@models << model; end
     def self.destroy_all; (@@models || []).each{|m|m.destroy_all}; end
+
+    def self.database; "test-database"; end
 
     module Document
       module Includes
@@ -81,7 +105,7 @@ elsif TEST_TYPE == :dsl
         def _entries; @entries ||= {}; end
         def all; @entries.values; end
         def validations; @validations ||= {}; end
-        def destroy_all; @entries = {}; end
+        def destroy_all; @entries = {}; @id = 0; end
 
         def find(hash)
           @entries ||= {}
