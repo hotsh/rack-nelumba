@@ -4,43 +4,43 @@ require_model 'person'
 describe Person do
   describe "Schema" do
     it "should have an authorization id" do
-      Person.attributes.keys.must_include :authorization_id
+      Person.keys.keys.must_include "authorization_id"
     end
 
     it "should have an author id" do
-      Person.attributes.keys.must_include :author_id
+      Person.keys.keys.must_include "author_id"
     end
 
     it "should have an activities id" do
-      Person.attributes.keys.must_include :activities_id
+      Person.keys.keys.must_include "activities_id"
     end
 
     it "should have a timeline id" do
-      Person.attributes.keys.must_include :timeline_id
+      Person.keys.keys.must_include "timeline_id"
     end
 
     it "should have a favorites id" do
-      Person.attributes.keys.must_include :favorites_id
+      Person.keys.keys.must_include "favorites_id"
     end
 
     it "should have a shared id" do
-      Person.attributes.keys.must_include :shared_id
+      Person.keys.keys.must_include "shared_id"
     end
 
     it "should have a replies id" do
-      Person.attributes.keys.must_include :replies_id
+      Person.keys.keys.must_include "replies_id"
     end
 
     it "should have a mentions id" do
-      Person.attributes.keys.must_include :mentions_id
+      Person.keys.keys.must_include "mentions_id"
     end
 
     it "should have a following_ids array" do
-      Person.attributes.keys.must_include :following_ids
+      Person.keys.keys.must_include "following_ids"
     end
 
     it "should have a followers_ids array" do
-      Person.attributes.keys.must_include :followers_ids
+      Person.keys.keys.must_include "followers_ids"
     end
   end
 
