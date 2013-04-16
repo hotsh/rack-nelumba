@@ -34,35 +34,61 @@ class Identity
   end
 
   # Create a new Identity from a Hash of values or a Lotus::Identity.
-  def self.create!(arg, *args)
-    if arg.is_a? Lotus::Identity
-      arg = arg.to_hash
+  def self.create!(*args)
+    hash = {}
+    if args.length > 0
+      hash = args.shift
     end
 
-    arg["username"] = arg["username"].downcase if arg["username"]
-    arg[:username] = arg[:username].downcase if arg[:username]
+    if hash.is_a? Lotus::Identity
+      hash = hash.to_hash
+    end
 
-    arg["domain"] = arg["domain"].downcase if arg["domain"]
-    arg[:domain] = arg[:domain].downcase if arg[:domain]
+    hash["username"] = hash["username"].downcase if hash["username"]
+    hash["username"] = hash[:username].downcase if hash[:username]
+    hash.delete :username
 
-    super arg, *args
+    hash["domain"] = hash["domain"].downcase if hash["domain"]
+    hash["domain"] = hash[:domain].downcase if hash[:domain]
+    hash.delete :domain
+
+    hash = self.sanitize_params(hash)
+
+    super hash, *args
+  end
+
+  # Create a new Identity from a Hash of values or a Lotus::Identity.
+  def self.create(*args)
+    self.create! *args
   end
 
   # Ensure params has only valid keys
   def self.sanitize_params(params)
+    params.keys.each do |k|
+      if k.is_a? Symbol
+        params[k.to_s] = params[k]
+        params.delete k
+      end
+    end
+
     # Delete unknown keys
     params.keys.each do |k|
-      unless self.keys.keys.map.include? k
+      unless self.keys.keys.include? k
         params.delete(k)
       end
     end
 
     # Delete immutable fields
     params.delete("_id")
+
+    params
   end
 
   # Discover an identity from the given user identifier.
   def self.discover!(account)
+    identity = Identity.find_by_identifier(account)
+    return identity if identity
+
     identity = Lotus.discover_identity(account)
     return false unless identity
 
