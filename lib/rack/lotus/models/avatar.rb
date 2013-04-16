@@ -23,7 +23,7 @@ class Avatar
 
     # Pull image down
     response = self.pull_url(url, options[:content_type])
-    return nil if response.class != "HTTPOK"
+    return nil unless response.kind_of? Net::HTTPSuccess
 
     image = Magick::ImageList.new
     image.from_blob(response.body)
