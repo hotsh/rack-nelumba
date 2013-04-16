@@ -109,36 +109,55 @@ class Author
     return author if author
 
     begin
-      author = create!(arg, *args)
+      author = self.create!(arg, *args)
     rescue
-      author = self.find(:uid => uid) or raise
+      author = self.first(:uid => uid) or raise
     end
 
     author
   end
 
   # Create a new Author from a Hash of values or a Lotus::Author.
-  def self.create!(arg, *args)
-    if arg.is_a? Lotus::Author
-      arg = arg.to_hash
-      arg[:uid] = arg[:id]
-      arg.delete :id
+  def self.create!(*args)
+    hash = {}
+    if args.length > 0
+      hash = args.shift
     end
 
-    super arg, *args
+    if hash.is_a? Lotus::Author
+      hash = hash.to_hash
+      hash[:uid] = hash[:id]
+      hash.delete :id
+    end
+
+    hash = sanitize_params(hash)
+
+    super hash, *args
+  end
+
+  # Create a new Author from a Hash of values or a Lotus::Author.
+  def self.create(*args)
+    self.create! *args
   end
 
   # Discover an Author by the given feed location or account.
   def self.discover!(author_identifier)
+    # Did we already discover this Author?
+    identity = Identity.find_by_identifier(author_identifier)
+    return identity.author if identity
+
+    # Discover the Identity
     identity = Lotus.discover_identity(author_identifier)
     return false unless identity
 
+    # Use their Identity to discover their feed and their Author
     feed = Lotus.discover_feed(identity)
     return false unless feed
 
     saved_feed = Feed.create!(feed)
-    Identity.create!(identity.merge(:outbox => saved_feed,
-                                    :author => saved_feed.authors.first)).author
+    identity = identity.to_hash.merge(:outbox => saved_feed,
+                                      :author => saved_feed.authors.first)
+    Identity.create!(identity).author
   end
 
   # Discover and populate the associated activity feed for this author.
@@ -149,37 +168,49 @@ class Author
   def self.sanitize_params(params)
     # Delete unknown subkeys
     if params["extended_name"]
-      params["extended_name"].keys.each do |k|
-        if ["formatted", "given_name", "family_name", "honorific_prefix",
-            "honorific_suffix", "middle_name"].include?(k)
-          params["extended_name"][(k.to_sym rescue k)] =
+      unless params["extended_name"].is_a? Hash
+        params.delete "extended_name"
+      else
+        params["extended_name"].keys.each do |k|
+          if ["formatted", "given_name", "family_name", "honorific_prefix",
+              "honorific_suffix", "middle_name"].include?(k)
+            params["extended_name"][(k.to_sym rescue k)] =
+              params["extended_name"].delete(k)
+          else
             params["extended_name"].delete(k)
-        else
-          params["extended_name"].delete(k)
+          end
         end
       end
     end
 
     if params["organization"]
-      params["organization"].keys.each do |k|
-        if ["name", "department", "title", "type", "start_date", "end_date",
-            "description"].include?(k)
-          params["organization"][(k.to_sym rescue k)] =
+      unless params["organization"].is_a? Hash
+        params.delete "organization"
+      else
+        params["organization"].keys.each do |k|
+          if ["name", "department", "title", "type", "start_date", "end_date",
+              "description"].include?(k)
+            params["organization"][(k.to_sym rescue k)] =
+              params["organization"].delete(k)
+          else
             params["organization"].delete(k)
-        else
-          params["organization"].delete(k)
+          end
         end
       end
     end
 
     if params["address"]
-      params["address"].keys.each do |k|
-        if ["formatted", "street_address", "locality", "region", "country",
-            "postal_code"].include?(k)
-          params["address"][(k.to_sym rescue k)] =
+      unless params["address"].is_a? Hash
+        params.delete "address"
+      else
+        params["address"].keys.each do |k|
+          if ["formatted", "street_address", "locality", "region", "country",
+              "postal_code"].include?(k)
+            params["address"][(k.to_sym rescue k)] =
+              params["address"].delete(k)
+          else
             params["address"].delete(k)
-        else
-          params["address"].delete(k)
+          end
         end
       end
     end
