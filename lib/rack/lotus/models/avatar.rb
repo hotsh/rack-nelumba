@@ -23,6 +23,7 @@ class Avatar
 
     # Pull image down
     response = self.pull_url(url, options[:content_type])
+    return nil if response.class != "HTTPOK"
 
     image = Magick::ImageList.new
     image.from_blob(response.body)
@@ -50,6 +51,8 @@ class Avatar
     return nil if self.sizes.empty?
 
     size = self.sizes.first unless size
+    return nil unless self.sizes.include? size
+
     "/avatars/#{self.id}/#{size[0]}x#{size[1]}"
   end
 
@@ -58,12 +61,16 @@ class Avatar
     return nil if self.sizes.empty?
 
     size = self.sizes.first unless size
+    return nil unless self.sizes.include? size
+
     Avatar.storage_read "avatar_#{self.id}_#{size[0]}x#{size[1]}"
   end
 
   # Yield a base64 string encoded with the content type
   def read_base64(size = nil)
     data = self.read(size)
+    return nil unless data
+
     "data:#{self.content_type};base64,#{Base64.encode64(data)}"
   end
 
