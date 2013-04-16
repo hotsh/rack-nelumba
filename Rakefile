@@ -28,13 +28,14 @@ namespace :test do
 
   desc "Run single file"
   task :file, :file do |task, args|
-    puts "Testing #{args.file}"
     test_task = Rake::TestTask.new("unittests") do |t|
       if args.file
-        if args.file.start_with? "spec/"
-          args.file = "spec/#{args.file}"
+        file = args.file
+        unless file.start_with? "spec/"
+          file = "spec/#{args.file}"
         end
-        t.pattern = args.file
+        t.pattern = file
+        puts "Testing #{file}"
       else
         t.pattern = "spec/models/*_test.rb"
       end
