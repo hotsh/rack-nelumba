@@ -44,7 +44,7 @@ describe Person do
     end
   end
 
-  describe "#create" do
+  describe "create" do
     it "should create an author upon creation" do
       author = stub('Author')
       Author.stubs(:create).returns(author)
@@ -270,12 +270,13 @@ describe Person do
     end
 
     it "should create an activity if passed a hash" do
+      activity = Activity.create
       person = Person.create
-      activity = {:content => "Hello"}
 
-      Activity.expects(:create!).with(activity).returns(
-        Activity.create(activity))
-      person.post! activity
+      hash = {:content => "Hello"}
+
+      Activity.expects(:create!).with(hash).returns(activity)
+      person.post! hash
     end
   end
 
