@@ -86,6 +86,25 @@ class Activity
     klass.find_by_id(self.actor_id) if klass && self.actor_id
   end
 
+  # Set the object.
+  def object=(obj)
+    if obj.nil?
+      self.object_uid = nil
+      self.object_type = nil
+    else
+      self.object_uid  = obj.id
+      self.object_type = obj.class.to_s
+    end
+  end
+
+  # Get the object.
+  def object
+    return self unless self.object_type
+
+    klass = Kernel.const_get(self.object_type) if self.object_type
+    klass.find_by_id(self.object_uid) if klass && self.object_uid
+  end
+
   # Create a new Activity if the given Activity is not found by its id.
   def self.find_or_create_by_uid!(arg, *args)
     if arg.is_a? ::Lotus::Activity
@@ -94,39 +113,83 @@ class Activity
       uid = arg[:uid]
     end
 
-    activity = self.find(:uid => uid)
+    activity = self.first(:uid => uid)
     return activity if activity
 
     begin
       activity = create!(arg, *args)
     rescue
-      activity = self.find(:uid => uid) or raise
+      activity = self.first(:uid => uid) or raise
     end
 
     activity
   end
 
   # Create a new Activity from a Hash of values or a Lotus::Activity.
-  def self.create!(arg, *args)
-    if arg.is_a? Lotus::Activity
-      arg = arg.to_hash
-
-      arg[:uid] = arg[:id]
-      arg.delete :id
-
-      arg.delete :author
-      arg.delete :in_reply_to
+  def self.create!(*args)
+    hash = {}
+    if args.length > 0
+      hash = args.shift
     end
 
-    super arg, *args
+    if hash.is_a? Lotus::Activity
+      hash = hash.to_hash
+
+      hash[:uid] = hash[:id]
+      hash.delete :id
+
+      hash.delete :author
+      hash.delete :in_reply_to
+    end
+
+    super hash, *args
+  end
+
+  # Create a new Activity from a Hash of values or a Lotus::Activity.
+  def self.create(*args)
+    self.create! *args
   end
 
   # Discover a feed by the given activity location.
   def self.discover!(activity_identifier)
+    activity = Activity.first(:url => activity_identifier)
+    return activity if activity
+
     activity = Lotus.discover_activity(activity_identifier)
     return false unless activity
 
+    existing = Activity.first(:uid => activity.id)
+    return existing if existing
+
     self.create!(activity)
+  end
+
+  # Yields the parts of speech for the activity. Returns a hash with the
+  # following:
+  #
+  # :verb         => The action being performed by the subject.
+  # :subject      => The entity performing the action.
+  # :object       => The object the action is being applied to. Could be an
+  #                    Author or Activity
+  # :object_type  => How to interpret the object of the action.
+  # :object_owner => The entity that owns the object of the action.
+  # :when         => The Date when the activity took place.
+  # :activity     => A reference to the original Activity.
+  def parts_of_speech
+    object_owner = nil
+    object_owner = self.object.actor if self.object.respond_to?(:actor)
+    object_owner = self.object if self.object.is_a?(Author)
+    object_owner = self.actor unless self.object_type
+
+    {
+      :verb         => self.verb || :post,
+      :object       => self.object,
+      :object_type  => self.type || :note,
+      :object_owner => object_owner,
+      :subject      => self.actor,
+      :when         => self.updated_at,
+      :activity     => self
+    }
   end
 
   # Generates components of the description of the action taken by this
