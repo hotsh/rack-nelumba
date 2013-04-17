@@ -102,7 +102,6 @@ class Aggregate
       feed.repost! activity
     end
 
-    # Ping PuSH hubs
-    feed.ping
+    # TODO: PuSH Hubs
   end
 end
