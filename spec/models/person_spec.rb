@@ -103,139 +103,335 @@ describe Person do
   end
 
   describe "#follow!" do
-    it "should add the given Author to the following list" do
-      person = Person.create
-      author = Author.create
-      identity = Identity.create(:outbox_id => Aggregate.create.id,
-                                 :author_id => author.id)
+    before do
+      @person = Person.new
+      @person.stubs(:save)
 
-      person.follow! author
-      person.following_ids.must_include author.id
+      timeline = Aggregate.new
+      timeline.stubs(:follow!)
+      timeline.stubs(:save)
+      @person.stubs(:timeline).returns(timeline)
+
+      activities = Aggregate.new
+      activities.stubs(:save)
+      activities.stubs(:post!)
+      @person.stubs(:activities).returns(activities)
+
+      @author = Author.new({:local => false})
+
+      feed = Feed.new
+      feed.stubs(:save)
+
+      outbox = Aggregate.new
+      outbox.stubs(:save)
+      outbox.stubs(:feed).returns(feed)
+
+      identity = Identity.new(:outbox_id => outbox.id,
+                              :author_id => @author.id)
+      identity.stubs(:outbox).returns(outbox)
+      identity.stubs(:author).returns(@author)
+      identity.stubs(:save)
+
+      @author.stubs(:identity).returns(identity)
+      @author.stubs(:save)
+
+      @person.stubs(:author).returns(@author)
+    end
+
+    it "should add the given remote Author to the following list" do
+      @person.follow! @author
+      @person.following_ids.must_include @author.id
+    end
+
+    it "should allow an Identity to be given" do
+      @person.follow! @author.identity
+      @person.following_ids.must_include @author.id
+    end
+
+    it "should add the given local Author to the following list" do
+      @author.local = true
+
+      local_person = Person.new
+      local_person.stubs(:save)
+      @author.stubs(:person).returns(local_person)
+
+      local_person.stubs(:followed_by!)
+
+      @person.follow! @author
+      @person.following_ids.must_include @author.id
+    end
+
+    it "should add self to the local Author's followers list" do
+      @author.local = true
+
+      local_person = Person.new
+      local_person.stubs(:save)
+      @author.stubs(:person).returns(local_person)
+
+      local_person.expects(:followed_by!)
+
+      @person.follow! @author
     end
   end
 
   describe "#unfollow!" do
-    it "should remove the given Author from the following list" do
-      person = Person.create
-      author = Author.create
-      identity = Identity.create(:outbox_id => Aggregate.create.id,
-                                 :author_id => author.id)
+    before do
+      @person = Person.new
+      @person.stubs(:save)
 
-      person.follow! author
-      person.unfollow! author
+      timeline = Aggregate.new
+      timeline.stubs(:follow!)
+      timeline.stubs(:save)
+      @person.stubs(:timeline).returns(timeline)
 
-      person.following_ids.wont_include author.id
+      activities = Aggregate.new
+      activities.stubs(:save)
+      activities.stubs(:post!)
+      @person.stubs(:activities).returns(activities)
+
+      @author = Author.new({:local => false})
+
+      feed = Feed.new
+      feed.stubs(:save)
+
+      outbox = Aggregate.new
+      outbox.stubs(:save)
+      outbox.stubs(:feed).returns(feed)
+
+      identity = Identity.new(:outbox_id => outbox.id,
+                              :author_id => @author.id)
+      identity.stubs(:outbox).returns(outbox)
+      identity.stubs(:author).returns(@author)
+      identity.stubs(:save)
+
+      @author.stubs(:identity).returns(identity)
+      @author.stubs(:save)
+
+      @person.stubs(:author).returns(@author)
+
+      @person.following_ids = [@author.id]
+    end
+
+    it "should remove the given remote Author from the following list" do
+      @person.unfollow! @author
+      @person.following_ids.wont_include @author.id
+    end
+
+    it "should allow an Identity to be given" do
+      @person.unfollow! @author.identity
+      @person.following_ids.wont_include @author.id
+    end
+
+    it "should remove the given local Author from the following list" do
+      @author.local = true
+
+      local_person = Person.new
+      local_person.stubs(:save)
+      @author.stubs(:person).returns(local_person)
+
+      local_person.stubs(:unfollowed_by!)
+
+      @person.unfollow! @author
+      @person.following_ids.wont_include @author.id
+    end
+
+    it "should remove self from the local Author's followers list" do
+      @author.local = true
+
+      local_person = Person.new
+      local_person.stubs(:save)
+      @author.stubs(:person).returns(local_person)
+
+      local_person.expects(:unfollowed_by!)
+
+      @person.unfollow! @author
     end
   end
 
   describe "#followed_by!" do
-    it "should add the given Author to our followers list" do
-      person = Person.create
-      author = Author.create
-      identity = Identity.create(:outbox_id => Aggregate.create.id,
-                                 :author_id => author.id)
+    before do
+      activities = Aggregate.new
+      activities.stubs(:followed_by!)
 
-      person.followed_by! author
-      person.followers_ids.must_include author.id
+      @person = Person.new
+      @person.stubs(:save)
+      @person.stubs(:activities).returns(activities)
+
+      @author = Author.new
+      @author.stubs(:save)
+
+      feed = Aggregate.new
+      feed.stubs(:save)
+
+      @identity = Identity.new(:outbox_id => feed,
+                               :author_id => @author.id)
+
+      @identity.stubs(:author).returns(@author)
+      @identity.stubs(:outbox).returns(feed)
+      @author.stubs(:identity).returns(@identity)
+    end
+
+    it "should add the given remote Author to our followers list" do
+      @person.followed_by! @author
+      @person.followers_ids.must_include @author.id
+    end
+
+    it "should add the given Identity to our followers list" do
+      @person.followed_by! @identity
+      @person.followers_ids.must_include @author.id
+    end
+
+    it "should add outbox to activities' followers list" do
+      @person.activities.expects(:followed_by!).with(@identity.outbox)
+      @person.followed_by! @author
     end
   end
 
   describe "#unfollowed_by!" do
-    it "should add the given Author to our followers list" do
-      person = Person.create
-      author = Author.create
-      identity = Identity.create(:outbox_id => Aggregate.create.id,
-                                 :author_id => author.id)
+    before do
+      activities = Aggregate.new
+      activities.stubs(:unfollowed_by!)
 
-      person.unfollowed_by! author
-      person.followers_ids.wont_include author.id
+      @person = Person.new
+      @person.stubs(:save)
+      @person.stubs(:activities).returns(activities)
+
+      @author = Author.new
+      @author.stubs(:save)
+
+      feed = Aggregate.new
+      feed.stubs(:save)
+
+      @identity = Identity.new(:outbox_id => feed,
+                               :author_id => @author.id)
+
+      @identity.stubs(:author).returns(@author)
+      @identity.stubs(:outbox).returns(feed)
+      @author.stubs(:identity).returns(@identity)
+    end
+
+    it "should remove the given remote Author from our followers list" do
+      @person.unfollowed_by! @author
+      @person.followers_ids.wont_include @author.id
+    end
+
+    it "should remove the given Identity from our followers list" do
+      @person.unfollowed_by! @identity
+      @person.followers_ids.wont_include @author.id
+    end
+
+    it "should remove outbox from activities' followers list" do
+      @person.activities.expects(:unfollowed_by!).with(@identity.outbox)
+      @person.unfollowed_by! @author
     end
   end
 
   describe "#favorite!" do
-    it "should repost the given activity to our favorites aggregate" do
-      person = Person.create
-      activity = Activity.create
+    before do
+      activities = Aggregate.new
+      activities.stubs(:post!)
+      favorites = Aggregate.new
+      favorites.stubs(:repost!)
 
-      person.favorites.expects(:repost!).with(activity)
-      person.favorite! activity
+      author = Author.new
+
+      @person = Person.new
+      @person.stubs(:activities).returns(activities)
+      @person.stubs(:favorites).returns(favorites)
+      @person.stubs(:author).returns(author)
+    end
+
+    it "should repost the given activity to our favorites aggregate" do
+      activity = Activity.new
+
+      @person.favorites.expects(:repost!).with(activity)
+      @person.favorite! activity
     end
 
     it "should post an activity to our activities with favorite verb" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.activities.expects(:post!).with(has_entry(:verb, :favorite))
-      person.favorite! activity
+      @person.activities.expects(:post!).with(has_entry(:verb, :favorite))
+      @person.favorite! activity
     end
 
     it "should post an activity to our activities with our author as actor" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.activities.expects(:post!)
-        .with(has_entries(:actor_id   => person.author.id,
+      @person.activities.expects(:post!)
+        .with(has_entries(:actor_id   => @person.author.id,
                           :actor_type => 'Author'))
 
-      person.favorite! activity
+      @person.favorite! activity
     end
 
     it "should post an activity to our activities with favorited activity" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.activities.expects(:post!)
+      @person.activities.expects(:post!)
         .with(has_entries(:object_uid  => activity.id,
                           :object_type => 'Activity'))
 
-      person.favorite! activity
+      @person.favorite! activity
     end
   end
 
   describe "#unfavorite!" do
-    it "should delete the activity from the favorites aggregate" do
-      person = Person.create
-      activity = Activity.create
+    before do
+      activities = Aggregate.new
+      activities.stubs(:post!)
+      favorites = Aggregate.new
+      favorites.stubs(:delete!)
 
-      person.favorites.expects(:delete!).with(activity)
-      person.unfavorite! activity
+      author = Author.new
+
+      @person = Person.new
+      @person.stubs(:activities).returns(activities)
+      @person.stubs(:favorites).returns(favorites)
+      @person.stubs(:author).returns(author)
     end
 
-    it "should post an activity to our activities with unfavorite verb" do
-      person = Person.create
-      activity = Activity.create
+    it "should repost the given activity to our favorites aggregate" do
+      activity = Activity.new
 
-      person.activities.expects(:post!).with(has_entry(:verb, :unfavorite))
-      person.unfavorite! activity
+      @person.favorites.expects(:delete!).with(activity)
+      @person.unfavorite! activity
+    end
+
+    it "should post an activity to our activities with favorite verb" do
+      activity = Activity.new
+
+      @person.activities.expects(:post!).with(has_entry(:verb, :unfavorite))
+      @person.unfavorite! activity
     end
 
     it "should post an activity to our activities with our author as actor" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.activities.expects(:post!)
-        .with(has_entries(:actor_id   => person.author.id,
+      @person.activities.expects(:post!)
+        .with(has_entries(:actor_id   => @person.author.id,
                           :actor_type => 'Author'))
 
-      person.unfavorite! activity
+      @person.unfavorite! activity
     end
 
     it "should post an activity to our activities with favorited activity" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.activities.expects(:post!)
+      @person.activities.expects(:post!)
         .with(has_entries(:object_uid  => activity.id,
                           :object_type => 'Activity'))
 
-      person.unfavorite! activity
+      @person.unfavorite! activity
     end
   end
 
   describe "#mentioned_by!" do
     it "should repost the activity to our mentions aggregate" do
-      person = Person.create
-      activity = Activity.create
+      person = Person.new
+      activity = Activity.new
+
+      person.stubs(:mentions).returns(Aggregate.new)
 
       person.mentions.expects(:repost!).with(activity)
       person.mentioned_by! activity
@@ -244,8 +440,10 @@ describe Person do
 
   describe "#replied_by!" do
     it "should repost the activity to our replies aggregate" do
-      person = Person.create
-      activity = Activity.create
+      person = Person.new
+      activity = Activity.new
+
+      person.stubs(:replies).returns(Aggregate.new)
 
       person.replies.expects(:repost!).with(activity)
       person.replied_by! activity
@@ -254,26 +452,40 @@ describe Person do
 
   describe "#post!" do
     it "should post the activity to our activities aggregate" do
-      person = Person.create
-      activity = Activity.create
+      person = Person.new
+      activity = Activity.new
+
+      person.stubs(:timeline).returns(Aggregate.new)
+      person.stubs(:activities).returns(Aggregate.new)
 
       person.activities.expects(:post!).with(activity)
+      person.timeline.stubs(:repost!).with(activity)
       person.post! activity
     end
 
     it "should repost the activity to our timeline" do
-      person = Person.create
-      activity = Activity.create
+      person = Person.new
+      activity = Activity.new
 
+      person.stubs(:timeline).returns(Aggregate.new)
+      person.stubs(:activities).returns(Aggregate.new)
+
+      person.activities.stubs(:post!).with(activity)
       person.timeline.expects(:repost!).with(activity)
       person.post! activity
     end
 
     it "should create an activity if passed a hash" do
-      activity = Activity.create
-      person = Person.create
+      activity = Activity.new
+      person = Person.new
+
+      person.stubs(:timeline).returns(Aggregate.new)
+      person.stubs(:activities).returns(Aggregate.new)
 
       hash = {:content => "Hello"}
+
+      person.activities.stubs(:post!).with(activity)
+      person.timeline.stubs(:repost!).with(activity)
 
       Activity.expects(:create!).with(hash).returns(activity)
       person.post! hash
@@ -281,20 +493,58 @@ describe Person do
   end
 
   describe "#share!" do
-    it "should repost the activity to our timeline aggregate" do
-      person = Person.create
-      activity = Activity.create
+    before do
+      @person = Person.new
+      @person.stubs(:timeline).returns(Aggregate.new)
+      @person.stubs(:shared).returns(Aggregate.new)
+      @person.stubs(:activities).returns(Aggregate.new)
 
-      person.timeline.expects(:repost!).with(activity)
-      person.share! activity
+      @person.stubs(:author).returns(Author.new)
+
+      @person.shared.stubs(:repost!)
+      @person.timeline.stubs(:repost!)
+      @person.activities.stubs(:post!)
+    end
+
+    it "should repost the activity to our timeline aggregate" do
+      activity = Activity.new
+
+      @person.timeline.expects(:repost!).with(activity)
+      @person.share! activity
     end
 
     it "should repost the activity to our shared aggregate" do
-      person = Person.create
-      activity = Activity.create
+      activity = Activity.new
 
-      person.shared.expects(:repost!).with(activity)
-      person.share! activity
+      @person.shared.expects(:repost!).with(activity)
+      @person.share! activity
+    end
+
+    it "should post an activity to our activities with the share verb" do
+      @person.activities.expects(:post!)
+        .with(has_entry(:verb, :share))
+
+      @person.share! Activity.new
+    end
+
+    it "should post an activity to our activities with the correct actor" do
+      activity = Activity.new
+
+      @person.activities.expects(:post!)
+        .with(has_entries(:actor_id  => @person.author.id,
+                          :actor_type => 'Author'))
+
+      @person.share! activity
+    end
+
+    it "should post an activity to our activities with shared activity" do
+      activity = Activity.new
+
+      @person.activities.expects(:post!)
+        .with(has_entries(:object_uid  => activity.id,
+                          :object_type => 'Activity'))
+
+      @person.share! activity
     end
   end
 end

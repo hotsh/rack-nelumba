@@ -134,21 +134,21 @@ class Person
     self.save
 
     # determine their feed
-    if author.local?
-      self.activities.followed_by! author.person.timeline.feed
-    end
+    self.activities.followed_by! author.identity.outbox
   end
 
   # Updates to show we are not followed by the given Author.
   def unfollowed_by!(author)
+    if author.is_a? Identity
+      author = author.author
+    end
+
     # remove them from our list
     self.followers_ids.delete(author.id)
     self.save
 
     # remove their feed as a syndicate of our activities
-    if author.local?
-      self.activities.unfollowed_by! author.person.timeline.feed
-    end
+    self.activities.unfollowed_by! author.identity.outbox
   end
 
   # Add the given Activity to our list of favorites.
