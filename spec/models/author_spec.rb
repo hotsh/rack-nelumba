@@ -133,10 +133,8 @@ describe Author do
     end
 
     it "should not store arbitrary fields" do
-      Author.expects(:new)
-        .with(Not(has_entry(:foobar, "bar")))
-
-      Author.create!(:foobar => "bar")
+      Author.create!(:foobar => "bar").serializable_hash.keys
+        .wont_include "foobar"
     end
   end
 
@@ -259,9 +257,11 @@ describe Author do
   describe "#discover_feed!" do
     it "should use Lotus to discover a feed from the identity" do
       author = Author.create
-      identity = Identity.create(:author_id => author.id)
+
+      Identity.create(:author_id => author.id)
+
       lotus_identity = Lotus::Identity.new
-      identity.stubs(:to_lotus).returns(lotus_identity)
+      Identity.any_instance.stubs(:to_lotus).returns(lotus_identity)
 
       Lotus.expects(:discover_feed).with(lotus_identity)
 

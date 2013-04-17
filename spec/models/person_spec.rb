@@ -54,8 +54,7 @@ describe Person do
     end
 
     it "should create an activities aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:activities=).with(aggregate)
 
@@ -63,8 +62,7 @@ describe Person do
     end
 
     it "should create a timeline aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:timeline=).with(aggregate)
 
@@ -72,8 +70,7 @@ describe Person do
     end
 
     it "should create a shared aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:shared=).with(aggregate)
 
@@ -81,8 +78,7 @@ describe Person do
     end
 
     it "should create a favorites aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:favorites=).with(aggregate)
 
@@ -90,8 +86,7 @@ describe Person do
     end
 
     it "should create a replies aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:replies=).with(aggregate)
 
@@ -99,8 +94,7 @@ describe Person do
     end
 
     it "should create a mentions aggregate upon creation" do
-      aggregate = stub('Aggregate')
-      aggregate.stubs(:id)
+      aggregate = Aggregate.create
       Aggregate.stubs(:create).returns(aggregate)
       Person.any_instance.expects(:mentions=).with(aggregate)
 

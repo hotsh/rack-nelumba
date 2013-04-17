@@ -64,28 +64,32 @@ describe Identity do
       identity = Identity.create!(:username => "wilkie",
                                   :domain   => "rstat.us")
 
-      Identity.find_by_identifier("wilkie@rstat.us").must_equal identity
+      Identity.find_by_identifier("wilkie@rstat.us")
+        .id.must_equal identity.id
     end
 
     it "should search without case sensitivity of the username" do
       identity = Identity.create!(:username => "WilkiE",
                                   :domain   => "rstat.us")
 
-      Identity.find_by_identifier("wiLkIe@rstat.us").must_equal identity
+      Identity.find_by_identifier("wiLkIe@rstat.us")
+        .id.must_equal identity.id
     end
 
     it "should search without case sensitivity of the domain" do
       identity = Identity.create!(:username => "wilkie",
                                   :domain   => "rStat.uS")
 
-      Identity.find_by_identifier("wilkie@rstAt.Us").must_equal identity
+      Identity.find_by_identifier("wilkie@rstAt.Us")
+        .id.must_equal identity.id
     end
 
     it "should ignore url scheme" do
       identity = Identity.create!(:username => "wilkie",
                                   :domain   => "rstat.us")
 
-      Identity.find_by_identifier("acct:wilkie@rstat.us").must_equal identity
+      Identity.find_by_identifier("acct:wilkie@rstat.us")
+        .id.must_equal identity.id
     end
   end
 
@@ -102,10 +106,8 @@ describe Identity do
     end
 
     it "should not store arbitrary fields" do
-      Identity.expects(:new)
-        .with(Not(has_entry(:foobar, "bar")))
-
-      Identity.create!(:foobar => "bar")
+      Identity.create!(:foobar => "bar").serializable_hash.keys
+        .wont_include "foobar"
     end
   end
 
@@ -167,7 +169,7 @@ describe Identity do
                                  :domain => "rstat.us")
       Lotus.expects(:discover_identity).never
 
-      Identity.discover!("wilkie@rstat.us").must_equal identity
+      Identity.discover!("wilkie@rstat.us").id.must_equal identity.id
     end
 
     it "should create the Identity upon discovery" do

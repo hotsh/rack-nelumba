@@ -13,7 +13,8 @@ module Lotus
   class Subscription; end
 end
 
-TEST_TYPE = :dsl
+TEST_TYPE = :dsl unless defined?(TEST_TYPE)
+TEST_TYPE = :vanilla if ENV["TEST_DB"]
 
 if TEST_TYPE == :vanilla
   require 'mongo_mapper'
@@ -109,8 +110,11 @@ elsif TEST_TYPE == :dsl
 
         def find(hash)
           @entries ||= {}
-          @entries.values.select do |v|
+          selection = @entries.values.select do |v|
             v.send(hash.first[0]) == hash.first[1]
+          end
+          selection.map do |e|
+            self.new(e)
           end
         end
 
@@ -271,6 +275,13 @@ elsif TEST_TYPE == :dsl
           key :_id, ObjectId
 
           def initialize(*args)
+            if args.length > 0
+              if args.first.class == self.class
+                @values = args.first.serializable_hash
+                return
+              end
+            end
+
             id = self.class._next_id
             self.class._entries[id] = self
 
@@ -301,6 +312,10 @@ elsif TEST_TYPE == :dsl
 
           def save!
             self.save
+          end
+
+          def serializable_hash
+            @values
           end
 
           def update_attributes(hash)
