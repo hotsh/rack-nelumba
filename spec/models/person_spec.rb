@@ -45,60 +45,49 @@ describe Person do
   end
 
   describe "create" do
-    it "should create an author upon creation" do
-      author = stub('Author')
-      Author.stubs(:create).returns(author)
-      Person.any_instance.expects(:author=).with(author)
+    before do
+      @author = Author.new
+      Author.stubs(:create).returns(@author)
 
-      Person.create
+      @aggregate = Aggregate.new
+      Aggregate.stubs(:create).returns(@aggregate)
+
+      @person = Person.new
+    end
+
+    it "should create an author upon creation" do
+      @person.expects(:author=).with(@author)
+      @person.run_callbacks :create
     end
 
     it "should create an activities aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:activities=).with(aggregate)
-
-      Person.create
+      @person.expects(:activities=).with(@aggregate)
+      @person.run_callbacks :create
     end
 
     it "should create a timeline aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:timeline=).with(aggregate)
-
-      Person.create
+      @person.expects(:timeline=).with(@aggregate)
+      @person.run_callbacks :create
     end
 
     it "should create a shared aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:shared=).with(aggregate)
-
-      Person.create
+      @person.expects(:shared=).with(@aggregate)
+      @person.run_callbacks :create
     end
 
     it "should create a favorites aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:favorites=).with(aggregate)
-
-      Person.create
+      @person.expects(:favorites=).with(@aggregate)
+      @person.run_callbacks :create
     end
 
     it "should create a replies aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:replies=).with(aggregate)
-
-      Person.create
+      @person.expects(:replies=).with(@aggregate)
+      @person.run_callbacks :create
     end
 
     it "should create a mentions aggregate upon creation" do
-      aggregate = Aggregate.create
-      Aggregate.stubs(:create).returns(aggregate)
-      Person.any_instance.expects(:mentions=).with(aggregate)
-
-      Person.create
+      @person.expects(:mentions=).with(@aggregate)
+      @person.run_callbacks :create
     end
   end
 

@@ -15,6 +15,29 @@ end
 
 require 'mongo_mapper'
 
+module ActiveSupport::Callbacks::ClassMethods
+  def callbacks
+    return @callbacks if @callbacks
+
+    @callbacks ||= {}
+    [:create, :save].each do |method|
+      self.send(:"_#{method}_callbacks").each do |callback|
+        @callbacks[:"#{callback.kind}_#{method}"] ||= []
+        @callbacks[:"#{callback.kind}_#{method}"] << callback.raw_filter
+      end
+    end
+    @callbacks
+  end
+
+  def before_create_callbacks
+    callbacks[:before_create]
+  end
+
+  def after_create_callbacks
+    callbacks[:after_create]
+  end
+end
+
 require_model 'person'
 require_model 'identity'
 require_model 'author'

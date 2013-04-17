@@ -74,13 +74,15 @@ describe Activity do
 
   describe "create!" do
     it "should assign default uid" do
-      activity = Activity.create
+      activity = Activity.new
+      activity.run_callbacks :create
 
       activity.uid.must_equal "/activities/#{activity.id}"
     end
 
     it "should assign default url" do
-      activity = Activity.create
+      activity = Activity.new
+      activity.run_callbacks :create
 
       activity.url.must_equal "/activities/#{activity.id}"
     end
@@ -88,8 +90,8 @@ describe Activity do
 
   describe "#actor=" do
     it "should assign actor_id to the id of a given Author" do
-      activity = Activity.create
-      actor = Author.create
+      activity = Activity.new
+      actor = Author.new
 
       activity.actor = actor
 
@@ -97,8 +99,8 @@ describe Activity do
     end
 
     it "should assign actor_id to the id of a given Activity" do
-      activity = Activity.create
-      actor = Activity.create
+      activity = Activity.new
+      actor = Activity.new
 
       activity.actor = actor
 
@@ -106,8 +108,8 @@ describe Activity do
     end
 
     it "should assign actor_type appropriately for a given Author" do
-      activity = Activity.create
-      actor = Author.create
+      activity = Activity.new
+      actor = Author.new
 
       activity.actor = actor
 
@@ -115,8 +117,8 @@ describe Activity do
     end
 
     it "should assign actor_type appropriately for a given Activity" do
-      activity = Activity.create
-      actor = Activity.create
+      activity = Activity.new
+      actor = Activity.new
 
       activity.actor = actor
 
@@ -127,8 +129,8 @@ describe Activity do
   describe "#actor" do
     it "should retrieve a stored Author" do
       actor = Author.create
-      activity = Activity.create(:actor_id => actor.id,
-                                 :actor_type => "Author")
+      activity = Activity.new(:actor_id => actor.id,
+                              :actor_type => "Author")
 
       activity.actor.id.must_equal actor.id
       activity.actor.class.must_equal Author
@@ -136,8 +138,8 @@ describe Activity do
 
     it "should retrieve a stored Activity" do
       actor = Activity.create
-      activity = Activity.create(:actor_id => actor.id,
-                                 :actor_type => "Activity")
+      activity = Activity.new(:actor_id => actor.id,
+                              :actor_type => "Activity")
 
       activity.actor.id.must_equal actor.id
       activity.actor.class.must_equal Activity
