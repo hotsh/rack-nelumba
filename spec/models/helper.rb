@@ -38,6 +38,29 @@ module ActiveSupport::Callbacks::ClassMethods
   end
 end
 
+module MongoMapper::Plugins::Associations::ClassMethods
+  def has_one?(id)
+    association = self.associations[id]
+    return nil unless association
+
+    association.is_a? MongoMapper::Plugins::Associations::OneAssociation
+  end
+
+  def belongs_to?(id)
+    association = self.associations[id]
+    return nil unless association
+
+    association.is_a? MongoMapper::Plugins::Associations::BelongsToAssociation
+  end
+
+  def has_many?(id)
+    association = self.associations[id]
+    return nil unless association
+
+    association.is_a? MongoMapper::Plugins::Associations::ManyAssociation
+  end
+end
+
 require_model 'person'
 require_model 'identity'
 require_model 'author'
