@@ -9,9 +9,10 @@ end
 namespace :test do
   desc "Run all tests (rake test will do this be default)"
   task :all do
-    Rake::TestTask.new do |t|
+    Rake::TestTask.new("all") do |t|
       t.pattern = "spec/**/*_spec.rb"
     end
+    task("all").execute
   end
 
   Dir.foreach("spec") do |dirname|
