@@ -78,19 +78,19 @@ class Aggregate
 
   # Add to the feed and tell subscribers.
   def post!(activity)
-    feed.post! activity
+    self.feed.post! activity
 
     publish(activity)
   end
 
   # Remove the activity from the feed.
   def delete!(activity)
-    feed.delete! activity
+    self.feed.delete! activity
   end
 
   # Add a copy to our feed and tell subscribers.
   def repost!(activity)
-    feed.repost! activity
+    self.feed.repost! activity
 
     publish(activity)
   end
@@ -98,7 +98,7 @@ class Aggregate
   # Publish an activity that is within our feed.
   def publish(activity)
     # Push to direct followers
-    followers.each do |feed|
+    self.followers.each do |feed|
       feed.repost! activity
     end
 
