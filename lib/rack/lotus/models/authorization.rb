@@ -31,6 +31,11 @@ class Authorization
   validates_presence_of :identity
   validates_presence_of :hashed_password
 
+  before_create :create_person_and_identity
+
+  # Log modification
+  timestamps!
+
   private
 
   def create_person_and_identity
@@ -48,23 +53,19 @@ class Authorization
       :public_key => "foo",
       :salmon_endpoint => "/people/#{person.id}/salmon",
       :dialback_endpoint => "/people/#{person.id}/dialback",
-      :activity_inbox_endpoint => "/people/#{person.id}/activity_inbox",
-      :activity_outbox_endpoint => "/people/#{person.id}/activity_outbox",
+      :activity_inbox_endpoint => "/people/#{person.id}/inbox",
+      :activity_outbox_endpoint => "/people/#{person.id}/outbox",
       :profile_page => "/people/#{person.id}",
       :outbox_id => person.activities.id
     )
     self.identity_id = self.identity.id
-    self.save
   end
 
   public
 
-  # Log modification
-  timestamps!
-
   # Generate a Hash containing this person's LRDD meta info.
   def self.lrdd(username)
-    username = params[:acct].match /(?:acct\:)?([^@]+)(?:@([^@]+))?$/
+    username = username.match /(?:acct\:)?([^@]+)(?:@([^@]+))?$/
     username = username[1] if username
     if username.nil?
       return nil
@@ -72,10 +73,9 @@ class Authorization
 
     # Find the person
     auth = Authorization.find_by_username(/#{Regexp.escape(username)}/i)
-    if auth.nil?
-      return nil
-    end
+    return nil unless auth
 
+    domain    = auth.identity.domain
     url       = "http#{auth.identity.ssl ? "s" : ""}://#{auth.identity.domain}"
     feed_id   = auth.identity.outbox.id
     person_id = auth.person.id
@@ -84,22 +84,22 @@ class Authorization
       :subject => "acct:#{username}@#{domain}",
       :expires => "#{(Time.now.utc.to_date >> 1).xmlschema}Z",
       :aliases => [
-        "#{url}/profile/#{username}",
+        "#{url}#{auth.identity.profile_page}",
         "#{url}/feeds/#{feed_id}"
       ],
       :links => [
         {:rel  => "http://webfinger.net/rel/profile-page",
-         :href => "#{url}/profile/#{username}"},
+         :href => "#{url}/people/#{person_id}"},
         {:rel  => "http://schemas.google.com/g/2010#updates-from",
          :href => "#{url}/feeds/#{feed_id}"},
         {:rel  => "salmon",
          :href => "#{url}/people/#{person_id}/salmon"},
         {:rel  => "http://salmon-protocol.org/ns/salmon-replies",
          :href => "#{url}/people/#{person_id}/salmon"},
-        {:rel  => "http://salmon-protocol.org/ns/salmon-replies",
-         :href =>"#{url}/people/#{person_id}/salmon"},
+        {:rel  => "http://salmon-protocol.org/ns/salmon-mention",
+         :href => "#{url}/people/#{person_id}/salmon"},
         {:rel  => "magic-public-key",
-         :href => "data:application/magic-public-key,#{identity.public_key}"}
+         :href => "data:application/magic-public-key,#{auth.identity.public_key}"}
 
         # TODO: ostatus subscribe
         #{:rel      => "http://ostatus.org/schema/1.0/subscribe",
@@ -153,14 +153,21 @@ class Authorization
   end
 
   # :nodoc: Do not allow the password to be set at any cost.
-  def password=
+  def password=(value)
   end
 
   # Cleanup any unexpected keys.
   def self.sanitize_params(params)
+    params.keys.each do |k|
+      if k.is_a? Symbol
+        params[k.to_s] = params[k]
+        params.delete k
+      end
+    end
+
     # Delete unknown keys
     params.keys.each do |k|
-      unless self.keys.keys.map.include?(k) or (k == "password" || k == :password)
+      unless self.keys.keys.map.include?(k)
         params.delete(k)
       end
     end
@@ -173,16 +180,13 @@ class Authorization
   end
 
   # Create a new Authorization.
-  def self.create!(params, *args)
-    params = self.sanitize_params(params)
+  def initialize(*args)
+    params = {}
+    params = args.shift if args.length > 0
 
-    params["hashed_password"] = self.hash_password(params["password"])
-    params.delete("password")
+    params["hashed_password"] = Authorization.hash_password(params["password"])
+    params = Authorization.sanitize_params(params)
 
-    authorization = Authorization.new(params, *args)
-    authorization.send(:create_person_and_identity)
-    authorization.save
-
-    authorization
+    super params, *args
   end
 end
