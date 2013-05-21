@@ -72,6 +72,7 @@ module Rack
       status 404 and return unless author
 
       current_person.follow! author
+      redirect '/'
     end
 
     # Unfollow a person
@@ -80,6 +81,7 @@ module Rack
                                    current_person.id.to_s == params["id"]
 
       current_person.unfollow! params["followed_id"]
+      redirect '/'
     end
 
     # Favorite an activity
@@ -92,6 +94,7 @@ module Rack
       status 404 and return unless activity
 
       current_person.favorite! activity
+      redirect '/'
     end
 
     # Share an activity
@@ -104,6 +107,7 @@ module Rack
       status 404 and return unless activity
 
       current_person.share! activity
+      redirect '/'
     end
 
     # External delivery to our own stream.
