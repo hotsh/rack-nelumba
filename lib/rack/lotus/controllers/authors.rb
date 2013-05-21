@@ -63,7 +63,7 @@ module Rack
         params = Author.sanitize_params(params)
         @author.update_attributes!(params)
 
-        redirect "/authors/#{params["id"]}"
+        redirect "/authors/#{@author.id}"
       end
     end
 

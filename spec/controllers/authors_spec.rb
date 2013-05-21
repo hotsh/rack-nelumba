@@ -186,7 +186,7 @@ describe Rack::Lotus do
         author.stubs(:update_attributes!)
 
         Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns({:id => author.id})
+        Author.stubs(:sanitize_params).returns({"id" => author.id})
 
         login_as("wilkie", author)
 

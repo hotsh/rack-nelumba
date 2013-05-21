@@ -40,7 +40,6 @@ def create_authorization(params)
   keypair = Struct.new(:public_key, :private_key).new("PUBKEY", "PRIVKEY")
   Lotus::Crypto.stubs(:new_keypair).returns(keypair)
 
-  authorization.run_callbacks :create
   authorization
 end
 
@@ -115,7 +114,7 @@ describe Authorization do
             .with(:authorization_id => @authorization.id)
             .returns(@person)
 
-      @authorization.run_callbacks :create
+      @authorization.save
     end
 
     it "should set the new person's author attributes to the username" do
@@ -127,14 +126,16 @@ describe Authorization do
                     .returns(true)
 
       @authorization.username = "wilkie"
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity" do
       Identity.expects(:create!)
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with the generated public key" do
@@ -142,7 +143,8 @@ describe Authorization do
               .with(has_entry(:public_key, "PUBKEY"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with the given username" do
@@ -151,7 +153,8 @@ describe Authorization do
               .returns(@person)
 
       @authorization.username = "wilkie"
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with the new person's author" do
@@ -159,7 +162,8 @@ describe Authorization do
               .with(has_entry(:author, @person.author))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's salmon endpoint" do
@@ -167,7 +171,8 @@ describe Authorization do
               .with(has_entry(:salmon_endpoint, "/people/#{@person.id}/salmon"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's dialback endpoint" do
@@ -176,7 +181,8 @@ describe Authorization do
                               "/people/#{@person.id}/dialback"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's activity inbox endpoint" do
@@ -185,7 +191,8 @@ describe Authorization do
                               "/people/#{@person.id}/inbox"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's activity outbox endpoint" do
@@ -194,7 +201,8 @@ describe Authorization do
                               "/people/#{@person.id}/outbox"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's activity outbox endpoint" do
@@ -203,7 +211,8 @@ describe Authorization do
                               "/people/#{@person.id}/outbox"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity with person's profile page" do
@@ -211,7 +220,8 @@ describe Authorization do
               .with(has_entry(:profile_page, "/people/#{@person.id}"))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should create an Identity associated with the person's activities" do
@@ -219,17 +229,21 @@ describe Authorization do
               .with(has_entry(:outbox_id, @person.activities.id))
               .returns(@person)
 
-      @authorization.run_callbacks :create
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
     end
 
     it "should associate a new Identity with this Authorization" do
-      @authorization.run_callbacks :create
+      @authorization = Authorization.create!(:username => "wilkie",
+                                             :password => "foobar")
 
       @authorization.identity_id.must_equal @person.author.identity.id
     end
 
     it "should store the private key" do
-      @authorization.run_callbacks :create
+      @authorization = Authorization.create!(:username => "wilkie",
+                                             :password => "foobar")
+
       @authorization.private_key.must_equal "PRIVKEY"
     end
   end
