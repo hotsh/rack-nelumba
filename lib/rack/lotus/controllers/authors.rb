@@ -53,6 +53,8 @@ module Rack
 
     # Update a known Author
     post '/authors/:id' do
+      params = params() # Can't pass it unless it is a hash
+
       @author = Author.find_by_id(params[:id])
       if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
         # Do not allow creation
@@ -61,7 +63,7 @@ module Rack
         params = Author.sanitize_params(params)
         @author.update_attributes!(params)
 
-        redirect "/authors/#{params[:id]}"
+        redirect "/authors/#{params["id"]}"
       end
     end
 
