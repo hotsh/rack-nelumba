@@ -23,7 +23,7 @@ module Rack
         if existing_author
           author = existing_author
         else
-          author = Author.create!(Author.sanitize_params(author.to_hash))
+          author = Author.create!(author)
         end
         redirect "/authors/#{author._id}"
       else
