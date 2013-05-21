@@ -58,7 +58,8 @@ class Authorization
       :activity_inbox_endpoint => "/people/#{person.id}/inbox",
       :activity_outbox_endpoint => "/people/#{person.id}/outbox",
       :profile_page => "/people/#{person.id}",
-      :outbox_id => person.activities.id
+      :outbox_id => person.activities.id,
+      :inbox_id => person.timeline.id
     )
     self.identity_id = self.identity.id
 

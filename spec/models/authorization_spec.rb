@@ -95,6 +95,7 @@ describe Authorization do
       @person.stubs(:save).returns(true)
       @person.stubs(:author).returns(author)
       @person.stubs(:activities).returns(Aggregate.new)
+      @person.stubs(:timeline).returns(Aggregate.new)
 
       identity = Identity.new
       identity.stubs(:save).returns(true)
@@ -218,6 +219,15 @@ describe Authorization do
     it "should create an Identity with person's profile page" do
       Identity.expects(:create!)
               .with(has_entry(:profile_page, "/people/#{@person.id}"))
+              .returns(@person)
+
+      Authorization.create!(:username => "wilkie",
+                            :password => "foobar")
+    end
+
+    it "should create an Identity associated with the person's timeline" do
+      Identity.expects(:create!)
+              .with(has_entry(:inbox_id, @person.timeline.id))
               .returns(@person)
 
       Authorization.create!(:username => "wilkie",

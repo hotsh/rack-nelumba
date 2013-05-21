@@ -30,6 +30,9 @@ class Identity
   key :outbox_id, ObjectId
   belongs_to :outbox, :class_name => 'Aggregate'
 
+  key :inbox_id, ObjectId
+  belongs_to :inbox, :class_name => 'Aggregate'
+
   timestamps!
 
   # Extends the lease for the public key so it remains valid through the given
@@ -78,6 +81,7 @@ class Identity
   end
 
   # Create a new Identity from a Hash of values or a Lotus::Identity.
+  # TODO: Create outbox and inbox aggregates to hold feed and sent activities
   def self.create!(*args)
     hash = {}
     if args.length > 0

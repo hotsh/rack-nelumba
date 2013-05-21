@@ -249,14 +249,21 @@ describe Person do
       @author = Author.new
       @author.stubs(:save)
 
-      feed = Aggregate.new
-      feed.stubs(:save)
+      aggregate = Aggregate.new
+      aggregate.stubs(:feed).returns(Feed.new)
+      aggregate.stubs(:save)
 
-      @identity = Identity.new(:outbox_id => feed,
+      aggregate_in = Aggregate.new
+      aggregate_in.stubs(:feed).returns(Feed.new)
+      aggregate_in.stubs(:save)
+
+      @identity = Identity.new(:outbox_id => aggregate.id,
+                               :inbox_id  => aggregate_in.id,
                                :author_id => @author.id)
 
       @identity.stubs(:author).returns(@author)
-      @identity.stubs(:outbox).returns(feed)
+      @identity.stubs(:outbox).returns(aggregate)
+      @identity.stubs(:inbox).returns(aggregate_in)
       @author.stubs(:identity).returns(@identity)
     end
 
@@ -271,7 +278,7 @@ describe Person do
     end
 
     it "should add outbox to activities' followers list" do
-      @person.activities.expects(:followed_by!).with(@identity.outbox)
+      @person.activities.expects(:followed_by!).with(@identity.inbox.feed)
       @person.followed_by! @author
     end
   end
@@ -288,14 +295,21 @@ describe Person do
       @author = Author.new
       @author.stubs(:save)
 
-      feed = Aggregate.new
-      feed.stubs(:save)
+      aggregate = Aggregate.new
+      aggregate.stubs(:feed).returns(Feed.new)
+      aggregate.stubs(:save)
 
-      @identity = Identity.new(:outbox_id => feed,
+      aggregate_in = Aggregate.new
+      aggregate_in.stubs(:feed).returns(Feed.new)
+      aggregate_in.stubs(:save)
+
+      @identity = Identity.new(:outbox_id => aggregate.id,
+                               :inbox_id  => aggregate_in.id,
                                :author_id => @author.id)
 
       @identity.stubs(:author).returns(@author)
-      @identity.stubs(:outbox).returns(feed)
+      @identity.stubs(:outbox).returns(aggregate)
+      @identity.stubs(:inbox).returns(aggregate_in)
       @author.stubs(:identity).returns(@identity)
     end
 
@@ -310,7 +324,7 @@ describe Person do
     end
 
     it "should remove outbox from activities' followers list" do
-      @person.activities.expects(:unfollowed_by!).with(@identity.outbox)
+      @person.activities.expects(:unfollowed_by!).with(@identity.inbox.feed)
       @person.unfollowed_by! @author
     end
   end
