@@ -1,10 +1,11 @@
 GIT
   remote: git://github.com/hotsh/lotus.git
-  revision: d24a282a5cd16bac704aee27ee55db23eb46abaa
+  revision: 9d2a36f3f9755076d7913ff52657112daeb83177
   specs:
     lotus (0.0.12)
       nokogiri
       ratom (~> 0.7.2)
+      rsa
       ruby-hmac
 
 GIT
@@ -44,6 +45,13 @@ GEM
     bson_ext (1.8.4)
       bson (~> 1.8.4)
     builder (3.0.4)
+    columnize (0.3.6)
+    debugger (1.5.0)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.2.0)
+      debugger-ruby_core_source (~> 1.2.0)
+    debugger-linecache (1.2.0)
+    debugger-ruby_core_source (1.2.0)
     haml (4.0.2)
       tilt
     hashie (2.0.3)
@@ -75,6 +83,7 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rmagick (2.13.2)
+    rsa (0.1.4)
     ruby-hmac (0.4.0)
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
@@ -90,6 +99,7 @@ PLATFORMS
 DEPENDENCIES
   ansi
   awesome_print
+  debugger
   lotus!
   minitest
   mocha
