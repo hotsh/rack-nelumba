@@ -133,6 +133,8 @@ class Feed
 
     self.entries << activity
     self.save
+
+    activity
   end
 
   # Reposts an activity from another feed.

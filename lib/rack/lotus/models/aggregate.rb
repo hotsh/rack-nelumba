@@ -78,6 +78,12 @@ class Aggregate
 
   # Add to the feed and tell subscribers.
   def post!(activity)
+    if activity.is_a?(Hash) ||
+       activity.is_a?(::Lotus::Activity)
+      # Create a new activity
+      activity = Activity.create!(activity)
+    end
+
     self.feed.post! activity
 
     publish(activity)
