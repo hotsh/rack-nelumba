@@ -136,7 +136,7 @@ class Person
     self.save
 
     # determine their feed
-    self.activities.followed_by! author.identity.outbox
+    self.activities.followed_by! author.identity.outbox.feed
   end
 
   # Updates to show we are not followed by the given Author.
@@ -152,7 +152,7 @@ class Person
     self.save
 
     # remove their feed as a syndicate of our activities
-    self.activities.unfollowed_by! author.identity.outbox
+    self.activities.unfollowed_by! author.identity.outbox.feed
   end
 
   # Add the given Activity to our list of favorites.
