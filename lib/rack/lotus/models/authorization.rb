@@ -31,7 +31,7 @@ class Authorization
   validates_presence_of :identity
   validates_presence_of :hashed_password
 
-  before_create :create_person_and_identity
+  before_validation :create_person_and_identity, :on => :create
 
   # Log modification
   timestamps!
