@@ -129,6 +129,8 @@ class Person
       author = author.author
     end
 
+    return if author.nil?
+
     # add them from our list
     self.followers << author
     self.save
@@ -142,6 +144,8 @@ class Person
     if author.is_a? Identity
       author = author.author
     end
+
+    return if author.nil?
 
     # remove them from our list
     self.followers_ids.delete(author.id)

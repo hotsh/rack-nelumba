@@ -190,4 +190,57 @@ describe Identity do
       Identity.discover!("wilkie@rstat.us").must_equal "new identity"
     end
   end
+
+  describe "discover_author!" do
+    it "should discover the author through Author" do
+      identity = Identity.new(:username => "wilkie", :domain => "rstat.us")
+      Author.expects(:discover!).with("acct:wilkie@rstat.us").returns("author")
+
+      identity.discover_author!
+    end
+  end
+
+  describe "return_or_discover_public_key" do
+    it "should return public_key when public_key_lease is not expired" do
+      days = Identity::PUBLIC_KEY_LEASE_DAYS
+      identity = Identity.new(:public_key => "KEY",
+                              :public_key_lease => (DateTime.now+days).to_date,
+                              :username => "wilkie",
+                              :domain => "rstat.us")
+
+      Lotus.expects(:discover_identity).never
+
+      identity.return_or_discover_public_key.must_equal "KEY"
+    end
+
+    it "should discover the public key when the public_key_lease has expired" do
+      identity = Identity.new(:public_key => "BOGUS",
+                              :public_key_lease => (DateTime.now-1).to_date,
+                              :username => "wilkie",
+                              :domain => "rstat.us")
+
+      identity.expects(:reset_key_lease)
+
+      lotus_identity = mock('Lotus::Identity')
+      lotus_identity.stubs(:public_key).returns("KEY")
+      Lotus.expects(:discover_identity).returns(lotus_identity)
+
+      identity.return_or_discover_public_key.must_equal "KEY"
+    end
+
+    it "should discover the public key when the public_key_lease is nil" do
+      identity = Identity.new(:public_key => "BOGUS",
+                              :public_key_lease => nil,
+                              :username => "wilkie",
+                              :domain => "rstat.us")
+
+      identity.expects(:reset_key_lease)
+
+      lotus_identity = mock('Lotus::Identity')
+      lotus_identity.stubs(:public_key).returns("KEY")
+      Lotus.expects(:discover_identity).returns(lotus_identity)
+
+      identity.return_or_discover_public_key.must_equal "KEY"
+    end
+  end
 end

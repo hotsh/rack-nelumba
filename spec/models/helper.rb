@@ -6,11 +6,13 @@ def require_model(name)
 end
 
 module Lotus
-  class Identity;     end
-  class Activity;     end
-  class Author;       end
-  class Feed;         end
-  class Subscription; end
+  class  Identity;     end
+  class  Activity;     end
+  class  Author;       end
+  class  Feed;         end
+  class  Subscription; end
+  class  Notification; end
+  module Crypto;       end
 end
 
 require 'mongo_mapper'

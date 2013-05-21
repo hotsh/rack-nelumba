@@ -138,5 +138,44 @@ module Rack
 
       redirect '/'
     end
+
+    # Handle a salmon payload
+    post '/people/:id/salmon' do
+      person = Person.find_by_id(params[:id])
+      status 404 and return if person.nil?
+
+      # Form the notification
+      notification = ::Lotus::Notification.from_xml(request.body.read)
+
+      # If it already exists, this will update
+      activity = Activity.find_from_notification(notification)
+
+      if activity
+        activity = activity.update_from_notification!(notification)
+
+        # Failure to verify (Forbidden)
+        status 403 and return if activity.nil?
+        success = 200
+      else
+        activity = Activity.create_from_notification!(notification)
+
+        # Failure to verify (Bad Request)
+        status 400 and return if activity.nil?
+        success = 202
+      end
+
+      case activity.verb
+      when :follow
+        person.followed_by! nil
+      when :unfollow
+        person.unfollowed_by! identity.author
+      when :post
+        # TODO: determine who is mentioned, replied and deliver if this is
+        #       "person"
+      end
+
+      headers["Location"] = activity.url
+      status success
+    end
   end
 end

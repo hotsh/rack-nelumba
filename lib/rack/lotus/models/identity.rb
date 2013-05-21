@@ -4,6 +4,9 @@
 class Identity
   include MongoMapper::Document
 
+  # public keys are good for 4 weeks
+  PUBLIC_KEY_LEASE_DAYS = 28
+
   belongs_to :author
   key :author_id, ObjectId
 
@@ -11,7 +14,13 @@ class Identity
   key :ssl
   key :domain
 
+  # Identities have a public key that they use to sign salmon responses.
+  #  Leasing: To ensure that keys can only be compromised in a small window but
+  #  not require the server to retrieve a key per update, we store a lease.
+  #  When the lease expires, and a notification comes, we retrieve the key.
   key :public_key
+  key :public_key_lease, Date
+
   key :salmon_endpoint
   key :dialback_endpoint
   key :activity_inbox_endpoint
@@ -22,6 +31,41 @@ class Identity
   belongs_to :outbox, :class_name => 'Aggregate'
 
   timestamps!
+
+  # Extends the lease for the public key so it remains valid through the given
+  # expiry period.
+  def reset_key_lease
+    self.public_key_lease = (DateTime.now + PUBLIC_KEY_LEASE_DAYS).to_date
+  end
+
+  # Extends the lease for the public key so it remains valid through the given
+  # expiry period and saves.
+  def reset_key_lease!
+    reset_key_lease
+    self.save
+  end
+
+  # Invalidates the public key
+  def invalidate_public_key!
+    self.public_key_lease = nil
+    self.save
+  end
+
+  # Returns the valid public key
+  def return_or_discover_public_key
+    if self.public_key_lease.nil? or
+       self.public_key_lease < DateTime.now.to_date
+      # Lease has expired, get the public key again
+      identity = Lotus.discover_identity("acct:#{self.username}@#{self.domain}")
+
+      self.public_key = identity.public_key
+      reset_key_lease
+
+      self.save
+    end
+
+    self.public_key
+  end
 
   def self.find_by_identifier(identifier)
     matches  = identifier.match /^(?:.+\:)?([^@]+)@(.+)$/
@@ -93,6 +137,11 @@ class Identity
     return false unless identity
 
     self.create!(identity)
+  end
+
+  # Discover the associated author for this identity.
+  def discover_author!
+    Author.discover!("acct:#{self.username}@#{self.domain}")
   end
 
   # Creates an immutable Lotus::Identity representation.

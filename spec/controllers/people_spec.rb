@@ -1,9 +1,14 @@
 require_relative 'helper'
 require_controller 'people'
 
-class  Person; end
+class  Author;   end
+class  Person;   end
 class  Activity; end
-module Lotus;  end
+class  Identity; end
+module Lotus;
+  class Notification; end
+  class Activity; end
+end
 
 describe Rack::Lotus do
   before do
@@ -577,6 +582,104 @@ describe Rack::Lotus do
         person.expects(:post!).with(has_entry(:verb, :post))
 
         post '/people/current_person/activities'
+      end
+    end
+
+    describe "POST /people/:id/salmon" do
+      before do
+        @person = mock('Person')
+        aggregate = mock('Aggregate')
+        feed = mock('Feed')
+
+        @person.stubs(:activities).returns(aggregate)
+        aggregate.stubs(:feed).returns(feed)
+
+        @person.stubs(:followed_by!)
+        @person.stubs(:unfollowed_by!)
+
+        Person.stubs(:find_by_id).returns(@person)
+
+        activity = Lotus::Activity.new
+        activity.stubs(:verb).returns(:follow)
+        activity.stubs(:id).returns("ID")
+
+        @internal_activity = Activity.new
+        @internal_activity.stubs(:verb).returns(:follow)
+        @internal_activity.stubs(:url).returns("http://example.com/activities/1")
+        Activity.stubs(:create!).returns(@internal_activity)
+        Activity.stubs(:find_by_uid).returns(nil)
+        Activity.stubs(:find_from_notification).returns(nil)
+        Activity.stubs(:create_from_notification!).returns(@internal_activity)
+
+        author = Author.new
+
+        identity = Identity.new
+        identity.stubs(:return_or_discover_public_key).returns("RSA_PUBLIC_KEY")
+        identity.stubs(:discover_author!)
+        identity.stubs(:author).returns(author)
+
+        Lotus::Notification.stubs(:from_xml).returns(@notification)
+      end
+
+      it "should return 404 if the person is not found" do
+        Person.stubs(:find_by_id).returns(nil)
+
+        post '/people/bogus/salmon'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 403 if the person exists and message is not updated" do
+        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        @internal_activity.stubs(:update_from_notification!).returns(nil)
+
+        post '/people/1234abcd/salmon', "foo"
+        last_response.status.must_equal 403
+      end
+
+      it "should update if the person is found and verified" do
+        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        @internal_activity.expects(:update_from_notification!).returns(@internal_activity)
+
+        post '/people/1234abcd/salmon', "foo"
+      end
+
+      it "should return 200 if the person is found and message is updated" do
+        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        @internal_activity.stubs(:update_from_notification!).returns(@internal_activity)
+
+        post '/people/1234abcd/salmon', "foo"
+        last_response.status.must_equal 200
+      end
+
+      it "should create if the person is found and verified" do
+        Activity.expects(:create_from_notification!).returns(@internal_activity)
+
+        post '/people/1234abcd/salmon', "foo"
+      end
+
+      it "should return 202 if the person is found and message is verified" do
+        post '/people/1234abcd/salmon', "foo"
+        last_response.status.must_equal 202
+      end
+
+      it "should return 400 when reciprient is found but the access is rejected" do
+        Activity.stubs(:create_from_notification!).returns(nil)
+
+        post '/people/1234abcd/salmon', "foo"
+        last_response.status.must_equal 400
+      end
+
+      it "should return a Location HTTP header with the activity url" do
+        post '/people/1234abcd/salmon', "foo"
+        last_response.headers["Location"].must_equal @internal_activity.url
+      end
+
+      it "should handle the given payload" do
+        Lotus::Notification.expects(:from_xml)
+                           .with("foo")
+                           .returns(@notification)
+
+        post '/people/1234abcd/salmon', "foo"
       end
     end
   end

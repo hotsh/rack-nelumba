@@ -192,6 +192,58 @@ class Activity
     }
   end
 
+  def self.find_from_notification(notification)
+    Activity.first(:uid => notification.activity.id)
+  end
+
+  def self.create_from_notification!(notification)
+    # We need to verify the payload
+    identity = Identity.discover!(notification.account)
+    if notification.verified? identity.return_or_discover_public_key
+      # Then add it to our feed in the appropriate place
+      identity.discover_author!
+      internal_activity = Activity.find_from_notification(notification)
+
+      # If it already exists, update it
+      if internal_activity
+        internal_activity.update_from_notification(notification, true)
+      else
+        internal_activity = Activity.create!(notification.activity)
+        internal_author = Author.find_or_create_by_uid!(
+                            notification.activity.actor.id)
+
+        internal_activity.actor = internal_author
+        internal_activity.save
+        internal_activity
+      end
+    else
+      nil
+    end
+  end
+
+  def update_from_notification(notification, force = false)
+    # Do not allow another actor to change an existing activity
+    if self.actor && self.actor.uri != notification.activity.actor.uri
+      return nil
+    end
+
+    # We need to verify the payload
+    identity = Identity.discover!(notification.account)
+    if force or notification.verified?(identity.return_or_discover_public_key)
+      # Then add it to our feed in the appropriate place
+      identity.discover_author!
+
+      attributes = notification.activity.to_hash
+      attributes.delete :id
+
+      self.update_attributes!(attributes)
+
+      self
+    else
+      nil
+    end
+  end
+
   # Generates components of the description of the action taken by this
   # activity. This would be a good place for localization efforts.
   def human_description

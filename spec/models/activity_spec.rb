@@ -318,4 +318,72 @@ describe Activity do
       activity.parts_of_speech[:when].must_equal activity.updated_at
     end
   end
+
+  describe "create_from_notification!" do
+    before do
+      activity_author = Lotus::Author.new
+      activity_author.stubs(:uri).returns("acct:wilkie@restat.us")
+      activity_author.stubs(:id).returns("AUTHOR ID")
+
+      activity = Lotus::Activity.new
+      activity.stubs(:verb).returns(:follow)
+      activity.stubs(:id).returns("1")
+      activity.stubs(:to_hash).returns(:title => "New Title", :id => "1", :url => "foo")
+      activity.stubs(:actor).returns(activity_author)
+
+      @notification = mock('Lotus::Notification')
+      @notification.stubs(:activity).returns(activity)
+      @notification.stubs(:account).returns("acct:wilkie@rstat.us")
+      @notification.stubs(:verified?).returns(true)
+
+      author = Author.new
+      author.stubs(:uri).returns(activity_author.uri)
+      author.stubs(:uid).returns(activity_author.id)
+      Author.stubs(:find_or_create_by_uid!).returns(author)
+      Author.stubs(:find_by_id).returns(author)
+
+      @identity = Identity.new
+      @identity.stubs(:return_or_discover_public_key).returns("RSA_PUBLIC_KEY")
+      @identity.stubs(:discover_author!)
+      @identity.stubs(:author).returns(author)
+
+      Identity.stubs(:discover!).with("acct:wilkie@rstat.us").returns(@identity)
+
+    end
+
+    it "should verify the content" do
+      @notification.expects(:verified?).with("RSA_PUBLIC_KEY").returns(true)
+
+      Activity.create_from_notification! @notification
+    end
+
+    it "should discover the account that sent the salmon" do
+      Identity.expects(:discover!).with(@notification.account).returns(@identity)
+
+      Activity.create_from_notification! @notification
+    end
+
+    it "should return nil when the payload is not verified" do
+      @notification.stubs(:verified?).returns(false)
+      Activity.create_from_notification!(@notification).must_equal nil
+    end
+
+    it "should return the new activity" do
+      Activity.create_from_notification!(@notification)
+              .class.must_equal Activity
+    end
+
+    it "should return the old activity when already exists" do
+      old = Activity.create_from_notification!(@notification)
+      Activity.create_from_notification!(@notification).must_equal old
+    end
+
+    it "should return nil if the update exists under a different author" do
+      old = Activity.create_from_notification!(@notification)
+
+      @notification.activity.actor.stubs(:uri).returns("acct:bogus@rstat.us")
+
+      Activity.create_from_notification!(@notification).must_equal nil
+    end
+  end
 end

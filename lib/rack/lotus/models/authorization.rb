@@ -46,11 +46,13 @@ class Authorization
                                     :preferred_username => username)
     person.author.save
 
+    keypair = ::Lotus::Crypto.generate_keypair
+
     self.identity = Identity.create!(
       :username => self.username,
       :domain => "www.example.com",
       :author => person.author,
-      :public_key => "foo",
+      :public_key => keypair.public_key,
       :salmon_endpoint => "/people/#{person.id}/salmon",
       :dialback_endpoint => "/people/#{person.id}/dialback",
       :activity_inbox_endpoint => "/people/#{person.id}/inbox",
@@ -59,6 +61,8 @@ class Authorization
       :outbox_id => person.activities.id
     )
     self.identity_id = self.identity.id
+
+    self.private_key = keypair.private_key
   end
 
   public

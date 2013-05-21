@@ -1,5 +1,4 @@
 require_relative 'helper'
-require_relative 'helper'
 require_model 'authorization'
 
 require 'xml'
@@ -37,6 +36,9 @@ def create_authorization(params)
   Identity.stubs(:create!).returns(identity)
 
   Person.stubs(:create).returns(person)
+
+  keypair = Struct.new(:public_key, :private_key).new("PUBKEY", "PRIVKEY")
+  Lotus::Crypto.stubs(:generate_keypair).returns(keypair)
 
   authorization.run_callbacks :create
   authorization
@@ -102,6 +104,9 @@ describe Authorization do
       author.stubs(:identity).returns(identity)
       Identity.stubs(:create!).returns(identity)
 
+      keypair = Struct.new(:public_key, :private_key).new("PUBKEY", "PRIVKEY")
+      Lotus::Crypto.stubs(:generate_keypair).returns(keypair)
+
       Person.stubs(:create).returns(@person)
     end
 
@@ -127,6 +132,14 @@ describe Authorization do
 
     it "should create an Identity" do
       Identity.expects(:create!)
+              .returns(@person)
+
+      @authorization.run_callbacks :create
+    end
+
+    it "should create an Identity with the generated public key" do
+      Identity.expects(:create!)
+              .with(has_entry(:public_key, "PUBKEY"))
               .returns(@person)
 
       @authorization.run_callbacks :create
@@ -213,6 +226,11 @@ describe Authorization do
       @authorization.run_callbacks :create
 
       @authorization.identity_id.must_equal @person.author.identity.id
+    end
+
+    it "should store the private key" do
+      @authorization.run_callbacks :create
+      @authorization.private_key.must_equal "PRIVKEY"
     end
   end
 
