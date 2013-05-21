@@ -51,7 +51,7 @@ class Authorization
     self.identity = Identity.create!(
       :username => self.username,
       :domain => "www.example.com",
-      :author => person.author,
+      :author_id => person.author.id,
       :public_key => keypair.public_key,
       :salmon_endpoint => "/people/#{person.id}/salmon",
       :dialback_endpoint => "/people/#{person.id}/dialback",

@@ -159,7 +159,7 @@ describe Authorization do
 
     it "should create an Identity with the new person's author" do
       Identity.expects(:create!)
-              .with(has_entry(:author, @person.author))
+              .with(has_entry(:author_id, @person.author.id))
               .returns(@person)
 
       Authorization.create!(:username => "wilkie",
