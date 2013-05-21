@@ -46,7 +46,7 @@ class Authorization
                                     :preferred_username => username)
     person.author.save
 
-    keypair = ::Lotus::Crypto.generate_keypair
+    keypair = ::Lotus::Crypto.new_keypair
 
     self.identity = Identity.create!(
       :username => self.username,

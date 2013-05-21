@@ -38,7 +38,7 @@ def create_authorization(params)
   Person.stubs(:create).returns(person)
 
   keypair = Struct.new(:public_key, :private_key).new("PUBKEY", "PRIVKEY")
-  Lotus::Crypto.stubs(:generate_keypair).returns(keypair)
+  Lotus::Crypto.stubs(:new_keypair).returns(keypair)
 
   authorization.run_callbacks :create
   authorization
@@ -105,7 +105,7 @@ describe Authorization do
       Identity.stubs(:create!).returns(identity)
 
       keypair = Struct.new(:public_key, :private_key).new("PUBKEY", "PRIVKEY")
-      Lotus::Crypto.stubs(:generate_keypair).returns(keypair)
+      Lotus::Crypto.stubs(:new_keypair).returns(keypair)
 
       Person.stubs(:create).returns(@person)
     end
