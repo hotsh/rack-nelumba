@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'authors'
 
-class  Author; end
+class  Lotus::Author; end
 module Lotus;  end
 
 describe Rack::Lotus do
@@ -12,14 +12,14 @@ describe Rack::Lotus do
 
   describe "Authors Controller" do
     describe "GET /authors" do
-      it "should query for all Authors" do
-        Author.expects(:all)
+      it "should query for all Lotus::Authors" do
+        Lotus::Author.expects(:all)
 
         get '/authors'
       end
 
-      it "should yield an array of all Authors" do
-        Author.stubs(:all).returns([])
+      it "should yield an array of all Lotus::Authors" do
+        Lotus::Author.stubs(:all).returns([])
 
         # Ah. This is where I need a presenter pattern instead of instance
         # variable bullshits. I can't be extensible OR test state transfer
@@ -42,9 +42,9 @@ describe Rack::Lotus do
         author = stub('Author')
         author.stubs(:uri).returns("foo")
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(author)
+        Lotus::Author.stubs(:find).returns(author)
 
-        Author.expects(:create!).never
+        Lotus::Author.expects(:create!).never
 
         post '/authors/discover', "account" => acct
       end
@@ -55,10 +55,10 @@ describe Rack::Lotus do
         author.stubs(:uri).returns("foo")
         author.stubs(:to_hash).returns({})
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(nil)
-        Author.stubs(:sanitize_params)
+        Lotus::Author.stubs(:find).returns(nil)
+        Lotus::Author.stubs(:sanitize_params)
 
-        Author.expects(:create!)
+        Lotus::Author.expects(:create!)
 
         post '/authors/discover', "account" => acct
       end
@@ -77,7 +77,7 @@ describe Rack::Lotus do
         author.stubs(:uri).returns("foo")
         author.stubs(:_id).returns("ID")
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(author)
+        Lotus::Author.stubs(:find).returns(author)
 
         post '/authors/discover', "account" => acct
         last_response.status.must_equal 302
@@ -89,7 +89,7 @@ describe Rack::Lotus do
         author.stubs(:uri).returns("foo")
         author.stubs(:_id).returns("ID")
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(author)
+        Lotus::Author.stubs(:find).returns(author)
 
         post '/authors/discover', "account" => acct
         last_response.location.must_equal "http://example.org/authors/ID"
@@ -102,9 +102,9 @@ describe Rack::Lotus do
         author.stubs(:_id).returns("ID")
         author.stubs(:to_hash)
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(nil)
-        Author.stubs(:sanitize_params)
-        Author.stubs(:create!).returns(author)
+        Lotus::Author.stubs(:find).returns(nil)
+        Lotus::Author.stubs(:sanitize_params)
+        Lotus::Author.stubs(:create!).returns(author)
 
         post '/authors/discover', "account" => acct
         last_response.status.must_equal 302
@@ -117,9 +117,9 @@ describe Rack::Lotus do
         author.stubs(:_id).returns("ID")
         author.stubs(:to_hash)
         Lotus.stubs(:discover_author).with(acct).returns(author)
-        Author.stubs(:find).returns(nil)
-        Author.stubs(:sanitize_params)
-        Author.stubs(:create!).returns(author)
+        Lotus::Author.stubs(:find).returns(nil)
+        Lotus::Author.stubs(:sanitize_params)
+        Lotus::Author.stubs(:create!).returns(author)
 
         post '/authors/discover', "account" => acct
         last_response.location.must_equal "http://example.org/authors/ID"
@@ -128,14 +128,14 @@ describe Rack::Lotus do
 
     describe "GET /authors/:id" do
       it "should return 404 when the author is not found" do
-        Author.stubs(:find_by_id).returns(nil)
+        Lotus::Author.stubs(:find_by_id).returns(nil)
 
         get '/authors/1234abcd'
         last_response.status.must_equal 404
       end
 
       it "should return 200 when the author is found" do
-        Author.stubs(:find_by_id).returns(stub('author'))
+        Lotus::Author.stubs(:find_by_id).returns(stub('author'))
 
         get '/authors/1234abcd'
         last_response.status.must_equal 200
@@ -144,14 +144,14 @@ describe Rack::Lotus do
 
     describe "GET /authors/:id/edit" do
       it "should return 404 when the author is not found" do
-        Author.stubs(:find_by_id).returns(nil)
+        Lotus::Author.stubs(:find_by_id).returns(nil)
 
         get '/authors/1234abcd/edit'
         last_response.status.must_equal 404
       end
 
       it "should return 200 when the author is found" do
-        Author.stubs(:find_by_id).returns(stub('author'))
+        Lotus::Author.stubs(:find_by_id).returns(stub('author'))
 
         get '/authors/1234abcd/edit'
         last_response.status.must_equal 200
@@ -160,7 +160,7 @@ describe Rack::Lotus do
 
     describe "POST /authors/:id" do
       it "should return 404 when the author is not found" do
-        Author.stubs(:find_by_id).returns(nil)
+        Lotus::Author.stubs(:find_by_id).returns(nil)
 
         post '/authors/1234abcd'
         last_response.status.must_equal 404
@@ -171,8 +171,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns({:id => author.id})
+        Lotus::Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:sanitize_params).returns({:id => author.id})
 
         login_as("wilkie", author)
 
@@ -185,8 +185,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns({"id" => author.id})
+        Lotus::Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:sanitize_params).returns({"id" => author.id})
 
         login_as("wilkie", author)
 
@@ -198,8 +198,8 @@ describe Rack::Lotus do
         author = stub('Author')
         author.stubs(:id).returns("ID")
 
-        Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns("sanitized")
+        Lotus::Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:sanitize_params).returns("sanitized")
 
         author.expects(:update_attributes!).with("sanitized")
 
@@ -213,8 +213,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns({:id => author.id})
+        Lotus::Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:sanitize_params).returns({:id => author.id})
 
         post "/authors/#{author.id}"
         last_response.status.must_equal 404
@@ -225,8 +225,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Author.stubs(:find_by_id).returns(author)
-        Author.stubs(:sanitize_params).returns({:id => author.id})
+        Lotus::Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:sanitize_params).returns({:id => author.id})
 
         login_as("intruder")
 
@@ -237,14 +237,14 @@ describe Rack::Lotus do
 
     describe "GET /authors/:id/avatar/edit" do
       it "should return 404 when the author is not found" do
-        Author.stubs(:find_by_id).returns(nil)
+        Lotus::Author.stubs(:find_by_id).returns(nil)
 
         get '/authors/1234abcd/avatar/edit'
         last_response.status.must_equal 404
       end
 
       it "should return 200 when the author is found" do
-        Author.stubs(:find_by_id).returns(stub('author'))
+        Lotus::Author.stubs(:find_by_id).returns(stub('author'))
 
         get '/authors/1234abcd/avatar/edit'
         last_response.status.must_equal 200
@@ -253,7 +253,7 @@ describe Rack::Lotus do
 
     describe "POST /authors/:id/avatar" do
       it "should return 404 when the author is not found" do
-        Author.stubs(:find_by_id).returns(nil)
+        Lotus::Author.stubs(:find_by_id).returns(nil)
 
         post '/authors/1234abcd/avatar'
         last_response.status.must_equal 404
@@ -264,7 +264,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:find_by_id).returns(author)
 
         login_as("wilkie", author)
 
@@ -277,7 +277,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:find_by_id).returns(author)
 
         login_as("wilkie", author)
 
@@ -289,7 +289,7 @@ describe Rack::Lotus do
         author = stub('Author')
         author.stubs(:id).returns("ID")
 
-        Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:find_by_id).returns(author)
 
         author.expects(:update_avatar!).with("AVATAR_URL")
 
@@ -303,7 +303,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:find_by_id).returns(author)
 
         post "/authors/#{author.id}/avatar"
         last_response.status.must_equal 404
@@ -314,7 +314,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Author.stubs(:find_by_id).returns(author)
+        Lotus::Author.stubs(:find_by_id).returns(author)
 
         login_as("intruder")
 

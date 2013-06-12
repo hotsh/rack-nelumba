@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'feeds'
 
-class  Feed;  end
+class  Lotus::Feed;  end
 module Lotus; end
 
 describe Rack::Lotus do
@@ -13,7 +13,7 @@ describe Rack::Lotus do
   describe "Feeds Controller" do
     describe "GET /feeds/:id" do
       it "should return 404 if the feed doesn't exist" do
-        Feed.stubs(:find_by_id).returns(nil)
+        Lotus::Feed.stubs(:find_by_id).returns(nil)
 
         get '/feeds/bogus'
         last_response.status.must_equal 404
@@ -22,7 +22,7 @@ describe Rack::Lotus do
       it "should render feeds/show" do
         feed = stub('Feed')
         feed.stubs(:entries).returns("entries")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"feeds/show",
@@ -34,7 +34,7 @@ describe Rack::Lotus do
       it "should return 200 upon success" do
         feed = stub('Feed')
         feed.stubs(:entries).returns("entries")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         Rack::Lotus.any_instance.stubs(:render).with(anything,
                                                      :"feeds/show",
@@ -47,7 +47,7 @@ describe Rack::Lotus do
       it "should pass a feed variable to the view" do
         feed = stub('Feed')
         feed.stubs(:entries).returns("entries")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        anything,
@@ -59,7 +59,7 @@ describe Rack::Lotus do
       it "should pass an activities variable to the view" do
         feed = stub('Feed')
         feed.stubs(:entries).returns("entries")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         Rack::Lotus.any_instance.expects(:render).with(
           anything,
@@ -73,7 +73,7 @@ describe Rack::Lotus do
       it "should render for html" do
         feed = stub('Feed')
         feed.stubs(:entries).returns("entries")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         Rack::Lotus.any_instance.stubs(:render).returns("html")
 

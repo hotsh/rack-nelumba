@@ -2,7 +2,7 @@ module Rack
   class Lotus
     # Get the avatar
     get '/avatars/:id/:size' do
-      avatar = Avatar.find_by_id(params[:id])
+      avatar = ::Lotus::Avatar.find_by_id(params[:id])
       status 404 and return unless avatar
 
       size = params["size"].split('x').map(&:to_i)

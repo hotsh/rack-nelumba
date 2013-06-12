@@ -18,7 +18,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 if the feed does not exist" do
-        Feed.stubs(:find_by_id).returns(nil)
+        Lotus::Feed.stubs(:find_by_id).returns(nil)
 
         get '/subscriptions/valid', "hub.challenge" => "challenge"
         last_response.status.must_equal 404
@@ -28,7 +28,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         get '/subscriptions/valid', "hub.challenge" => "challenge",
                                     "hub.topic"     => "bogus_url"
@@ -39,7 +39,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_subscription).returns(false)
@@ -55,7 +55,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_subscription).returns(true)
@@ -73,7 +73,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_subscription).returns(true)
@@ -91,7 +91,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.expects(:verify_subscription).returns(true)
@@ -108,7 +108,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.expects(:verify_subscription).with("verify_token").returns(true)
@@ -125,7 +125,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_subscription).returns(true)
@@ -143,7 +143,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:verification_token).returns("valid_token")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_subscription).returns(true)
@@ -162,7 +162,7 @@ describe Rack::Lotus do
 
     describe "POST /subscriptions/:id.atom" do
       it "should return 404 when the feed does not exist" do
-        Feed.stubs(:find_by_id).returns(nil)
+        Lotus::Feed.stubs(:find_by_id).returns(nil)
 
         post '/subscriptions/bogus.atom'
         last_response.status.must_equal 404
@@ -172,7 +172,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_content).returns(false)
@@ -186,7 +186,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_content).returns(false)
@@ -201,7 +201,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.expects(:verify_content).with("body", anything).returns(false)
@@ -215,7 +215,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.expects(:verify_content).with(anything, "bogus").returns(false)
@@ -229,7 +229,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_content).returns(true)
@@ -246,7 +246,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
         feed.stubs(:url).returns("valid_url")
         feed.stubs(:secret).returns("secret")
-        Feed.stubs(:find_by_id).returns(feed)
+        Lotus::Feed.stubs(:find_by_id).returns(feed)
 
         sub = stub('Lotus::Subscription')
         sub.stubs(:verify_content).returns(true)

@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'activities'
 
-class  Activity; end
+class  Lotus::Activity; end
 module Lotus;  end
 
 describe Rack::Lotus do
@@ -13,14 +13,14 @@ describe Rack::Lotus do
   describe "Activities Controller" do
     describe "GET /activities/:id" do
       it "should return 404 if the activity is not found" do
-        Activity.stubs(:find_by_id).returns(nil)
+        Lotus::Activity.stubs(:find_by_id).returns(nil)
 
         get '/activities/1234abcd'
         last_response.status.must_equal 404
       end
 
       it "should return 200 if the person is found" do
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         get '/activities/1234abcd'
         last_response.status.must_equal 200
@@ -29,14 +29,14 @@ describe Rack::Lotus do
 
     describe "PUT /activities/:id" do
       it "should return 404 if the activity is not found" do
-        Activity.stubs(:find_by_id).returns(nil)
+        Lotus::Activity.stubs(:find_by_id).returns(nil)
 
         put '/activities/1234abcd'
         last_response.status.must_equal 404
       end
 
       it "should return 200 if the person is found" do
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         put '/activities/1234abcd'
         last_response.status.must_equal 200

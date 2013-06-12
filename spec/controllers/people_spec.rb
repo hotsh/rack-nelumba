@@ -2,12 +2,12 @@ require_relative 'helper'
 require_controller 'people'
 
 class  Author;   end
-class  Person;   end
-class  Activity; end
+class  Lotus::Person;   end
+class  Lotus::Activity; end
 class  Identity; end
 module Lotus;
   class Notification; end
-  class Activity; end
+  class Lotus::Activity; end
 end
 
 describe Rack::Lotus do
@@ -19,13 +19,13 @@ describe Rack::Lotus do
   describe "People Controller" do
     describe "GET /people" do
       it "should query for all people" do
-        Person.expects(:all)
+        Lotus::Person.expects(:all)
 
         get '/people'
       end
 
       it "should pass an array of people to renderer" do
-        Person.stubs(:all).returns("persons")
+        Lotus::Person.stubs(:all).returns("persons")
         Rack::Lotus.any_instance.expects(:render).with(
           anything,
           anything,
@@ -36,7 +36,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/index" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/index",
                                                        anything)
@@ -55,11 +55,11 @@ describe Rack::Lotus do
         aggregate.stubs(:feed).returns(feed)
         feed.stubs(:ordered).returns("timeline")
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd'
         last_response.status.must_equal 404
@@ -91,7 +91,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/show" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/show",
                                                        anything)
@@ -110,11 +110,11 @@ describe Rack::Lotus do
         aggregate.stubs(:feed).returns(feed)
         feed.stubs(:ordered).returns("favorites")
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/favorites'
         last_response.status.must_equal 404
@@ -146,7 +146,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/favorites" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/favorites",
                                                        anything)
@@ -165,11 +165,11 @@ describe Rack::Lotus do
         aggregate.stubs(:feed).returns(feed)
         feed.stubs(:ordered).returns("shared")
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/shared'
         last_response.status.must_equal 404
@@ -201,7 +201,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/shared" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/shared",
                                                        anything)
@@ -215,11 +215,11 @@ describe Rack::Lotus do
         @person = stub('Person')
         @person.stubs(:following).returns("following")
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/following'
         last_response.status.must_equal 404
@@ -251,7 +251,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/following" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/following",
                                                        anything)
@@ -265,11 +265,11 @@ describe Rack::Lotus do
         @person = stub('Person')
         @person.stubs(:followers).returns("followers")
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/followers'
         last_response.status.must_equal 404
@@ -301,7 +301,7 @@ describe Rack::Lotus do
       end
 
       it "should render people/followers" do
-        Person.stubs(:all)
+        Lotus::Person.stubs(:all)
         Rack::Lotus.any_instance.expects(:render).with(anything,
                                                        :"people/followers",
                                                        anything)
@@ -333,25 +333,35 @@ describe Rack::Lotus do
       it "should look up the activity from the given activity_id parameter" do
         login_as "wilkie"
 
-        Activity.expects(:find_by_id).with("foo")
+        Lotus::Activity.expects(:find_by_id).with("foo")
 
         post '/people/current_person/shared', "activity_id" => "foo"
       end
 
-      it "should return 200 if the person is found" do
+      it "should redirect if the person is found" do
         person = login_as "wilkie"
         person.stubs(:share!)
 
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/shared'
-        last_response.status.must_equal 200
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect to home if the person is found" do
+        person = login_as "wilkie"
+        person.stubs(:share!)
+
+        Lotus::Activity.stubs(:find_by_id).returns("something")
+
+        post '/people/current_person/shared'
+        last_response.location.must_equal "http://example.org/"
       end
 
       it "should share the given activity" do
         person = login_as "wilkie"
 
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         person.expects(:share!).with("something")
 
@@ -382,25 +392,36 @@ describe Rack::Lotus do
       it "should look up the activity from the given activity_id parameter" do
         login_as "wilkie"
 
-        Activity.expects(:find_by_id).with("foo")
+        Lotus::Activity.expects(:find_by_id).with("foo")
 
         post '/people/current_person/favorites', "activity_id" => "foo"
       end
 
-      it "should return 200 if the person is found" do
+      it "should redirect if the person is found" do
         person = login_as "wilkie"
         person.stubs(:favorite!)
 
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/favorites'
-        last_response.status.must_equal 200
+        last_response.status.must_equal 302
+        last_response.location.must_equal "http://example.org/"
+      end
+
+      it "should redirect home if the person is found" do
+        person = login_as "wilkie"
+        person.stubs(:favorite!)
+
+        Lotus::Activity.stubs(:find_by_id).returns("something")
+
+        post '/people/current_person/favorites'
+        last_response.location.must_equal "http://example.org/"
       end
 
       it "should share the given activity" do
         person = login_as "wilkie"
 
-        Activity.stubs(:find_by_id).returns("something")
+        Lotus::Activity.stubs(:find_by_id).returns("something")
 
         person.expects(:favorite!).with("something")
 
@@ -501,22 +522,40 @@ describe Rack::Lotus do
         post '/people/current_person/following', "discover" => "someone"
       end
 
-      it "should return 200 with a known author via author_id" do
+      it "should redirect with a known author via author_id" do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
         Author.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
-        last_response.status.must_equal 200
+        last_response.status.must_equal 302
       end
 
-      it "should return 200 with an author via discover" do
+      it "should redirect home with a known author via author_id" do
+        person = login_as "wilkie"
+        person.stubs(:follow!).with("somebody")
+
+        Author.stubs(:find_by_id).returns("somebody")
+        post '/people/current_person/following', "author_id" => "foobar"
+        last_response.location.must_equal "http://example.org/"
+      end
+
+      it "should redirect with an author via discover" do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
         Author.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
-        last_response.status.must_equal 200
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect home with an author via discover" do
+        person = login_as "wilkie"
+        person.stubs(:follow!).with("somebody")
+
+        Author.stubs(:discover!).returns("somebody")
+        post '/people/current_person/following', "discover" => "someone"
+        last_response.location.must_equal "http://example.org/"
       end
     end
 
@@ -597,19 +636,19 @@ describe Rack::Lotus do
         @person.stubs(:followed_by!)
         @person.stubs(:unfollowed_by!)
 
-        Person.stubs(:find_by_id).returns(@person)
+        Lotus::Person.stubs(:find_by_id).returns(@person)
 
         activity = Lotus::Activity.new
         activity.stubs(:verb).returns(:follow)
         activity.stubs(:id).returns("ID")
 
-        @internal_activity = Activity.new
+        @internal_activity = Lotus::Activity.new
         @internal_activity.stubs(:verb).returns(:follow)
         @internal_activity.stubs(:url).returns("http://example.com/activities/1")
-        Activity.stubs(:create!).returns(@internal_activity)
-        Activity.stubs(:find_by_uid).returns(nil)
-        Activity.stubs(:find_from_notification).returns(nil)
-        Activity.stubs(:create_from_notification!).returns(@internal_activity)
+        Lotus::Activity.stubs(:create!).returns(@internal_activity)
+        Lotus::Activity.stubs(:find_by_uid).returns(nil)
+        Lotus::Activity.stubs(:find_from_notification).returns(nil)
+        Lotus::Activity.stubs(:create_from_notification!).returns(@internal_activity)
 
         author = Author.new
 
@@ -622,14 +661,14 @@ describe Rack::Lotus do
       end
 
       it "should return 404 if the person is not found" do
-        Person.stubs(:find_by_id).returns(nil)
+        Lotus::Person.stubs(:find_by_id).returns(nil)
 
         post '/people/bogus/salmon'
         last_response.status.must_equal 404
       end
 
       it "should return 403 if the person exists and message is not updated" do
-        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.stubs(:update_from_notification!).returns(nil)
 
         post '/people/1234abcd/salmon', "foo"
@@ -637,14 +676,14 @@ describe Rack::Lotus do
       end
 
       it "should update if the person is found and verified" do
-        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.expects(:update_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
       end
 
       it "should return 200 if the person is found and message is updated" do
-        Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.stubs(:update_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
@@ -652,7 +691,7 @@ describe Rack::Lotus do
       end
 
       it "should create if the person is found and verified" do
-        Activity.expects(:create_from_notification!).returns(@internal_activity)
+        Lotus::Activity.expects(:create_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
       end
@@ -663,7 +702,7 @@ describe Rack::Lotus do
       end
 
       it "should return 400 when reciprient is found but the access is rejected" do
-        Activity.stubs(:create_from_notification!).returns(nil)
+        Lotus::Activity.stubs(:create_from_notification!).returns(nil)
 
         post '/people/1234abcd/salmon', "foo"
         last_response.status.must_equal 400

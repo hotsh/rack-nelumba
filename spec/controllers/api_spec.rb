@@ -2,7 +2,7 @@ require_relative 'helper'
 require_controller 'api'
 
 class  API; end
-class  Authorization; end
+class  Lotus::Authorization; end
 module Lotus;  end
 
 describe Rack::Lotus do
@@ -30,7 +30,7 @@ describe Rack::Lotus do
         API.stubs(:routes).returns(routes)
 
         get "/api"
-        last_response.body.must_equal "json"
+        last_response.body[0..4].must_equal "json"
       end
 
       it "should return JSON when specified" do
@@ -54,7 +54,7 @@ describe Rack::Lotus do
         accept "application/json"
         get "/api"
 
-        last_response.body.must_equal "json"
+        last_response.body[0..4].must_equal "json"
       end
 
       it "should return JRD+JSON when specified" do
@@ -78,7 +78,7 @@ describe Rack::Lotus do
         accept "application/jrd+json"
         get "/api"
 
-        last_response.body.must_equal "jrd+json"
+        last_response.body[0..8].must_equal "jrd+json"
       end
 
       it "should return XRD+XML when specified" do
@@ -96,7 +96,7 @@ describe Rack::Lotus do
         accept "application/xrd+xml"
         get "/api"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return XRD+XML when XML is specified" do
@@ -114,7 +114,7 @@ describe Rack::Lotus do
         accept "application/xml"
         get "/api"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return 406 if accept is unacceptable" do
@@ -127,7 +127,7 @@ describe Rack::Lotus do
 
     describe "GET /api/lrdd/:acct" do
       it "should return 406 if accept is unacceptable and account exists" do
-        Authorization.stubs(:xrd).returns("something")
+        Lotus::Authorization.stubs(:xrd).returns("something")
 
         accept "application/bogus"
         get "/api/lrdd/acct:wilkie@rstat.us"
@@ -136,23 +136,24 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when accept not specified" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
-        get "/api/lrdd/acct:wilkie@rstat.us"
+        accept "*/*"
+        get "/api/lrdd/acct:wilkie@rstat.usd"
 
         content_type.must_match "application/xrd+xml"
       end
 
       it "should return XRD+XML content when accept not specified" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
         get "/api/lrdd/acct:wilkie@rstat.us"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return XRD+XML when accept specifies" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xrd+xml"
         get "/api/lrdd/acct:wilkie@rstat.us"
@@ -161,16 +162,16 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when accept specifies" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xrd+xml"
         get "/api/lrdd/acct:wilkie@rstat.us"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return XRD+XML when accept specifies XML" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xml"
         get "/api/lrdd/acct:wilkie@rstat.us"
@@ -179,16 +180,16 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when accept specifies XML" do
-        Authorization.stubs(:xrd).returns("xrd+xml")
+        Lotus::Authorization.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xml"
         get "/api/lrdd/acct:wilkie@rstat.us"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return JRD+JSON when accept specifies JSON" do
-        Authorization.stubs(:jrd).returns("jrd+json")
+        Lotus::Authorization.stubs(:jrd).returns("jrd+json")
 
         accept "application/json"
         get "/api/lrdd/acct:wilkie@rstat.us"
@@ -197,16 +198,16 @@ describe Rack::Lotus do
       end
 
       it "should return JRD+JSON content when accept specifies JSON" do
-        Authorization.stubs(:jrd).returns("jrd+json")
+        Lotus::Authorization.stubs(:jrd).returns("jrd+json")
 
         accept "application/json"
         get "/api/lrdd/acct:wilkie@rstat.us"
 
-        last_response.body.must_equal "jrd+json"
+        last_response.body[0..8].must_equal "jrd+json"
       end
 
       it "should return JRD+JSON when accept specifies" do
-        Authorization.stubs(:jrd).returns("jrd+json")
+        Lotus::Authorization.stubs(:jrd).returns("jrd+json")
 
         accept "application/jrd+json"
         get "/api/lrdd/acct:wilkie@rstat.us"
@@ -215,16 +216,16 @@ describe Rack::Lotus do
       end
 
       it "should return JRD+JSON content when accept specifies" do
-        Authorization.stubs(:jrd).returns("jrd+json")
+        Lotus::Authorization.stubs(:jrd).returns("jrd+json")
 
         accept "application/jrd+json"
         get "/api/lrdd/acct:wilkie@rstat.us"
 
-        last_response.body.must_equal "jrd+json"
+        last_response.body[0..7].must_equal "jrd+json"
       end
 
       it "should return 404 when account not found and accepting JSON" do
-        Authorization.stubs(:jrd).returns(nil)
+        Lotus::Authorization.stubs(:jrd).returns(nil)
 
         accept "application/json"
         get "/api/lrdd/acct:bogus@rstat.us"
@@ -233,7 +234,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when account not found and accepting JRD+JSON" do
-        Authorization.stubs(:jrd).returns(nil)
+        Lotus::Authorization.stubs(:jrd).returns(nil)
 
         accept "application/jrd+json"
         get "/api/lrdd/acct:bogus@rstat.us"
@@ -242,7 +243,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when account not found and accepting XML" do
-        Authorization.stubs(:xrd).returns(nil)
+        Lotus::Authorization.stubs(:xrd).returns(nil)
 
         accept "application/xml"
         get "/api/lrdd/acct:bogus@rstat.us"
@@ -251,7 +252,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when account not found and accepting XRD+XML" do
-        Authorization.stubs(:xrd).returns(nil)
+        Lotus::Authorization.stubs(:xrd).returns(nil)
 
         accept "application/xrd+xml"
         get "/api/lrdd/acct:bogus@rstat.us"
@@ -260,7 +261,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when account not found and accept unspecified" do
-        Authorization.stubs(:xrd).returns(nil)
+        Lotus::Authorization.stubs(:xrd).returns(nil)
 
         get "/api/lrdd/acct:bogus@rstat.us"
 
@@ -268,7 +269,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when account not found and no good accept" do
-        Authorization.stubs(:xrd).returns(nil)
+        Lotus::Authorization.stubs(:xrd).returns(nil)
 
         accept "application/bogus"
         get "/api/lrdd/acct:bogus@rstat.us"
@@ -298,7 +299,7 @@ describe Rack::Lotus do
 
         get "/.well-known/host-meta"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return XRD+XML when accept specifies" do
@@ -316,7 +317,7 @@ describe Rack::Lotus do
         accept "application/xrd+xml"
         get "/.well-known/host-meta"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return XRD+XML when accept specifies XML" do
@@ -334,7 +335,7 @@ describe Rack::Lotus do
         accept "application/xml"
         get "/.well-known/host-meta"
 
-        last_response.body.must_equal "xrd+xml"
+        last_response.body[0..7].must_equal "xrd+xml"
       end
 
       it "should return JRD+JSON when accept specifies JSON" do
@@ -358,7 +359,7 @@ describe Rack::Lotus do
         accept "application/json"
         get "/.well-known/host-meta"
 
-        last_response.body.must_equal "jrd+json"
+        last_response.body[0..8].must_equal "jrd+json"
       end
 
       it "should return JRD+JSON when accept specifies" do

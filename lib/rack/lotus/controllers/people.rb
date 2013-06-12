@@ -2,13 +2,13 @@ module Rack
   class Lotus
     # Get a listing of the people on this server.
     get '/people' do
-      people = Person.all
+      people = ::Lotus::Person.all
       render :haml, :"people/index", :locals => {:people => people}
     end
 
     # Get the public profile for this person.
     get '/people/:id' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       timeline = person.activities.feed.ordered
@@ -18,7 +18,7 @@ module Rack
 
     # Get the public feed for somebody's favorites.
     get '/people/:id/favorites' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       favorites = person.favorites.feed.ordered
@@ -28,7 +28,7 @@ module Rack
 
     # Get the public feed for somebody's feed of shared posts.
     get '/people/:id/shared' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       shared = person.shared.feed.ordered
@@ -38,7 +38,7 @@ module Rack
 
     # Retrieve list of people we follow
     get '/people/:id/following' do
-      person = Person.find_by_id(params["id"])
+      person = ::Lotus::Person.find_by_id(params["id"])
       status 404 and return unless person
 
       following = person.following
@@ -49,7 +49,7 @@ module Rack
 
     # Retrieve a list of people who are following us.
     get '/people/:id/followers' do
-      person = Person.find_by_id(params["id"])
+      person = ::Lotus::Person.find_by_id(params["id"])
       status 404 and return unless person
 
       followers = person.followers
@@ -89,7 +89,7 @@ module Rack
       status 404 and return unless current_person &&
                                    current_person.id.to_s == params["id"]
 
-      activity = Activity.find_by_id(params["activity_id"])
+      activity = ::Lotus::Activity.find_by_id(params["activity_id"])
 
       status 404 and return unless activity
 
@@ -102,7 +102,7 @@ module Rack
       status 404 and return unless current_person &&
                                    current_person.id.to_s == params["id"]
 
-      activity = Activity.find_by_id(params["activity_id"])
+      activity = ::Lotus::Activity.find_by_id(params["activity_id"])
 
       status 404 and return unless activity
 
@@ -112,19 +112,19 @@ module Rack
 
     # External delivery to our own stream.
     post '/people/:id/timeline' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
     # External delivery of followed activity streams.
     post '/people/:id/inbox' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
     # External delivery of direct messages.
     post '/people/:id/direct' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
@@ -145,14 +145,14 @@ module Rack
 
     # Handle a salmon payload
     post '/people/:id/salmon' do
-      person = Person.find_by_id(params[:id])
+      person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       # Form the notification
       notification = ::Lotus::Notification.from_xml(request.body.read)
 
       # If it already exists, this will update
-      activity = Activity.find_from_notification(notification)
+      activity = ::Lotus::Activity.find_from_notification(notification)
 
       if activity
         activity = activity.update_from_notification!(notification)
@@ -161,7 +161,7 @@ module Rack
         status 403 and return if activity.nil?
         success = 200
       else
-        activity = Activity.create_from_notification!(notification)
+        activity = ::Lotus::Activity.create_from_notification!(notification)
 
         # Failure to verify (Bad Request)
         status 400 and return if activity.nil?

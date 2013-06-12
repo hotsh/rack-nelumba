@@ -8,7 +8,7 @@ module Rack
       # Only respond if there is a challenge
       if params["hub.challenge"]
         # Find the referenced feed
-        feed = Feed.find_by_id(params[:id])
+        feed = ::Lotus::Feed.find_by_id(params[:id])
 
         # Don't continue if the feed doesn't exist
         status 404 and return unless feed
@@ -38,7 +38,7 @@ module Rack
     # Subscriber receives updates
     post '/subscriptions/:id.atom' do
       # Find the referenced feed
-      feed = Feed.find_by_id(params[:id])
+      feed = ::Lotus::Feed.find_by_id(params[:id])
       status 404 and return unless feed
 
       signature = request.env['HTTP_X_HUB_SIGNATURE']

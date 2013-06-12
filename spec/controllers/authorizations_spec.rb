@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'authorizations'
 
-class  Authorization; end
+class  Lotus::Authorization; end
 module Lotus;         end
 
 describe Rack::Lotus do
@@ -29,7 +29,7 @@ describe Rack::Lotus do
         person = stub('Person')
         person.stubs(:id).returns("PID")
         @auth.stubs(:person).returns(person)
-        Authorization.stubs(:first).returns(@auth)
+        Lotus::Authorization.stubs(:first).returns(@auth)
 
         @session = stub('session')
         @session.stubs(:[]=).with(:user_id, "ID")
@@ -47,7 +47,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when the username does not exist" do
-        Authorization.stubs(:first).returns(nil)
+        Lotus::Authorization.stubs(:first).returns(nil)
 
         post '/login', "password" => "foobar", "username" => "bogus"
 
@@ -55,7 +55,7 @@ describe Rack::Lotus do
       end
 
       it "should not login when the username does not exist" do
-        Authorization.stubs(:first).returns(nil)
+        Lotus::Authorization.stubs(:first).returns(nil)
 
         @session.expects(:[]=).never
         @session.expects(:[]=).never
@@ -143,7 +143,7 @@ describe Rack::Lotus do
 
     describe "POST /authorizations" do
       it "should return 404 if the username is already taken" do
-        Authorization.stubs(:find_by_username).returns("something")
+        Lotus::Authorization.stubs(:find_by_username).returns("something")
 
         post '/authorizations', "username" => "taken", "password" => "foobar"
 
@@ -151,7 +151,7 @@ describe Rack::Lotus do
       end
 
       it "should create an account for the given username when unique" do
-        Authorization.stubs(:find_by_username).returns(nil)
+        Lotus::Authorization.stubs(:find_by_username).returns(nil)
         Rack::Lotus.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
@@ -162,7 +162,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Authorization.expects(:create!)
+        Lotus::Authorization.expects(:create!)
                      .with(has_entry("username" => "wilkie"))
                      .returns(auth)
 
@@ -170,7 +170,7 @@ describe Rack::Lotus do
       end
 
       it "should create an account for the given password" do
-        Authorization.stubs(:find_by_username).returns(nil)
+        Lotus::Authorization.stubs(:find_by_username).returns(nil)
         Rack::Lotus.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
@@ -181,7 +181,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Authorization.expects(:create!)
+        Lotus::Authorization.expects(:create!)
                      .with(has_entry("password" => "foobar"))
                      .returns(auth)
 
@@ -189,7 +189,7 @@ describe Rack::Lotus do
       end
 
       it "should login the new account upon creation" do
-        Authorization.stubs(:find_by_username).returns(nil)
+        Lotus::Authorization.stubs(:find_by_username).returns(nil)
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
         person = stub('Person')
@@ -199,7 +199,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Authorization.stubs(:create!).returns(auth)
+        Lotus::Authorization.stubs(:create!).returns(auth)
 
         session = stub('session')
         session.expects(:[]=).with(:user_id, "ID")
@@ -210,7 +210,7 @@ describe Rack::Lotus do
       end
 
       it "should redirect when account is created" do
-        Authorization.stubs(:find_by_username).returns(nil)
+        Lotus::Authorization.stubs(:find_by_username).returns(nil)
         Rack::Lotus.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
@@ -221,7 +221,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Authorization.stubs(:create!).returns(auth)
+        Lotus::Authorization.stubs(:create!).returns(auth)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
 
@@ -229,7 +229,7 @@ describe Rack::Lotus do
       end
 
       it "should redirect to author edit for new account upon creation" do
-        Authorization.stubs(:find_by_username).returns(nil)
+        Lotus::Authorization.stubs(:find_by_username).returns(nil)
         Rack::Lotus.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
@@ -240,7 +240,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Authorization.stubs(:create!).returns(auth)
+        Lotus::Authorization.stubs(:create!).returns(auth)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
 

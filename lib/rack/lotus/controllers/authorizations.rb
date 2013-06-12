@@ -7,7 +7,7 @@ module Rack
 
     # Authenticate
     post '/login' do
-      authorization = Authorization.first(:username => /#{Regexp.escape(params["username"])}/i)
+      authorization = ::Lotus::Authorization.first(:username => /#{Regexp.escape(params["username"])}/i)
       if authorization && authorization.authenticated?(params["password"])
         session[:user_id]   = authorization.id
         session[:person_id] = authorization.person.id
@@ -36,13 +36,13 @@ module Rack
       username = params["username"]
       password = params["password"]
 
-      if Authorization.find_by_username /^#{Regexp.escape(username)}$/i
+      if ::Lotus::Authorization.find_by_username /^#{Regexp.escape(username)}$/i
         status 404
         return
       end
 
       # Create authorization
-      authorization = Authorization.create!(params)
+      authorization = ::Lotus::Authorization.create!(params)
 
       # Sign in
       session[:user_id]   = authorization.id

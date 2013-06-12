@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'avatars'
 
-class  Avatar; end
+class  Lotus::Avatar; end
 module Lotus;  end
 
 describe Rack::Lotus do
@@ -13,7 +13,7 @@ describe Rack::Lotus do
   describe "Avatars Controller" do
     describe "GET /avatars/:id/:size" do
       it "should return 404 if the avatar does not exist" do
-        Avatar.stubs(:find_by_id).returns(nil)
+        Lotus::Avatar.stubs(:find_by_id).returns(nil)
 
         get '/avatars/bogus_id/48x48'
         last_response.status.must_equal 404
@@ -23,7 +23,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read)
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         content_type.must_equal("image/some_image_type")
@@ -33,7 +33,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.expects(:read).with([48, 48])
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
       end
@@ -42,7 +42,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         last_response.body.must_equal "DATA"
@@ -52,7 +52,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns(nil)
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/1x4800'
         last_response.status.must_equal 404
@@ -62,7 +62,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         last_response.status.must_equal 200
@@ -72,7 +72,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Avatar.stubs(:find_by_id).returns(avatar)
+        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/bogus'
         last_response.status.must_equal 404
