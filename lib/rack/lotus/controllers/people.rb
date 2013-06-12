@@ -16,6 +16,16 @@ module Rack
                                                 :timeline => timeline}
     end
 
+    # Get the public feed for our timeline.
+    get '/people/:id/timeline' do
+      person = ::Lotus::Person.find_by_id(params[:id])
+      status 404 and return if person.nil?
+
+      timeline = person.activities.feed.ordered
+      render :haml, :"people/timeline", :locals => {:person => person,
+                                                    :timeline => timeline}
+    end
+
     # Get the public feed for somebody's favorites.
     get '/people/:id/favorites' do
       person = ::Lotus::Person.find_by_id(params[:id])
