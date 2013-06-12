@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'people'
 
-class  Author;   end
+class  Lotus::Author;   end
 class  Lotus::Person;   end
 class  Lotus::Activity; end
 class  Identity; end
@@ -446,7 +446,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Author.expects(:find_by_id).with("foobar")
+        Lotus::Author.expects(:find_by_id).with("foobar")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -454,7 +454,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Author.expects(:discover!).with("foobar")
+        Lotus::Author.expects(:discover!).with("foobar")
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -476,7 +476,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Author.stubs(:find_by_id)
+        Lotus::Author.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 404
       end
@@ -485,7 +485,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Author.stubs(:find_by_id)
+        Lotus::Author.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -493,7 +493,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Author.stubs(:discover!)
+        Lotus::Author.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
         last_response.status.must_equal 404
       end
@@ -502,7 +502,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Author.stubs(:discover!)
+        Lotus::Author.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -510,7 +510,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Author.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -518,7 +518,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Author.stubs(:discover!).returns("somebody")
+        Lotus::Author.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
       end
 
@@ -526,7 +526,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Author.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 302
       end
@@ -535,7 +535,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Author.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.location.must_equal "http://example.org/"
       end
@@ -544,7 +544,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Author.stubs(:discover!).returns("somebody")
+        Lotus::Author.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.status.must_equal 302
       end
@@ -553,7 +553,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Author.stubs(:discover!).returns("somebody")
+        Lotus::Author.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.location.must_equal "http://example.org/"
       end
@@ -650,7 +650,7 @@ describe Rack::Lotus do
         Lotus::Activity.stubs(:find_from_notification).returns(nil)
         Lotus::Activity.stubs(:create_from_notification!).returns(@internal_activity)
 
-        author = Author.new
+        author = Lotus::Author.new
 
         identity = Identity.new
         identity.stubs(:return_or_discover_public_key).returns("RSA_PUBLIC_KEY")

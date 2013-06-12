@@ -64,9 +64,9 @@ module Rack
                                    current_person.id.to_s == params["id"]
 
       if params["author_id"]
-        author = Author.find_by_id(params["author_id"])
+        author = ::Lotus::Author.find_by_id(params["author_id"])
       elsif params["discover"]
-        author = Author.discover!(params["discover"])
+        author = ::Lotus::Author.discover!(params["discover"])
       end
 
       status 404 and return unless author
