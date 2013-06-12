@@ -6,14 +6,14 @@ module Rack
 
     # Report a listing of all lotus routes.
     get '/api' do
-      if request.accept?('application/json')
+      if request.preferred_type('application/json')
         content_type 'application/json'
         API.routes.to_json
-      elsif request.accept?('application/jrd+json')
+      elsif request.preferred_type('application/jrd+json')
         content_type 'application/jrd+json'
         API.jrd.to_json
-      elsif request.accept?('application/xrd+xml') ||
-            request.accept?('application/xml')
+      elsif request.preferred_type('application/xrd+xml') ||
+            request.preferred_type('application/xml')
         content_type 'application/xrd+xml'
         API.xrd
       else
@@ -23,16 +23,18 @@ module Rack
 
     # Report the host-meta for a particular person.
     get '/api/lrdd/:acct' do
-      if request.accept?('application/xrd+xml') ||
-         request.accept?('application/xml')
+      if request.preferred_type('application/xrd+xml') ||
+         request.preferred_type('application/xml')
+        "xrd"
         content_type 'application/xrd+xml'
-        response = Authorization.xrd params["acct"]
-      elsif request.accept?('application/jrd+json') ||
-            request.accept?('application/json')
+        response = ::Lotus::Authorization.xrd params["acct"]
+      elsif request.preferred_type('application/jrd+json') ||
+            request.preferred_type('application/json')
+        "jrd"
         content_type 'application/jrd+json'
-        response = Authorization.jrd params["acct"]
+        response = ::Lotus::Authorization.jrd params["acct"]
       else
-        status 406 and return if Authorization.xrd params["acct"]
+        status 406 and return if ::Lotus::Authorization.xrd params["acct"]
         status 404 and return
       end
 
@@ -43,12 +45,12 @@ module Rack
 
     # Handle host-meta.
     get '/.well-known/host-meta' do
-      if request.accept?('application/xrd+xml') ||
-         request.accept?('application/xml')
+      if request.preferred_type('application/xrd+xml') ||
+         request.preferred_type('application/xml')
         content_type "application/xrd+xml"
         API.xrd
-      elsif request.accept?('application/jrd+json') ||
-            request.accept?('application/json')
+      elsif request.preferred_type('application/jrd+json') ||
+            request.preferred_type('application/json')
         content_type "application/jrd+json"
         API.jrd.to_json
       else
