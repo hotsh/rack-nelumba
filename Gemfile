@@ -4,16 +4,17 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem "rake"     # rakefile
-  gem "minitest" # test framework (specified here for prior rubies)
-  gem "ansi"     # minitest colors
-  gem "turn"     # minitest output
-  gem "mocha"    # stubs
-  gem "debugger" # debugging
+  gem "rake"              # rakefile
+  gem "minitest", "4.7.0" # test framework (specified here for prior rubies)
+  gem "ansi"              # minitest colors
+  gem "turn"              # minitest output
+  gem "mocha"             # stubs
+  gem "debugger"          # debugging
 
   gem "awesome_print"
   gem "rack-test"
 end
 
-gem "lotus",     :git => "git://github.com/hotsh/lotus.git"
-gem "redfinger", :git => "git://github.com/hotsh/redfinger.git"
+gem "lotus",         :git => "git://github.com/hotsh/lotus.git"
+gem "lotus-mongodb", :git => "git://github.com/hotsh/lotus-mongodb.git"
+gem "redfinger",     :git => "git://github.com/hotsh/redfinger.git"
