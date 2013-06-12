@@ -3,7 +3,7 @@ module Rack
     module AuthorizationHelpers
       def current_person
         if session[:person_id]
-          @current_person ||= Lotus::Person.find_by_id(session[:person_id])
+          @current_person ||= ::Lotus::Person.find_by_id(session[:person_id])
         end
       end
     end
