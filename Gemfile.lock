@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/hotsh/lotus-mongodb.git
-  revision: 85e3e7255bda33f6c9fff792b7fa21cde5fff28d
+  revision: 1f0fc2c9e56fc7eaddeddfbf3bac015f026b2089
   specs:
     lotus-mongodb (0.0.1)
       bcrypt-ruby

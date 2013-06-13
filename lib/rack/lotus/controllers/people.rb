@@ -21,9 +21,39 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      timeline = person.activities.feed.ordered
+      timeline = person.timeline.feed.ordered
       render :haml, :"people/timeline", :locals => {:person => person,
                                                     :timeline => timeline}
+    end
+
+    # Get the public feed for our timeline.
+    get '/people/:id/activities' do
+      person = ::Lotus::Person.find_by_id(params[:id])
+      status 404 and return if person.nil?
+
+      activities = person.activities.feed.ordered
+      render :haml, :"people/activities", :locals => {:person => person,
+                                                      :activities => activities}
+    end
+
+    # Get the public feed for our mentions.
+    get '/people/:id/mentions' do
+      person = ::Lotus::Person.find_by_id(params[:id])
+      status 404 and return if person.nil?
+
+      mentions = person.mentions.feed.ordered
+      render :haml, :"people/mentions", :locals => {:person => person,
+                                                    :mentions => mentions}
+    end
+
+    # Get the public feed for our replies.
+    get '/people/:id/replies' do
+      person = ::Lotus::Person.find_by_id(params[:id])
+      status 404 and return if person.nil?
+
+      replies = person.replies.feed.ordered
+      render :haml, :"people/replies", :locals => {:person => person,
+                                                   :replies => replies}
     end
 
     # Get the public feed for somebody's favorites.

@@ -100,6 +100,226 @@ describe Rack::Lotus do
       end
     end
 
+    describe "GET /people/:id/replies" do
+      before do
+        @person = stub('Person')
+        aggregate = stub('Aggregate')
+        feed = stub('Feed')
+
+        @person.stubs(:replies).returns(aggregate)
+        aggregate.stubs(:feed).returns(feed)
+        feed.stubs(:ordered).returns("replies")
+
+        Lotus::Person.stubs(:find_by_id).returns(@person)
+      end
+
+      it "should return 404 if the person is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/replies'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 if the person is found" do
+        get '/people/1234abcd/replies'
+        last_response.status.must_equal 200
+      end
+
+      it "should pass person to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:person => @person)
+        )
+
+        get '/people/1234abcd/replies'
+      end
+
+      it "should pass an array of entries from their replies to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:replies => "replies")
+        )
+
+        get '/people/1234abcd/replies'
+      end
+
+      it "should render people/replies" do
+        Lotus::Person.stubs(:all)
+        Rack::Lotus.any_instance.expects(:render).with(anything,
+                                                       :"people/replies",
+                                                       anything)
+
+        get '/people/1234abcd/replies'
+      end
+    end
+
+    describe "GET /people/:id/mentions" do
+      before do
+        @person = stub('Person')
+        aggregate = stub('Aggregate')
+        feed = stub('Feed')
+
+        @person.stubs(:mentions).returns(aggregate)
+        aggregate.stubs(:feed).returns(feed)
+        feed.stubs(:ordered).returns("mentions")
+
+        Lotus::Person.stubs(:find_by_id).returns(@person)
+      end
+
+      it "should return 404 if the person is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/mentions'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 if the person is found" do
+        get '/people/1234abcd/mentions'
+        last_response.status.must_equal 200
+      end
+
+      it "should pass person to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:person => @person)
+        )
+
+        get '/people/1234abcd/mentions'
+      end
+
+      it "should pass an array of entries from their mentions to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:mentions => "mentions")
+        )
+
+        get '/people/1234abcd/mentions'
+      end
+
+      it "should render people/mentions" do
+        Lotus::Person.stubs(:all)
+        Rack::Lotus.any_instance.expects(:render).with(anything,
+                                                       :"people/mentions",
+                                                       anything)
+
+        get '/people/1234abcd/mentions'
+      end
+    end
+
+    describe "GET /people/:id/timeline" do
+      before do
+        @person = stub('Person')
+        aggregate = stub('Aggregate')
+        feed = stub('Feed')
+
+        @person.stubs(:timeline).returns(aggregate)
+        aggregate.stubs(:feed).returns(feed)
+        feed.stubs(:ordered).returns("timeline")
+
+        Lotus::Person.stubs(:find_by_id).returns(@person)
+      end
+
+      it "should return 404 if the person is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/timeline'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 if the person is found" do
+        get '/people/1234abcd/timeline'
+        last_response.status.must_equal 200
+      end
+
+      it "should pass person to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:person => @person)
+        )
+
+        get '/people/1234abcd/timeline'
+      end
+
+      it "should pass an array of entries from their timeline to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:timeline => "timeline")
+        )
+
+        get '/people/1234abcd/timeline'
+      end
+
+      it "should render people/timeline" do
+        Lotus::Person.stubs(:all)
+        Rack::Lotus.any_instance.expects(:render).with(anything,
+                                                       :"people/timeline",
+                                                       anything)
+
+        get '/people/1234abcd/timeline'
+      end
+    end
+
+    describe "GET /people/:id/activities" do
+      before do
+        @person = stub('Person')
+        aggregate = stub('Aggregate')
+        feed = stub('Feed')
+
+        @person.stubs(:activities).returns(aggregate)
+        aggregate.stubs(:feed).returns(feed)
+        feed.stubs(:ordered).returns("activities")
+
+        Lotus::Person.stubs(:find_by_id).returns(@person)
+      end
+
+      it "should return 404 if the person is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/activities'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 if the person is found" do
+        get '/people/1234abcd/activities'
+        last_response.status.must_equal 200
+      end
+
+      it "should pass person to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:person => @person)
+        )
+
+        get '/people/1234abcd/activities'
+      end
+
+      it "should pass an array of entries from their activities to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local(:activities => "activities")
+        )
+
+        get '/people/1234abcd/activities'
+      end
+
+      it "should render people/activities" do
+        Lotus::Person.stubs(:all)
+        Rack::Lotus.any_instance.expects(:render).with(anything,
+                                                       :"people/activities",
+                                                       anything)
+
+        get '/people/1234abcd/activities'
+      end
+    end
+
     describe "GET /people/:id/favorites" do
       before do
         @person = stub('Person')
