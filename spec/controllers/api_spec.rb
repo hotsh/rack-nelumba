@@ -1,9 +1,4 @@
 require_relative 'helper'
-require_controller 'api'
-
-class  API; end
-class  Lotus::Authorization; end
-module Lotus;  end
 
 describe Rack::Lotus do
   before do
@@ -17,7 +12,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("json")
 
-        API.stubs(:routes).returns(routes)
+        Rack::Lotus::API.stubs(:routes).returns(routes)
 
         get "/api"
         content_type.must_match "application/json"
@@ -27,7 +22,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("json")
 
-        API.stubs(:routes).returns(routes)
+        Rack::Lotus::API.stubs(:routes).returns(routes)
 
         get "/api"
         last_response.body[0..4].must_equal "json"
@@ -37,7 +32,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("json")
 
-        API.stubs(:routes).returns(routes)
+        Rack::Lotus::API.stubs(:routes).returns(routes)
 
         accept "application/json"
         get "/api"
@@ -49,7 +44,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("json")
 
-        API.stubs(:routes).returns(routes)
+        Rack::Lotus::API.stubs(:routes).returns(routes)
 
         accept "application/json"
         get "/api"
@@ -61,7 +56,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("jrd+json")
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/jrd+json"
         get "/api"
@@ -73,7 +68,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("jrd+json")
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/jrd+json"
         get "/api"
@@ -82,7 +77,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when specified" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xrd+xml"
         get "/api"
@@ -91,7 +86,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when specified" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xrd+xml"
         get "/api"
@@ -100,7 +95,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when XML is specified" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xml"
         get "/api"
@@ -109,7 +104,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when XML is specified" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xml"
         get "/api"
@@ -287,7 +282,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when accept not specified" do
-        API.stubs(:xrd)
+        Rack::Lotus::API.stubs(:xrd)
 
         get "/.well-known/host-meta"
 
@@ -295,7 +290,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when accept not specified" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         get "/.well-known/host-meta"
 
@@ -303,7 +298,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when accept specifies" do
-        API.stubs(:xrd)
+        Rack::Lotus::API.stubs(:xrd)
 
         accept "application/xrd+xml"
         get "/.well-known/host-meta"
@@ -312,7 +307,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when accept specifies" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xrd+xml"
         get "/.well-known/host-meta"
@@ -321,7 +316,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML when accept specifies XML" do
-        API.stubs(:xrd)
+        Rack::Lotus::API.stubs(:xrd)
 
         accept "application/xml"
         get "/.well-known/host-meta"
@@ -330,7 +325,7 @@ describe Rack::Lotus do
       end
 
       it "should return XRD+XML content when accept specifies XML" do
-        API.stubs(:xrd).returns("xrd+xml")
+        Rack::Lotus::API.stubs(:xrd).returns("xrd+xml")
 
         accept "application/xml"
         get "/.well-known/host-meta"
@@ -342,7 +337,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json)
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/json"
         get "/.well-known/host-meta"
@@ -354,7 +349,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("jrd+json")
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/json"
         get "/.well-known/host-meta"
@@ -366,7 +361,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json)
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/jrd+json"
         get "/.well-known/host-meta"
@@ -378,7 +373,7 @@ describe Rack::Lotus do
         routes = stub('routes')
         routes.stubs(:to_json).returns("jrd+json")
 
-        API.stubs(:jrd).returns(routes)
+        Rack::Lotus::API.stubs(:jrd).returns(routes)
 
         accept "application/jrd+json"
         get "/.well-known/host-meta"

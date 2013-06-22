@@ -116,5 +116,37 @@ module Mocha
         "has_local(#{@key.mocha_inspect} => #{@value.mocha_inspect})"
       end
     end
+
+    def has_object_with_entry(*options)
+      case options.length
+      when 1
+        key, value = options[0].first
+      when 2
+        key, value = options
+      end
+
+      HasObjectWithEntry.new(key, value)
+    end
+
+    class HasObjectWithEntry < Base
+      def initialize(key, value)
+        @key, @value = key, value
+      end
+
+      def matches?(available_parameters)
+        parameter = available_parameters.shift
+        return false unless parameter.respond_to?(:keys) &&
+                            parameter.respond_to?(:[])
+
+        return false unless parameter.keys.include? :object
+
+        parameter = parameter[:object]
+        parameter.send(key) == value
+      end
+
+      def mocha_inspect
+        "has_object_with_entry(#{@key.mocha_inspect} => #{@value.mocha_inspect})"
+      end
+    end
   end
 end

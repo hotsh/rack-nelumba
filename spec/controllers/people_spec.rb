@@ -638,7 +638,7 @@ describe Rack::Lotus do
         last_response.location.must_equal "http://example.org/"
       end
 
-      it "should share the given activity" do
+      it "should favorite the given activity" do
         person = login_as "wilkie"
 
         Lotus::Activity.stubs(:find_by_id).returns("something")
@@ -824,7 +824,11 @@ describe Rack::Lotus do
 
       it "should pass along the content when given" do
         person = login_as "wilkie"
-        person.expects(:post!).with(has_entry(:content, "my words"))
+        obj = mock('Lotus::Note')
+        Lotus::Note.stubs(:new)
+                   .with(has_entry(:text, "my words"))
+                   .returns(obj)
+        person.expects(:post!).with(has_entry(:object, obj))
 
         post '/people/current_person/activities', "content" => "my words"
       end

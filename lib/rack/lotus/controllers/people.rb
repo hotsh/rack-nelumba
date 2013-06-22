@@ -176,9 +176,8 @@ module Rack
       current_person.post!(:type => params["type"],
                            :verb => :post,
                            :actor => current_person.author,
-                           :title => "New Post",
-                           :content => params["content"],
-                           :content_type => "text")
+                           :object => ::Lotus::Note.new(:title => "New Post",
+                                                        :text => params["content"]))
 
       redirect '/'
     end

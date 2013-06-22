@@ -1,9 +1,6 @@
 require_relative 'helper'
 require_controller 'activities'
 
-class  Lotus::Activity; end
-module Lotus;  end
-
 describe Rack::Lotus do
   before do
     # Do not render
