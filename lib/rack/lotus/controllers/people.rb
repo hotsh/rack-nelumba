@@ -173,11 +173,19 @@ module Rack
       status 404 and return unless current_person &&
                                    current_person.id.to_s == params["id"]
 
-      current_person.post!(:type => params["type"],
-                           :verb => :post,
-                           :actor => current_person.author,
-                           :object => ::Lotus::Note.new(:title => "New Post",
-                                                        :text => params["content"]))
+      object =
+        case params["type"]
+        when "note", "status"
+          ::Lotus::Note.new(:title => "New Status",
+                            :text  => params["content"])
+        else
+          nil
+        end
+
+      current_person.post!(:type   => params["type"],
+                           :verb   => :post,
+                           :actor  => current_person.author,
+                           :object => object)
 
       redirect '/'
     end

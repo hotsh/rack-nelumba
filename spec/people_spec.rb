@@ -830,7 +830,8 @@ describe Rack::Lotus do
                    .returns(obj)
         person.expects(:post!).with(has_entry(:object, obj))
 
-        post '/people/current_person/activities', "content" => "my words"
+        post '/people/current_person/activities', "type"    => "note",
+                                                  "content" => "my words"
       end
 
       it "should pass along the correct author" do
