@@ -178,6 +178,9 @@ module Rack
         when "note", "status"
           ::Lotus::Note.new(:title => "New Status",
                             :text  => params["content"])
+        when "article"
+          ::Lotus::Article.new(:title   => params["title"],
+                               :content => params["content"])
         else
           nil
         end

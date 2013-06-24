@@ -822,7 +822,31 @@ describe Rack::Lotus do
         post '/people/current_person/activities', "type" => "thing"
       end
 
-      it "should pass along the content when given" do
+      it "should pass along the created object" do
+        person = login_as "wilkie"
+        obj = mock('Lotus::Note')
+        Lotus::Note.stubs(:new)
+                   .with(has_entry(:text, "my words"))
+                   .returns(obj)
+        person.expects(:post!).with(has_entry(:object, obj))
+
+        post '/people/current_person/activities', "type"    => "note",
+                                                  "content" => "my words"
+      end
+
+      it "should create a Lotus::Article for article types" do
+        person = login_as "wilkie"
+        obj = mock('Lotus::Note')
+        Lotus::Article.stubs(:new)
+                      .with(has_entry(:content, "my words"))
+                      .returns(obj)
+        person.expects(:post!).with(has_entry(:object, obj))
+
+        post '/people/current_person/activities', "type"    => "article",
+                                                  "content" => "my words"
+      end
+
+      it "should create a Lotus::Note for note types" do
         person = login_as "wilkie"
         obj = mock('Lotus::Note')
         Lotus::Note.stubs(:new)
