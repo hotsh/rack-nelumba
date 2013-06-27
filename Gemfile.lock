@@ -1,16 +1,17 @@
 GIT
   remote: git://github.com/hotsh/lotus-mongodb.git
-  revision: 80b08892e3f6b1c4763f61ffa2a05b946e2e2e3e
+  revision: eb971b416f83eea39b36e0608914b9d16db28a71
   specs:
     lotus-mongodb (0.0.1)
       bcrypt-ruby
       bson_ext
       mongo_mapper
+      redcarpet
       rmagick
 
 GIT
   remote: git://github.com/hotsh/lotus.git
-  revision: eab8a87545f3491a0b233ba62041e13c23f499ad
+  revision: d2d89bfcd40f72642cc196ef2e46ba41256f9047
   specs:
     lotus (0.0.12)
       nokogiri
@@ -62,7 +63,7 @@ GEM
       debugger-linecache (~> 1.2.0)
       debugger-ruby_core_source (~> 1.2.1)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.2)
+    debugger-ruby_core_source (1.2.3)
     haml (4.0.3)
       tilt
     hashie (2.0.5)
@@ -93,6 +94,7 @@ GEM
     rake (10.1.0)
     ratom (0.7.2)
       libxml-ruby (~> 2.3.2)
+    redcarpet (2.3.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rmagick (2.13.2)
