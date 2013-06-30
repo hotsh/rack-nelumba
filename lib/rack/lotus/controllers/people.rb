@@ -177,9 +177,11 @@ module Rack
         case params["type"]
         when "note", "status"
           ::Lotus::Note.new(:title => "New Status",
+                            :author_id => current_person.author.id,
                             :text  => params["content"])
         when "article"
           ::Lotus::Article.new(:title    => params["title"],
+                               :author_id => current_person.author.id,
                                :content  => params["content"],
                                :markdown => params["markdown"])
         else
