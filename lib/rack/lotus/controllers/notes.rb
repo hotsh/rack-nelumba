@@ -1,11 +1,11 @@
 module Rack
   class Lotus
-    # Retrieve a Lotus::Article
-    get '/articles/:id' do
-      article = Lotus::Article.find_by_id(params["id"])
-      status 404 and return if article.nil?
+    # Retrieve a Lotus::Note
+    get '/notes/:id' do
+      note = ::Lotus::Note.find_by_id(params["id"])
+      status 404 and return if note.nil?
 
-      render :haml, :"activities/article", :locals => {:article => article}
+      render :haml, :"activities/note", :locals => {:note => note}
     end
   end
 end
