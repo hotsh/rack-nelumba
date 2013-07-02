@@ -22,8 +22,15 @@ module Rack
       status 404 and return if person.nil?
 
       timeline = person.timeline.feed.ordered
-      render :haml, :"people/timeline", :locals => {:person => person,
-                                                    :timeline => timeline}
+
+      if pjax?
+        render :haml, :"people/_timeline", :locals => {:person => person,
+                                                       :timeline => timeline},
+                                           :layout => false
+      else
+        render :haml, :"people/timeline", :locals => {:person => person,
+                                                      :timeline => timeline}
+      end
     end
 
     # Get the public feed for our timeline.
@@ -42,8 +49,15 @@ module Rack
       status 404 and return if person.nil?
 
       mentions = person.mentions.feed.ordered
-      render :haml, :"people/mentions", :locals => {:person => person,
-                                                    :mentions => mentions}
+
+      if pjax?
+        render :haml, :"people/_mentions", :locals => {:person => person,
+                                                       :mentions => mentions},
+                                           :layout => false
+      else
+        render :haml, :"people/mentions", :locals => {:person => person,
+                                                      :mentions => mentions}
+      end
     end
 
     # Get the public feed for our replies.
@@ -62,8 +76,15 @@ module Rack
       status 404 and return if person.nil?
 
       favorites = person.favorites.feed.ordered
-      render :haml, :"people/favorites", :locals => {:person => person,
-                                                     :favorites => favorites}
+
+      if pjax?
+        render :haml, :"people/_favorites", :locals => {:person => person,
+                                                        :favorites => favorites},
+                                            :layout => false
+      else
+        render :haml, :"people/favorites", :locals => {:person => person,
+                                                       :favorites => favorites}
+      end
     end
 
     # Get the public feed for somebody's feed of shared posts.
@@ -74,6 +95,15 @@ module Rack
       shared = person.shared.feed.ordered
       render :haml, :"people/shared", :locals => {:person => person,
                                                   :shared => shared}
+
+      if pjax?
+        render :haml, :"people/_shared", :locals => {:person => person,
+                                                     :shared => shared},
+                                         :layout => false
+      else
+        render :haml, :"people/shared", :locals => {:person => person,
+                                                    :shared => shared}
+      end
     end
 
     # Retrieve list of people we follow
