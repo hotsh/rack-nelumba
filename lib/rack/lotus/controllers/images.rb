@@ -14,5 +14,14 @@ module Rack
         image.full_image
       end
     end
+
+    # Explicitly get the full size of the raw image
+    get '/images/:id/full' do
+      image = ::Lotus::Image.find_by_id(params["id"])
+      status 404 and return if image.nil?
+
+      content_type image.content_type
+      image.full_image
+    end
   end
 end
