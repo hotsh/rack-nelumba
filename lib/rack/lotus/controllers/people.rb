@@ -214,6 +214,9 @@ module Rack
                                :author_id => current_person.author.id,
                                :content  => params["content"],
                                :markdown => params["markdown"])
+        when "image"
+          ::Lotus::Image.from_blob!(current_person.author,
+                                    params["file"][:tempfile].read)
         else
           nil
         end
