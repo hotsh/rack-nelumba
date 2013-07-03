@@ -7,11 +7,11 @@ module Rack
 
       # TODO: Allow for size retrieval
 
-      if request.preferred_type('image/*')
+      if request.preferred_type('text/*')
+        render :haml, :"activities/image", :locals => {:image => image}
+      elsif request.preferred_type('image/*')
         content_type image.content_type
         image.full_image
-      else
-        render :haml, :"activities/image", :locals => {:image => image}
       end
     end
   end
