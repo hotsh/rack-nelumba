@@ -215,7 +215,6 @@ module Rack
                                :content  => params["content"],
                                :markdown => params["markdown"])
         when "image"
-          p params["file"]
           ::Lotus::Image.from_blob!(current_person.author,
                                     params["file"][:tempfile].read,
                                     :content_type => params["file"][:type])
