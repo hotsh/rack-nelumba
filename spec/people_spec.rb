@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_controller 'people'
 
-class  Lotus::Author;   end
+class  Lotus::Person;   end
 class  Lotus::Person;   end
 class  Lotus::Activity; end
 class  Identity; end
@@ -662,11 +662,11 @@ describe Rack::Lotus do
         last_response.status.must_equal 404
       end
 
-      it "should allow an author_id for known authors" do
+      it "should allow an author_id for known people" do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Author.expects(:find_by_id).with("foobar")
+        Lotus::Person.expects(:find_by_id).with("foobar")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -674,7 +674,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Author.expects(:discover!).with("foobar")
+        Lotus::Person.expects(:discover!).with("foobar")
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -696,7 +696,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Author.stubs(:find_by_id)
+        Lotus::Person.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 404
       end
@@ -705,7 +705,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Lotus::Author.stubs(:find_by_id)
+        Lotus::Person.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -713,7 +713,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Author.stubs(:discover!)
+        Lotus::Person.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
         last_response.status.must_equal 404
       end
@@ -722,7 +722,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Lotus::Author.stubs(:discover!)
+        Lotus::Person.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -730,7 +730,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -738,7 +738,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:discover!).returns("somebody")
+        Lotus::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
       end
 
@@ -746,7 +746,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 302
       end
@@ -755,7 +755,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:find_by_id).returns("somebody")
+        Lotus::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.location.must_equal "http://example.org/"
       end
@@ -764,7 +764,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:discover!).returns("somebody")
+        Lotus::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.status.must_equal 302
       end
@@ -773,7 +773,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Author.stubs(:discover!).returns("somebody")
+        Lotus::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.location.must_equal "http://example.org/"
       end
@@ -899,7 +899,7 @@ describe Rack::Lotus do
         Lotus::Activity.stubs(:find_from_notification).returns(nil)
         Lotus::Activity.stubs(:create_from_notification!).returns(@internal_activity)
 
-        author = Lotus::Author.new
+        author = Lotus::Person.new
 
         identity = Identity.new
         identity.stubs(:return_or_discover_public_key).returns("RSA_PUBLIC_KEY")
@@ -968,6 +968,284 @@ describe Rack::Lotus do
                            .returns(@notification)
 
         post '/people/1234abcd/salmon', "foo"
+      end
+    end
+
+    describe "POST /people/discover" do
+      it "should attempt to discover the author in 'account' field" do
+        acct = "acct:wilkie@rstat.us"
+        Lotus.expects(:discover_author).with(acct).returns(nil)
+
+        post '/people/discover', "account" => acct
+      end
+
+      it "should not create an author when it is already known" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('Person')
+        author.stubs(:uri).returns("foo")
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(author)
+
+        Lotus::Person.expects(:create!).never
+
+        post '/people/discover', "account" => acct
+      end
+
+      it "should create an author when it is not known" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('Person')
+        author.stubs(:uri).returns("foo")
+        author.stubs(:to_hash).returns({})
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(nil)
+        Lotus::Person.stubs(:sanitize_params)
+
+        Lotus::Person.expects(:create!)
+
+        post '/people/discover', "account" => acct
+      end
+
+      it "should return 404 when the author is not discovered" do
+        acct = "acct:noexists@rstat.us"
+        Lotus.stubs(:discover_author).with(acct).returns(nil)
+
+        post '/people/discover', "account" => acct
+        last_response.status.must_equal 404
+      end
+
+      it "should redirect when the author is discovered but exists" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('::Lotus::Person')
+        author.stubs(:uri).returns("foo")
+        author.stubs(:_id).returns("ID")
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(author)
+
+        post '/people/discover', "account" => acct
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect to the author when discovered but exists" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('::Lotus::Person')
+        author.stubs(:uri).returns("foo")
+        author.stubs(:_id).returns("ID")
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(author)
+
+        post '/people/discover', "account" => acct
+        last_response.location.must_equal "http://example.org/people/ID"
+      end
+
+      it "should redirect when the author is discovered and is created" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('::Lotus::Person')
+        author.stubs(:uri).returns("foo")
+        author.stubs(:_id).returns("ID")
+        author.stubs(:to_hash)
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(nil)
+        Lotus::Person.stubs(:sanitize_params)
+        Lotus::Person.stubs(:create!).returns(author)
+
+        post '/people/discover', "account" => acct
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect to the author when discovered and is created" do
+        acct = "acct:wilkie@rstat.us"
+        author = stub('::Lotus::Person')
+        author.stubs(:uri).returns("foo")
+        author.stubs(:_id).returns("ID")
+        author.stubs(:to_hash)
+        Lotus.stubs(:discover_author).with(acct).returns(author)
+        Lotus::Person.stubs(:find).returns(nil)
+        Lotus::Person.stubs(:sanitize_params)
+        Lotus::Person.stubs(:create!).returns(author)
+
+        post '/people/discover', "account" => acct
+        last_response.location.must_equal "http://example.org/people/ID"
+      end
+    end
+
+    describe "GET /people/:id/edit" do
+      it "should return 404 when the author is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/edit'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 when the author is found" do
+        Lotus::Person.stubs(:find_by_id).returns(stub('author'))
+
+        get '/people/1234abcd/edit'
+        last_response.status.must_equal 200
+      end
+    end
+
+    describe "POST /people/:id" do
+      it "should return 404 when the author is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        post '/people/1234abcd'
+        last_response.status.must_equal 404
+      end
+
+      it "should redirect when author is found and it is the logged in user" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_attributes!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}"
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect to author when found and it is the logged in user" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_attributes!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+        Lotus::Person.stubs(:sanitize_params).returns({"id" => author.id})
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}"
+        last_response.location.must_equal "http://example.org/people/#{author.id}"
+      end
+
+      it "should not allow injection of data to update_attributes" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+        Lotus::Person.stubs(:sanitize_params).returns("sanitized")
+
+        author.expects(:update_attributes!).with("sanitized")
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}", "foobar" => "moo"
+      end
+
+      it "should return 404 if the author, although exists, isn't logged on" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_attributes!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+
+        post "/people/#{author.id}"
+        last_response.status.must_equal 404
+      end
+
+      it "should return 404 if another person then owner attempts to edit" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_attributes!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+
+        login_as("intruder")
+
+        post "/people/#{author.id}"
+        last_response.status.must_equal 404
+      end
+    end
+
+    describe "GET /people/:id/avatar/edit" do
+      it "should return 404 when the author is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        get '/people/1234abcd/avatar/edit'
+        last_response.status.must_equal 404
+      end
+
+      it "should return 200 when the author is found" do
+        Lotus::Person.stubs(:find_by_id).returns(stub('author'))
+
+        get '/people/1234abcd/avatar/edit'
+        last_response.status.must_equal 200
+      end
+    end
+
+    describe "POST /people/:id/avatar" do
+      it "should return 404 when the author is not found" do
+        Lotus::Person.stubs(:find_by_id).returns(nil)
+
+        post '/people/1234abcd/avatar'
+        last_response.status.must_equal 404
+      end
+
+      it "should redirect when author is found and it is the logged in user" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_avatar!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}/avatar"
+        last_response.status.must_equal 302
+      end
+
+      it "should redirect to author when found and it is the logged in user" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_avatar!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}/avatar"
+        last_response.location.must_equal "http://example.org/people/#{author.id}"
+      end
+
+      it "should update the avatar with the given url" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+
+        author.expects(:update_avatar!).with("AVATAR_URL")
+
+        login_as("wilkie", author)
+
+        post "/people/#{author.id}/avatar", "avatar_url" => "AVATAR_URL"
+      end
+
+      it "should return 404 if the author, although exists, isn't logged on" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_avatar!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+
+        post "/people/#{author.id}/avatar"
+        last_response.status.must_equal 404
+      end
+
+      it "should return 404 if another person then owner attempts to edit" do
+        author = stub('Person')
+        author.stubs(:id).returns("ID")
+        author.stubs(:update_avatar!)
+
+        Lotus::Person.stubs(:find_by_id).returns(author)
+
+        login_as("intruder")
+
+        post "/people/#{author.id}/avatar"
+        last_response.status.must_equal 404
       end
     end
   end

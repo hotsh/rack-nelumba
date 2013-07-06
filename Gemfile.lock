@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/hotsh/lotus-mongodb.git
-  revision: a357ae7de38b7479902eca5a4a5ce5d62c70e231
+  revision: 8683a91f3dadb7ac7fd4df0da3674ffd3c865c58
   specs:
     lotus-mongodb (0.0.1)
       bcrypt-ruby
@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: git://github.com/hotsh/lotus.git
-  revision: a5eb1189a155b638c07d829dee8de6050ccfdea2
+  revision: 17ad724b199c388a7ce6bcf92ae2647be6fbfdfc
   specs:
     lotus (0.0.12)
       nokogiri
@@ -52,7 +52,7 @@ GEM
       multi_json (~> 1.0)
     ansi (1.4.3)
     awesome_print (1.1.0)
-    bcrypt-ruby (3.0.1)
+    bcrypt-ruby (3.1.0)
     bson (1.9.0)
     bson_ext (1.9.0)
       bson (~> 1.9.0)

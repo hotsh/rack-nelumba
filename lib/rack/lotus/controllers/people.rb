@@ -6,6 +6,57 @@ module Rack
       render :haml, :"people/index", :locals => {:people => people}
     end
 
+    # Get a field to discover a new Lotus::Person.
+    get '/people/discover' do
+      haml :"people/discover"
+    end
+
+    # Discover a new Lotus::Person.
+    post '/people/discover' do
+      author = nil
+      if params["account"]
+        author = ::Lotus::discover_author(params["account"])
+      end
+
+      if author
+        existing_author = ::Lotus::Person.find(:uri => author.uri)
+        if existing_author
+          author = existing_author
+        else
+          author = ::Lotus::Person.create!(author)
+        end
+        redirect "/people/#{author._id}"
+      else
+        status 404
+      end
+    end
+
+    # Edit a known Lotus::Person
+    get '/people/:id/edit' do
+      @author = ::Lotus::Person.find_by_id(params[:id])
+      if @author.nil?
+        status 404
+      else
+        haml :"people/edit"
+      end
+    end
+
+    # Update a known Lotus::Person
+    post '/people/:id' do
+      params = params() # Can't pass it unless it is a hash
+
+      @author = ::Lotus::Person.find_by_id(params[:id])
+      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
+        # Do not allow creation
+        status 404
+      else
+        params = ::Lotus::Person.sanitize_params(params)
+        @author.update_attributes!(params)
+
+        redirect "/people/#{@author.id}"
+      end
+    end
+
     # Get the public profile for this person.
     get '/people/:id' do
       person = ::Lotus::Person.find_by_id(params[:id])
@@ -15,6 +66,32 @@ module Rack
       render :haml, :"people/show", :locals => {:person => person,
                                                 :timeline => timeline}
     end
+
+    # Edit the author avatar
+    get '/people/:id/avatar/edit' do
+      @author = ::Lotus::Person.find_by_id(params[:id])
+      if @author.nil?
+        status 404
+      else
+        haml :"people/edit_avatar"
+      end
+    end
+
+    # Update an avatar for a known Lotus::Person
+    post '/people/:id/avatar' do
+      @author = ::Lotus::Person.find_by_id(params[:id])
+      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
+        # Do not allow creation
+        status 404
+      else
+        url = params["avatar_url"]
+        @author.update_avatar!(url)
+
+        redirect "/people/#{params[:id]}"
+      end
+    end
+
+    # TODO: Get avatar for person
 
     # Get the public feed for our timeline.
     get '/people/:id/timeline' do
@@ -134,9 +211,9 @@ module Rack
                                    current_person.id.to_s == params["id"]
 
       if params["author_id"]
-        author = ::Lotus::Author.find_by_id(params["author_id"])
+        author = ::Lotus::Person.find_by_id(params["author_id"])
       elsif params["discover"]
-        author = ::Lotus::Author.discover!(params["discover"])
+        author = ::Lotus::Person.discover!(params["discover"])
       end
 
       status 404 and return unless author
