@@ -49,7 +49,7 @@ module Rack
       session[:person_id] = authorization.person.id
 
       # Allow user to edit author
-      redirect "/authors/#{authorization.person.author.id}/edit"
+      redirect "/people/#{authorization.person.id}/edit"
     end
   end
 end

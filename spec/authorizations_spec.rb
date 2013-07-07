@@ -231,20 +231,20 @@ describe Rack::Lotus do
       it "should redirect to author edit for new account upon creation" do
         Lotus::Authorization.stubs(:find_by_username).returns(nil)
         Rack::Lotus.any_instance.stubs(:session).returns({})
+
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
+
         person = stub('Person')
         person.stubs(:id).returns("PID")
-        author = stub('Author')
-        author.stubs(:id).returns("AID")
-        person.stubs(:author).returns(author)
+
         auth.stubs(:person).returns(person)
 
         Lotus::Authorization.stubs(:create!).returns(auth)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
 
-        last_response.location.must_equal "http://example.org/authors/AID/edit"
+        last_response.location.must_equal "http://example.org/people/PID/edit"
       end
     end
   end
