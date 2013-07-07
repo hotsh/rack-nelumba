@@ -62,7 +62,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      timeline = person.activities.feed.ordered
+      timeline = person.activities.ordered
       render :haml, :"people/show", :locals => {:person => person,
                                                 :timeline => timeline}
     end
@@ -98,7 +98,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      timeline = person.timeline.feed.ordered
+      timeline = person.timeline.ordered
 
       if pjax?
         render :haml, :"people/_timeline", :locals => {:person => person,
@@ -115,7 +115,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      activities = person.activities.feed.ordered
+      activities = person.activities.ordered
       render :haml, :"people/activities", :locals => {:person => person,
                                                       :activities => activities}
     end
@@ -125,7 +125,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      mentions = person.mentions.feed.ordered
+      mentions = person.mentions.ordered
 
       if pjax?
         render :haml, :"people/_mentions", :locals => {:person => person,
@@ -142,7 +142,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      replies = person.replies.feed.ordered
+      replies = person.replies.ordered
       render :haml, :"people/replies", :locals => {:person => person,
                                                    :replies => replies}
     end
@@ -152,7 +152,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      favorites = person.favorites.feed.ordered
+      favorites = person.favorites.ordered
 
       if pjax?
         render :haml, :"people/_favorites", :locals => {:person => person,
@@ -169,7 +169,7 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      shared = person.shared.feed.ordered
+      shared = person.shared.ordered
       render :haml, :"people/shared", :locals => {:person => person,
                                                   :shared => shared}
 

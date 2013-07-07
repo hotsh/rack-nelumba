@@ -48,11 +48,9 @@ describe Rack::Lotus do
     describe "GET /people/:id" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:activities).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:activities).returns(feed)
         feed.stubs(:ordered).returns("timeline")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -103,11 +101,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/replies" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:replies).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:replies).returns(feed)
         feed.stubs(:ordered).returns("replies")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -158,11 +154,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/mentions" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:mentions).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:mentions).returns(feed)
         feed.stubs(:ordered).returns("mentions")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -213,11 +207,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/timeline" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:timeline).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:timeline).returns(feed)
         feed.stubs(:ordered).returns("timeline")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -268,11 +260,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/activities" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:activities).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:activities).returns(feed)
         feed.stubs(:ordered).returns("activities")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -323,11 +313,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/favorites" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:favorites).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:favorites).returns(feed)
         feed.stubs(:ordered).returns("favorites")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -378,11 +366,9 @@ describe Rack::Lotus do
     describe "GET /people/:id/shared" do
       before do
         @person = stub('Person')
-        aggregate = stub('Aggregate')
         feed = stub('Feed')
 
-        @person.stubs(:shared).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:shared).returns(feed)
         feed.stubs(:ordered).returns("shared")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
@@ -876,11 +862,9 @@ describe Rack::Lotus do
     describe "POST /people/:id/salmon" do
       before do
         @person = mock('Person')
-        aggregate = mock('Aggregate')
         feed = mock('Feed')
 
-        @person.stubs(:activities).returns(aggregate)
-        aggregate.stubs(:feed).returns(feed)
+        @person.stubs(:activities).returns(feed)
 
         @person.stubs(:followed_by!)
         @person.stubs(:unfollowed_by!)
