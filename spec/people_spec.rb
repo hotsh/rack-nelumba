@@ -860,7 +860,7 @@ describe Rack::Lotus do
 
       it "should pass along the correct author" do
         person = login_as "wilkie"
-        person.expects(:post!).with(has_entry(:actor, person.author))
+        person.expects(:post!).with(has_entry(:actor, person))
 
         post '/people/current_person/activities'
       end

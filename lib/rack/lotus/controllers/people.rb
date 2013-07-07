@@ -46,7 +46,7 @@ module Rack
       params = params() # Can't pass it unless it is a hash
 
       @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
+      if @author.nil? || current_person.nil? || (@author.id != current_person.id)
         # Do not allow creation
         status 404
       else
@@ -80,7 +80,7 @@ module Rack
     # Update an avatar for a known Lotus::Person
     post '/people/:id/avatar' do
       @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author.id != current_person.author.id)
+      if @author.nil? || current_person.nil? || (@author.id != current_person.id)
         # Do not allow creation
         status 404
       else
@@ -284,15 +284,15 @@ module Rack
         case params["type"]
         when "note", "status"
           ::Lotus::Note.new(:title => "New Status",
-                            :author_id => current_person.author.id,
+                            :author_id => current_person.id,
                             :text  => params["content"])
         when "article"
           ::Lotus::Article.new(:title    => params["title"],
-                               :author_id => current_person.author.id,
+                               :author_id => current_person.id,
                                :content  => params["content"],
                                :markdown => params["markdown"])
         when "image"
-          ::Lotus::Image.from_blob!(current_person.author,
+          ::Lotus::Image.from_blob!(current_person,
                                     params["file"][:tempfile].read,
                                     :content_type => params["file"][:type])
         else
@@ -301,7 +301,7 @@ module Rack
 
       current_person.post!(:type   => params["type"],
                            :verb   => :post,
-                           :actor  => current_person.author,
+                           :actor  => current_person,
                            :object => object)
 
       redirect '/'
@@ -336,7 +336,7 @@ module Rack
       when :follow
         person.followed_by! nil
       when :unfollow
-        person.unfollowed_by! identity.author
+        person.unfollowed_by! identity.person
       when :post
         # TODO: determine who is mentioned, replied and deliver if this is
         #       "person"

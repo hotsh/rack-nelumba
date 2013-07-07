@@ -40,19 +40,16 @@ def require_controller(name)
 end
 
 # Convenience method to 'sign in' as the given username
-def login_as(username, author = nil)
-  person = stub('Person')
-  person.stubs(:id).returns("current_person")
-  if author.nil?
-    author = stub('Author')
-    author.stubs(:nickname).returns(username)
-    author.stubs(:short_name).returns(username)
-    author.stubs(:name).returns(username)
-    author.stubs(:preferred_username).returns(username)
-    author.stubs(:display_name).returns(username)
-    author.stubs(:id).returns("current_author")
+def login_as(username, person = nil)
+  if person.nil?
+    person = stub('Person')
+    person.stubs(:id).returns("current_person")
+    person.stubs(:nickname).returns(username)
+    person.stubs(:short_name).returns(username)
+    person.stubs(:name).returns(username)
+    person.stubs(:preferred_username).returns(username)
+    person.stubs(:display_name).returns(username)
   end
-  person.stubs(:author).returns(author)
 
   Rack::Lotus.any_instance.stubs(:current_person).returns(person)
 
