@@ -25,7 +25,7 @@ module Rack
         # Get the domain from the first authorized account
         # It is a strange way to not have to provide the host name
         # I don't know how much I like it. :)
-        identity = Authorization.first.identity
+        identity = ::Lotus::Authorization.first.identity
 
         routes[:subject] = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
         routes[:host]    = identity.domain
