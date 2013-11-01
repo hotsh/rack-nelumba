@@ -63,7 +63,7 @@ module Rack
       status 404 and return if person.nil?
 
       # Set up HTTP links
-      response.headers["Link"] = "</people/#{params[:id]}>; rel=\"lrdd\"; type=\"application/xrd+xml\""
+      response.headers["Link"] = "</people/#{params[:id]}/activities>; rel=\"lrdd\"; type=\"application/xrd+xml\""
 
       timeline = person.activities.ordered
       render :haml, :"people/show", :locals => {:person => person,
@@ -107,9 +107,17 @@ module Rack
         render :haml, :"people/_timeline", :locals => {:person => person,
                                                        :timeline => timeline},
                                            :layout => false
-      else
+      elsif request.preferred_type('text/html')
         render :haml, :"people/timeline", :locals => {:person => person,
                                                       :timeline => timeline}
+      elsif request.preferred_type('application/json')
+        content_type 'application/json'
+        timeline.to_json
+      elsif request.preferred_type('application/xml')
+        content_type 'application/xml'
+        timeline.to_xml
+      else
+        status 406
       end
     end
 
@@ -119,8 +127,19 @@ module Rack
       status 404 and return if person.nil?
 
       activities = person.activities.ordered
-      render :haml, :"people/activities", :locals => {:person => person,
-                                                      :activities => activities}
+
+      if request.preferred_type('text/html')
+        render :haml, :"people/activities", :locals => {:person => person,
+                                                        :activities => activities}
+      elsif request.preferred_type('application/json')
+        content_type 'application/json'
+        activities.to_json
+      elsif request.preferred_type('application/xml')
+        content_type 'application/xml'
+        activities.to_xml
+      else
+        status 406
+      end
     end
 
     # Get the public feed for our mentions.
@@ -134,9 +153,17 @@ module Rack
         render :haml, :"people/_mentions", :locals => {:person => person,
                                                        :mentions => mentions},
                                            :layout => false
-      else
+      elsif request.preferred_type('text/html')
         render :haml, :"people/mentions", :locals => {:person => person,
                                                       :mentions => mentions}
+      elsif request.preferred_type('application/json')
+        content_type 'application/json'
+        mentions.to_json
+      elsif request.preferred_type('application/xml')
+        content_type 'application/xml'
+        mentions.to_xml
+      else
+        status 406
       end
     end
 
@@ -161,9 +188,17 @@ module Rack
         render :haml, :"people/_favorites", :locals => {:person => person,
                                                         :favorites => favorites},
                                             :layout => false
-      else
+      elsif request.preferred_type('text/html')
         render :haml, :"people/favorites", :locals => {:person => person,
                                                        :favorites => favorites}
+      elsif request.preferred_type('application/json')
+        content_type 'application/json'
+        favorites.to_json
+      elsif request.preferred_type('application/xml')
+        content_type 'application/xml'
+        favorites.to_xml
+      else
+        status 406
       end
     end
 
@@ -180,9 +215,17 @@ module Rack
         render :haml, :"people/_shared", :locals => {:person => person,
                                                      :shared => shared},
                                          :layout => false
-      else
+      elsif request.preferred_type('text/html')
         render :haml, :"people/shared", :locals => {:person => person,
                                                     :shared => shared}
+      elsif request.preferred_type('application/json')
+        content_type 'application/json'
+        shared.to_json
+      elsif request.preferred_type('application/xml')
+        content_type 'application/xml'
+        shared.to_xml
+      else
+        status 406
       end
     end
 
