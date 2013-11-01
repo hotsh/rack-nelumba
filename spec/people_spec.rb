@@ -56,6 +56,11 @@ describe Rack::Lotus do
         Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
+      it "should contain an HTTP Link header that points to the xml feed" do
+        get '/people/1234abcd'
+        last_response.headers["Link"].must_match /^<\/people\/1234abcd>; rel="lrdd"; type="application\/xrd\+xml"$/
+      end
+
       it "should return 404 if the person is not found" do
         Lotus::Person.stubs(:find_by_id).returns(nil)
 

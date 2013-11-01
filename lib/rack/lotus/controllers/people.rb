@@ -62,6 +62,9 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
+      # Set up HTTP links
+      response.headers["Link"] = "</people/#{params[:id]}>; rel=\"lrdd\"; type=\"application/xrd+xml\""
+
       timeline = person.activities.ordered
       render :haml, :"people/show", :locals => {:person => person,
                                                 :timeline => timeline}
