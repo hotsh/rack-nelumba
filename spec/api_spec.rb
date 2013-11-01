@@ -380,6 +380,40 @@ describe Rack::Lotus do
 
         last_response.body.must_equal "jrd+json"
       end
+
+      it "should return a lrdd route with a correct domain for json" do
+        identity = stub('Lotus::Identity')
+        identity.stubs(:ssl).returns(true)
+        identity.stubs(:domain).returns("www.example.com")
+
+        auth = stub('Lotus::Authorization')
+        auth.stubs(:identity).returns(identity)
+
+        ::Lotus::Authorization.stubs(:first).returns(auth)
+        accept "application/jrd+json"
+        get "/.well-known/host-meta"
+
+        lrdd = JSON::parse(last_response.body)["links"].select do |l|
+          l["rel"] == "lrdd"
+        end.first
+
+        lrdd["template"].start_with?("https://www.example.com/").must_equal true
+      end
+
+      it "should return a lrdd route with a correct domain for xml" do
+        identity = stub('Lotus::Identity')
+        identity.stubs(:ssl).returns(true)
+        identity.stubs(:domain).returns("www.example.com")
+
+        auth = stub('Lotus::Authorization')
+        auth.stubs(:identity).returns(identity)
+
+        ::Lotus::Authorization.stubs(:first).returns(auth)
+        accept "application/xrd+xml"
+        get "/.well-known/host-meta"
+
+        last_response.body.must_match /\<Link.+rel\s*=\s*"lrdd"\s+template\s*=\s*"https:\/\/www\.example\.com\//
+      end
     end
   end
 end

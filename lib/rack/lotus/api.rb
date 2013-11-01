@@ -15,19 +15,21 @@ module Rack
       def self.jrd
         links = []
 
-        routes = self.routes
-        routes.keys.each do |k|
-          links << {:rel => k, :template => routes[k]}
-        end
-
-        routes = {:links => links}
-
         # Get the domain from the first authorized account
         # It is a strange way to not have to provide the host name
         # I don't know how much I like it. :)
         identity = ::Lotus::Authorization.first.identity
 
-        routes[:subject] = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
+        url = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
+
+        routes = self.routes
+        routes.keys.each do |k|
+          links << {:rel => k, :template => "#{url}#{routes[k]}"}
+        end
+
+        routes = {:links => links}
+
+        routes[:subject] = url
         routes[:host]    = identity.domain
         routes[:expires] = "#{(Time.now.utc.to_date >> 1).xmlschema}Z"
 
