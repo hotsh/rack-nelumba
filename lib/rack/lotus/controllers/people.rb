@@ -150,7 +150,7 @@ module Rack
       elsif request.preferred_type('application/atom+xml') ||
             request.preferred_type('application/xml')
         content_type 'application/atom+xml'
-        activities.to_xml
+        person.activities.to_atom
       else
         status 406
       end
