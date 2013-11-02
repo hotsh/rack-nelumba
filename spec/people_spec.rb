@@ -47,18 +47,22 @@ describe Rack::Lotus do
 
     describe "GET /people/:id" do
       before do
+        auth = stub('Authorization')
         @person = stub('Person')
         feed = stub('Feed')
 
-        @person.stubs(:activities).returns(feed)
+        auth.stubs(:username).returns("foobar")
         feed.stubs(:ordered).returns("timeline")
+        @person.stubs(:activities).returns(feed)
+        @person.stubs(:id).returns("1234abcd")
+        @person.stubs(:authorization).returns(auth)
 
         Lotus::Person.stubs(:find_by_id).returns(@person)
       end
 
-      it "should contain an HTTP Link header that points to the xml feed" do
+      it "should contain an HTTP Link header that points to the XRD" do
         get '/people/1234abcd'
-        last_response.headers["Link"].must_match /^<\/people\/1234abcd>; rel="lrdd"; type="application\/xrd\+xml"$/
+        last_response.headers["Link"].must_match /^<\/api\/lrdd\/foobar>; rel="lrdd"; type="application\/xrd\+xml"$/
       end
 
       it "should return 404 if the person is not found" do
@@ -109,6 +113,7 @@ describe Rack::Lotus do
         feed = stub('Feed')
 
         @person.stubs(:replies).returns(feed)
+        @person.stubs(:id).returns("1234abcd")
         feed.stubs(:ordered).returns("replies")
 
         Lotus::Person.stubs(:find_by_id).returns(@person)

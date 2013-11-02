@@ -62,8 +62,10 @@ module Rack
       person = ::Lotus::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
-      # Set up HTTP links
-      response.headers["Link"] = "</people/#{params[:id]}/activities>; rel=\"lrdd\"; type=\"application/xrd+xml\""
+      # Set up HTTP link for LRDD
+      if person.authorization
+        response.headers["Link"] = "</api/lrdd/#{person.authorization.username}>; rel=\"lrdd\"; type=\"application/xrd+xml\""
+      end
 
       timeline = person.activities.ordered
       render :haml, :"people/show", :locals => {:person => person,
