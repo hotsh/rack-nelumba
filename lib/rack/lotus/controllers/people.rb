@@ -125,8 +125,9 @@ module Rack
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         timeline.to_json
-      elsif request.preferred_type('application/xml')
-        content_type 'application/xml'
+      elsif request.preferred_type('application/atom+xml') ||
+            request.preferred_type('application/xml')
+        content_type 'application/atom+xml'
         timeline.to_xml
       else
         status 406
@@ -146,8 +147,9 @@ module Rack
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         activities.to_json
-      elsif request.preferred_type('application/xml')
-        content_type 'application/xml'
+      elsif request.preferred_type('application/atom+xml') ||
+            request.preferred_type('application/xml')
+        content_type 'application/atom+xml'
         activities.to_xml
       else
         status 406
@@ -171,8 +173,9 @@ module Rack
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         mentions.to_json
-      elsif request.preferred_type('application/xml')
-        content_type 'application/xml'
+      elsif request.preferred_type('application/atom+xml') ||
+            request.preferred_type('application/xml')
+        content_type 'application/atom+xml'
         mentions.to_xml
       else
         status 406
@@ -206,8 +209,9 @@ module Rack
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         favorites.to_json
-      elsif request.preferred_type('application/xml')
-        content_type 'application/xml'
+      elsif request.preferred_type('application/atom+xml') ||
+            request.preferred_type('application/xml')
+        content_type 'application/atom+xml'
         favorites.to_xml
       else
         status 406
@@ -233,8 +237,9 @@ module Rack
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         shared.to_json
-      elsif request.preferred_type('application/xml')
-        content_type 'application/xml'
+      elsif request.preferred_type('application/atom+xml') ||
+            request.preferred_type('application/xml')
+        content_type 'application/atom+xml'
         shared.to_xml
       else
         status 406
