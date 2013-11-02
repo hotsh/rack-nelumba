@@ -67,9 +67,19 @@ module Rack
         response.headers["Link"] = "</api/lrdd/#{person.authorization.username}>; rel=\"lrdd\"; type=\"application/xrd+xml\""
       end
 
+      # Set up other links
+      links = []
+      links << {:rel => "alternate",
+                :type => "application/atom+xml",
+                :href => "/people/#{person.id}/activities"}
+      links << {:rel => "alternate",
+                :type => "application/json",
+                :href => "/people/#{person.id}/activities"}
+
       timeline = person.activities.ordered
-      render :haml, :"people/show", :locals => {:person => person,
-                                                :timeline => timeline}
+      render :haml, :"people/show", :locals => {:person   => person,
+                                                :timeline => timeline,
+                                                :links    => links}
     end
 
     # Edit the author avatar

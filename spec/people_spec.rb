@@ -87,6 +87,40 @@ describe Rack::Lotus do
         get '/people/1234abcd'
       end
 
+      it "should pass an array of links to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local_of_type(:links => Array)
+        )
+
+        get '/people/1234abcd'
+      end
+
+      it "should pass an json alternative link to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local_includes(:links, {:rel => 'alternate',
+                                      :type => 'application/json',
+                                      :href => '/people/1234abcd/activities'})
+        )
+
+        get '/people/1234abcd'
+      end
+
+      it "should pass an xml alternative link to renderer" do
+        Rack::Lotus.any_instance.expects(:render).with(
+          anything,
+          anything,
+          has_local_includes(:links, {:rel => 'alternate',
+                                      :type => 'application/atom+xml',
+                                      :href => '/people/1234abcd/activities'})
+        )
+
+        get '/people/1234abcd'
+      end
+
       it "should pass an array of entries from their timeline to renderer" do
         Rack::Lotus.any_instance.expects(:render).with(
           anything,
