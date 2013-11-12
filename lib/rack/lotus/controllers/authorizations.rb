@@ -42,6 +42,8 @@ module Rack
       end
 
       # Create authorization
+      params[:domain] = request.host
+      params[:ssl]    = request.ssl?
       authorization = ::Lotus::Authorization.create!(params)
 
       # Sign in
