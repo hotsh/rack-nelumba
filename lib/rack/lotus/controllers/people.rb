@@ -356,8 +356,8 @@ module Rack
                                :markdown => params["markdown"])
         when "image"
           ::Lotus::Image.from_blob!(current_person,
-                                    :title => params["title"],
                                     params["file"][:tempfile].read,
+                                    :title => params["title"],
                                     :content_type => params["file"][:type])
         else
           nil
