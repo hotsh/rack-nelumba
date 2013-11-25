@@ -58,7 +58,6 @@ describe Rack::Lotus do
         Lotus::Authorization.stubs(:first).returns(nil)
 
         @session.expects(:[]=).never
-        @session.expects(:[]=).never
 
         post '/login', "password" => "foobar", "username" => "bogus"
 
@@ -74,7 +73,6 @@ describe Rack::Lotus do
       end
 
       it "should not login when the password is incorrect" do
-        @session.expects(:[]=).never
         @session.expects(:[]=).never
 
         @auth.stubs(:authenticated?).returns(false)
@@ -102,7 +100,8 @@ describe Rack::Lotus do
     describe "GET /logout" do
       it "should nullify the user_id session key" do
         session = stub('session')
-        session.stubs(:[]=).with(:user_id, nil)
+        session.stubs(:[]=)
+        session.expects(:[]=).with(:user_id, nil)
         Rack::Lotus.any_instance.stubs(:session).returns(session)
 
         get '/logout'
@@ -110,7 +109,8 @@ describe Rack::Lotus do
 
       it "should nullify the person_id session key" do
         session = stub('session')
-        session.stubs(:[]=).with(:person_id, nil)
+        session.stubs(:[]=)
+        session.expects(:[]=).with(:person_id, nil)
         Rack::Lotus.any_instance.stubs(:session).returns(session)
 
         get '/logout'
