@@ -1011,6 +1011,7 @@ describe Rack::Lotus do
         acct = "acct:wilkie@rstat.us"
         author = stub('Person')
         author.stubs(:uri).returns("foo")
+        author.stubs(:id).returns("ID")
         Lotus.stubs(:discover_author).with(acct).returns(author)
         Lotus::Person.stubs(:find).returns(author)
 
@@ -1023,6 +1024,7 @@ describe Rack::Lotus do
         acct = "acct:wilkie@rstat.us"
         author = stub('Person')
         author.stubs(:uri).returns("foo")
+        author.stubs(:id).returns("ID")
         author.stubs(:to_hash).returns({})
         Lotus.stubs(:discover_author).with(acct).returns(author)
         Lotus::Person.stubs(:find).returns(nil)
