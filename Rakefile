@@ -35,21 +35,7 @@ namespace :test do
         t.pattern = file
         puts "Testing #{file}"
       else
-        t.pattern = "spec/controllers/*_test.rb"
-      end
-    end
-    task("unittests").execute
-  end
-
-  desc "Run single model"
-  task :model, :file do |task, args|
-    test_task = Rake::TestTask.new("unittests") do |t|
-      if args.file
-        file = "spec/models/#{args.file}_spec.rb"
-        t.pattern = file
-        puts "Testing #{file}"
-      else
-        t.pattern = "spec/models/*_test.rb"
+        t.pattern = "spec/*_test.rb"
       end
     end
     task("unittests").execute
