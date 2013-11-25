@@ -25,7 +25,7 @@ module Rack
         else
           author = ::Lotus::Person.create!(author)
         end
-        redirect "/people/#{author._id}"
+        redirect "/people/#{author.id}"
       else
         status 404
       end
