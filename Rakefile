@@ -1,9 +1,9 @@
+require "bundler/gem_tasks"
+
 require 'rake/testtask'
 
-task :test do
-  Rake::TestTask.new do |t|
-    t.pattern = "spec/**/*_spec.rb"
-  end
+Rake::TestTask.new do |t|
+  t.pattern = "spec/**/*_spec.rb"
 end
 
 namespace :test do

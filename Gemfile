@@ -14,6 +14,12 @@ group :test do
   gem "rack-test"
 end
 
+platforms :rbx do
+  gem "json"
+  gem "racc"
+  gem "rubysl"
+end
+
 gem "lotus",         :git => "git://github.com/hotsh/lotus.git"
 gem "lotus-mongodb", :git => "git://github.com/hotsh/lotus-mongodb.git"
 gem "redfinger",     :git => "git://github.com/hotsh/redfinger.git"
