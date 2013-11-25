@@ -6,7 +6,6 @@ Turn.config do |c|
 end
 
 require "mocha/setup"
-require "debugger"
 
 require 'lotus'
 require 'lotus-mongodb'

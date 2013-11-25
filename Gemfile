@@ -9,7 +9,6 @@ group :test do
   gem "ansi"              # minitest colors
   gem "turn"              # minitest output
   gem "mocha"             # stubs
-  gem "debugger"          # debugging
 
   gem "awesome_print"
   gem "rack-test"
