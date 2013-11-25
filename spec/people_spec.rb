@@ -1002,42 +1002,24 @@ describe Rack::Lotus do
     describe "POST /people/discover" do
       it "should attempt to discover the author in 'account' field" do
         acct = "acct:wilkie@rstat.us"
-        Lotus.expects(:discover_author).with(acct).returns(nil)
+        Lotus::Person.expects(:discover!).with(acct).returns(nil)
 
         post '/people/discover', "account" => acct
       end
 
-      it "should not create an author when it is already known" do
+      it "should redirect to the author when it is known" do
         acct = "acct:wilkie@rstat.us"
         author = stub('Person')
-        author.stubs(:uri).returns("foo")
         author.stubs(:id).returns("ID")
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(author)
-
-        Lotus::Person.expects(:create!).never
+        Lotus::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
-      end
-
-      it "should create an author when it is not known" do
-        acct = "acct:wilkie@rstat.us"
-        author = stub('Person')
-        author.stubs(:uri).returns("foo")
-        author.stubs(:id).returns("ID")
-        author.stubs(:to_hash).returns({})
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(nil)
-        Lotus::Person.stubs(:sanitize_params)
-
-        Lotus::Person.expects(:create!)
-
-        post '/people/discover', "account" => acct
+        last_response.status.must_equal 302
       end
 
       it "should return 404 when the author is not discovered" do
         acct = "acct:noexists@rstat.us"
-        Lotus.stubs(:discover_author).with(acct).returns(nil)
+        Lotus::Person.stubs(:discover!).with(acct).returns(nil)
 
         post '/people/discover', "account" => acct
         last_response.status.must_equal 404
@@ -1046,10 +1028,8 @@ describe Rack::Lotus do
       it "should redirect when the author is discovered but exists" do
         acct = "acct:wilkie@rstat.us"
         author = stub('::Lotus::Person')
-        author.stubs(:uri).returns("foo")
         author.stubs(:id).returns("ID")
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(author)
+        Lotus::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
         last_response.status.must_equal 302
@@ -1058,40 +1038,8 @@ describe Rack::Lotus do
       it "should redirect to the author when discovered but exists" do
         acct = "acct:wilkie@rstat.us"
         author = stub('::Lotus::Person')
-        author.stubs(:uri).returns("foo")
         author.stubs(:id).returns("ID")
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(author)
-
-        post '/people/discover', "account" => acct
-        last_response.location.must_equal "http://example.org/people/ID"
-      end
-
-      it "should redirect when the author is discovered and is created" do
-        acct = "acct:wilkie@rstat.us"
-        author = stub('::Lotus::Person')
-        author.stubs(:uri).returns("foo")
-        author.stubs(:id).returns("ID")
-        author.stubs(:to_hash)
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(nil)
-        Lotus::Person.stubs(:sanitize_params)
-        Lotus::Person.stubs(:create!).returns(author)
-
-        post '/people/discover', "account" => acct
-        last_response.status.must_equal 302
-      end
-
-      it "should redirect to the author when discovered and is created" do
-        acct = "acct:wilkie@rstat.us"
-        author = stub('::Lotus::Person')
-        author.stubs(:uri).returns("foo")
-        author.stubs(:id).returns("ID")
-        author.stubs(:to_hash)
-        Lotus.stubs(:discover_author).with(acct).returns(author)
-        Lotus::Person.stubs(:find).returns(nil)
-        Lotus::Person.stubs(:sanitize_params)
-        Lotus::Person.stubs(:create!).returns(author)
+        Lotus::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
         last_response.location.must_equal "http://example.org/people/ID"

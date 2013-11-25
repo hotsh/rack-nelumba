@@ -13,18 +13,9 @@ module Rack
 
     # Discover a new Lotus::Person.
     post '/people/discover' do
-      author = nil
-      if params["account"]
-        author = ::Lotus::discover_author(params["account"])
-      end
+      author = ::Lotus::Person.discover!(params["account"])
 
       if author
-        existing_author = ::Lotus::Person.find(:uri => author.uri)
-        if existing_author
-          author = existing_author
-        else
-          author = ::Lotus::Person.create!(author)
-        end
         redirect "/people/#{author.id}"
       else
         status 404
