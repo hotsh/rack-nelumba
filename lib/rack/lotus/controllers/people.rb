@@ -68,9 +68,11 @@ module Rack
                 :href => "/people/#{person.id}/activities"}
 
       timeline = person.activities.ordered
-      render :haml, :"people/show", :locals => {:person   => person,
-                                                :timeline => timeline,
-                                                :links    => links}
+      render :haml, :"people/show", :locals => {
+        :person   => person,
+        :timeline => timeline,
+        :links    => links
+      }
     end
 
     # Edit the author avatar
@@ -107,19 +109,22 @@ module Rack
       timeline = person.timeline.ordered
 
       if pjax?
-        render :haml, :"people/_timeline", :locals => {:person => person,
-                                                       :timeline => timeline},
-                                           :layout => false
+        render :haml, :"people/_timeline", :locals => {
+          :person => person,
+          :timeline => timeline
+        }, :layout => false
       elsif request.preferred_type('text/html')
-        render :haml, :"people/timeline", :locals => {:person => person,
-                                                      :timeline => timeline}
+        render :haml, :"people/timeline", :locals => {
+          :person => person,
+          :timeline => timeline
+        }
       elsif request.preferred_type('application/json')
         content_type 'application/json'
-        timeline.to_json
+        person.timeline.to_json
       elsif request.preferred_type('application/atom+xml') ||
             request.preferred_type('application/xml')
         content_type 'application/atom+xml'
-        timeline.to_xml
+        person.timeline.to_atom
       else
         status 406
       end
@@ -133,8 +138,10 @@ module Rack
       activities = person.activities.ordered
 
       if request.preferred_type('text/html')
-        render :haml, :"people/activities", :locals => {:person => person,
-                                                        :activities => activities}
+        render :haml, :"people/activities", :locals => {
+          :person => person,
+          :activities => activities
+        }
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         activities.to_json
@@ -155,12 +162,15 @@ module Rack
       mentions = person.mentions.ordered
 
       if pjax?
-        render :haml, :"people/_mentions", :locals => {:person => person,
-                                                       :mentions => mentions},
-                                           :layout => false
+        render :haml, :"people/_mentions", :locals => {
+          :person => person,
+          :mentions => mentions
+        }, :layout => false
       elsif request.preferred_type('text/html')
-        render :haml, :"people/mentions", :locals => {:person => person,
-                                                      :mentions => mentions}
+        render :haml, :"people/mentions", :locals => {
+          :person => person,
+          :mentions => mentions
+        }
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         mentions.to_json
@@ -215,16 +225,21 @@ module Rack
       status 404 and return if person.nil?
 
       shared = person.shared.ordered
-      render :haml, :"people/shared", :locals => {:person => person,
-                                                  :shared => shared}
+      render :haml, :"people/shared", :locals => {
+        :person => person,
+        :shared => shared
+      }
 
       if pjax?
-        render :haml, :"people/_shared", :locals => {:person => person,
-                                                     :shared => shared},
-                                         :layout => false
+        render :haml, :"people/_shared", :locals => {
+          :person => person,
+          :shared => shared
+        }, :layout => false
       elsif request.preferred_type('text/html')
-        render :haml, :"people/shared", :locals => {:person => person,
-                                                    :shared => shared}
+        render :haml, :"people/shared", :locals => {
+          :person => person,
+          :shared => shared
+        }
       elsif request.preferred_type('application/json')
         content_type 'application/json'
         shared.to_json
@@ -244,8 +259,10 @@ module Rack
 
       following = person.following
 
-      render :haml, :"people/following", :locals => {:person => person,
-                                                     :following => following}
+      render :haml, :"people/following", :locals => {
+        :person => person,
+        :following => following
+      }
     end
 
     # Retrieve a list of people who are following us.
@@ -255,8 +272,10 @@ module Rack
 
       followers = person.followers
 
-      render :haml, :"people/followers", :locals => {:person => person,
-                                                     :followers => followers}
+      render :haml, :"people/followers", :locals => {
+        :person => person,
+        :followers => followers
+      }
     end
 
     # Follow a person
@@ -337,18 +356,18 @@ module Rack
       object =
         case params["type"]
         when "note", "status"
-          ::Lotus::Note.new(:title => "New Status",
+          ::Lotus::Note.new(:title     => "New Status",
                             :author_id => current_person.id,
-                            :text  => params["content"])
+                            :text      => params["content"])
         when "article"
-          ::Lotus::Article.new(:title    => params["title"],
+          ::Lotus::Article.new(:title     => params["title"],
                                :author_id => current_person.id,
-                               :content  => params["content"],
-                               :markdown => params["markdown"])
+                               :content   => params["content"],
+                               :markdown  => params["markdown"])
         when "image"
           ::Lotus::Image.from_blob!(current_person,
                                     params["file"][:tempfile].read,
-                                    :title => params["title"],
+                                    :title        => params["title"],
                                     :content_type => params["file"][:type])
         else
           nil

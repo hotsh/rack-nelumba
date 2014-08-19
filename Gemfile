@@ -1,7 +1,10 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in ostatus.gemspec
-gemspec
+platforms :rbx do
+  gem "json"
+  gem "racc"
+  gem "rubysl"
+end
 
 group :test do
   gem "rake"              # rakefile
@@ -14,11 +17,8 @@ group :test do
   gem "rack-test"
 end
 
-platforms :rbx do
-  gem "json"
-  gem "racc"
-  gem "rubysl"
-end
+# Specify your gem's dependencies in rack-lotus.gemspec
+gemspec
 
 gem "lotus",         :git => "git://github.com/hotsh/lotus.git"
 gem "lotus-mongodb", :git => "git://github.com/hotsh/lotus-mongodb.git"
