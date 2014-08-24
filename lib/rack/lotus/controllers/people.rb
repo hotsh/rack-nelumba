@@ -368,6 +368,7 @@ module Rack
           ::Lotus::Image.from_blob!(current_person,
                                     params["file"][:tempfile].read,
                                     :title        => params["title"],
+                                    :sizes        => [[650,160]],
                                     :content_type => params["file"][:type])
         else
           nil

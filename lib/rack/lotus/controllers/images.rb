@@ -11,7 +11,7 @@ module Rack
         content_type image.content_type
 
         if params["width"] && params["height"]
-          size = [params["width"], params["height"]]
+          size = [params["width"].to_i, params["height"].to_i]
           ret = image.image(size)
           if ret.nil?
             status 404
