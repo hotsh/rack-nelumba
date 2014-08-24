@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: git://github.com/hotsh/lotus.git
-  revision: 657a4f84f452f17138cb1525b090b40903b59664
+  revision: 276f2e18b8c0e629b5e47cab49a230a8311b688d
   specs:
     lotus (0.0.12)
       nokogiri
@@ -38,7 +38,7 @@ PATH
       haml
       mongo_mapper
       rmagick
-      sinatra
+      sinatra (> 1.0)
       tilt
 
 GEM
@@ -90,6 +90,8 @@ GEM
       mongo (~> 1.5)
     racc (1.4.11)
     rack (1.5.2)
+    rack-protection (1.5.3)
+      rack
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.3.2)
@@ -304,10 +306,12 @@ GEM
     rubysl-xmlrpc (2.0.0)
     rubysl-yaml (2.0.4)
     rubysl-zlib (2.0.1)
-    sinatra (1.0)
-      rack (>= 1.0)
+    sinatra (1.4.5)
+      rack (~> 1.4)
+      rack-protection (~> 1.4)
+      tilt (~> 1.3, >= 1.3.4)
     thread_safe (0.3.4)
-    tilt (2.0.1)
+    tilt (1.4.1)
     time-lord (1.0.1)
     turn (0.9.7)
       ansi

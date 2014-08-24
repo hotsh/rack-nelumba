@@ -11,14 +11,14 @@ Gem::Specification.new do |s|
   s.summary     = %q{Rack extension that provides a generalized federated system backend for social networks with ActivityStreams/OStatus/pump.io.}
   s.description = %q{This gem allows easier implementation and utilization of rack-based web services that are distributed and federated.}
 
-  s.add_dependency "sinatra"      # Routes
-  s.add_dependency "bson_ext"     # Database
-  s.add_dependency "mongo_mapper" # Database
-  s.add_dependency "bcrypt-ruby"  # Basic Authentication
-  s.add_dependency "rmagick"      # Used for avatar resizing
+  s.add_dependency "sinatra", "> 1.0" # Routes (requires version specifier due to bundler thinking '1.0' is newest otherwise)
+  s.add_dependency "bson_ext"         # Database
+  s.add_dependency "mongo_mapper"     # Database
+  s.add_dependency "bcrypt-ruby"      # Basic Authentication
+  s.add_dependency "rmagick"          # Used for avatar resizing
 
-  s.add_dependency "tilt"         # Preferred template interface
-  s.add_dependency "haml"         # Preferred HTML template language
+  s.add_dependency "tilt"             # Preferred template interface
+  s.add_dependency "haml"             # Preferred HTML template language
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
