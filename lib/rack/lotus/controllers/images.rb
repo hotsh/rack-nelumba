@@ -5,13 +5,21 @@ module Rack
       image = ::Lotus::Image.find_by_id(params["id"])
       status 404 and return if image.nil?
 
-      # TODO: Allow for size retrieval
-
       if request.preferred_type('text/*')
         render :haml, :"activities/image", :locals => {:image => image}
       elsif request.preferred_type('image/*')
         content_type image.content_type
-        image.full_image
+
+        if params["width"] && params["height"]
+          size = [params["width"], params["height"]]
+          ret = image.image(size)
+          if ret.nil?
+            status 404
+          end
+          ret
+        else
+          image.full_image
+        end
       end
     end
 
