@@ -3,7 +3,9 @@ module Rack
     # Get a listing of the people on this server.
     get '/people' do
       people = ::Lotus::Person.all
-      render :haml, :"people/index", :locals => {:people => people}
+      render :haml, :"people/index", :locals => {
+        :people => people
+      }
     end
 
     # Get a field to discover a new Lotus::Person.
@@ -24,11 +26,13 @@ module Rack
 
     # Edit a known Lotus::Person
     get '/people/:id/edit' do
-      @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil?
+      person = ::Lotus::Person.find_by_id(params[:id])
+      if person.nil?
         status 404
       else
-        haml :"people/edit"
+        render :haml, :"people/edit", :locals => {
+          :person => person
+        }
       end
     end
 
@@ -36,15 +40,15 @@ module Rack
     post '/people/:id' do
       params = params() # Can't pass it unless it is a hash
 
-      @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author.id != current_person.id)
+      person = ::Lotus::Person.find_by_id(params[:id])
+      if person.nil? || current_person.nil? || (person.id != current_person.id)
         # Do not allow creation
         status 404
       else
         params = ::Lotus::Person.sanitize_params(params)
-        @author.update_attributes!(params)
+        person.update_attributes!(params)
 
-        redirect "/people/#{@author.id}"
+        redirect "/people/#{person.id}"
       end
     end
 
@@ -77,25 +81,28 @@ module Rack
 
     # Edit the author avatar
     get '/people/:id/avatar/edit' do
-      @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil?
+      person = ::Lotus::Person.find_by_id(params[:id])
+      if person.nil?
         status 404
       else
+        render :haml, :"people/edit_avatar", :locals => {
+          :person   => person
+        }
         haml :"people/edit_avatar"
       end
     end
 
     # Update an avatar for a known Lotus::Person
     post '/people/:id/avatar' do
-      @author = ::Lotus::Person.find_by_id(params[:id])
-      if @author.nil? || current_person.nil? || (@author.id != current_person.id)
+      person = ::Lotus::Person.find_by_id(params[:id])
+      if person.nil? || current_person.nil? || (person.id != current_person.id)
         # Do not allow creation
         status 404
       else
         url = params["avatar_url"]
-        @author.update_avatar!(url)
+        person.update_avatar!(url)
 
-        redirect "/people/#{params[:id]}"
+        redirect "/people/#{person.id}"
       end
     end
 
