@@ -1,19 +1,19 @@
 require_relative 'helper'
 require_controller 'authorizations'
 
-class  Lotus::Authorization; end
-module Lotus;         end
+class  Nelumba::Authorization; end
+module Nelumba;         end
 
-describe Rack::Lotus do
+describe Rack::Nelumba do
   before do
     # Do not render
-    Rack::Lotus.any_instance.stubs(:render).returns("html")
+    Rack::Nelumba.any_instance.stubs(:render).returns("html")
   end
 
   describe "Authorizations Controller" do
     describe "GET /login" do
       it "should render authorizations/login" do
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"authorizations/login",
                                                        anything)
 
@@ -29,12 +29,12 @@ describe Rack::Lotus do
         person = stub('Person')
         person.stubs(:id).returns("PID")
         @auth.stubs(:person).returns(person)
-        Lotus::Authorization.stubs(:first).returns(@auth)
+        Nelumba::Authorization.stubs(:first).returns(@auth)
 
         @session = stub('session')
         @session.stubs(:[]=).with(:user_id, "ID")
         @session.stubs(:[]=).with(:person_id, "PID")
-        Rack::Lotus.any_instance.stubs(:session).returns(@session)
+        Rack::Nelumba.any_instance.stubs(:session).returns(@session)
       end
 
       it "should log in when given a valid username/password" do
@@ -47,7 +47,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 when the username does not exist" do
-        Lotus::Authorization.stubs(:first).returns(nil)
+        Nelumba::Authorization.stubs(:first).returns(nil)
 
         post '/login', "password" => "foobar", "username" => "bogus"
 
@@ -55,7 +55,7 @@ describe Rack::Lotus do
       end
 
       it "should not login when the username does not exist" do
-        Lotus::Authorization.stubs(:first).returns(nil)
+        Nelumba::Authorization.stubs(:first).returns(nil)
 
         @session.expects(:[]=).never
 
@@ -102,7 +102,7 @@ describe Rack::Lotus do
         session = stub('session')
         session.stubs(:[]=)
         session.expects(:[]=).with(:user_id, nil)
-        Rack::Lotus.any_instance.stubs(:session).returns(session)
+        Rack::Nelumba.any_instance.stubs(:session).returns(session)
 
         get '/logout'
       end
@@ -111,20 +111,20 @@ describe Rack::Lotus do
         session = stub('session')
         session.stubs(:[]=)
         session.expects(:[]=).with(:person_id, nil)
-        Rack::Lotus.any_instance.stubs(:session).returns(session)
+        Rack::Nelumba.any_instance.stubs(:session).returns(session)
 
         get '/logout'
       end
 
       it "should redirect" do
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
         get '/logout'
 
         last_response.status.must_equal 302
       end
 
       it "should redirect to home" do
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
         get '/logout'
 
         last_response.location.must_equal "http://example.org/"
@@ -133,7 +133,7 @@ describe Rack::Lotus do
 
     describe "GET /authorizations/new" do
       it "should render authorizations/login" do
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"authorizations/new",
                                                        anything)
 
@@ -143,7 +143,7 @@ describe Rack::Lotus do
 
     describe "POST /authorizations" do
       it "should return 404 if the username is already taken" do
-        Lotus::Authorization.stubs(:find_by_username).returns("something")
+        Nelumba::Authorization.stubs(:find_by_username).returns("something")
 
         post '/authorizations', "username" => "taken", "password" => "foobar"
 
@@ -151,8 +151,8 @@ describe Rack::Lotus do
       end
 
       it "should create an account for the given username when unique" do
-        Lotus::Authorization.stubs(:find_by_username).returns(nil)
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Nelumba::Authorization.stubs(:find_by_username).returns(nil)
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
         person = stub('Person')
@@ -162,7 +162,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Lotus::Authorization.expects(:create!)
+        Nelumba::Authorization.expects(:create!)
                      .with(has_entry("username" => "wilkie"))
                      .returns(auth)
 
@@ -170,8 +170,8 @@ describe Rack::Lotus do
       end
 
       it "should create an account for the given password" do
-        Lotus::Authorization.stubs(:find_by_username).returns(nil)
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Nelumba::Authorization.stubs(:find_by_username).returns(nil)
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
         person = stub('Person')
@@ -181,7 +181,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Lotus::Authorization.expects(:create!)
+        Nelumba::Authorization.expects(:create!)
                      .with(has_entry("password" => "foobar"))
                      .returns(auth)
 
@@ -189,7 +189,7 @@ describe Rack::Lotus do
       end
 
       it "should login the new account upon creation" do
-        Lotus::Authorization.stubs(:find_by_username).returns(nil)
+        Nelumba::Authorization.stubs(:find_by_username).returns(nil)
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
         person = stub('Person')
@@ -199,19 +199,19 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Lotus::Authorization.stubs(:create!).returns(auth)
+        Nelumba::Authorization.stubs(:create!).returns(auth)
 
         session = stub('session')
         session.expects(:[]=).with(:user_id, "ID")
         session.expects(:[]=).with(:person_id, "PID")
-        Rack::Lotus.any_instance.stubs(:session).returns(session)
+        Rack::Nelumba.any_instance.stubs(:session).returns(session)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
       end
 
       it "should redirect when account is created" do
-        Lotus::Authorization.stubs(:find_by_username).returns(nil)
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Nelumba::Authorization.stubs(:find_by_username).returns(nil)
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
         person = stub('Person')
@@ -221,7 +221,7 @@ describe Rack::Lotus do
         person.stubs(:author).returns(author)
         auth.stubs(:person).returns(person)
 
-        Lotus::Authorization.stubs(:create!).returns(auth)
+        Nelumba::Authorization.stubs(:create!).returns(auth)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
 
@@ -229,8 +229,8 @@ describe Rack::Lotus do
       end
 
       it "should redirect to author edit for new account upon creation" do
-        Lotus::Authorization.stubs(:find_by_username).returns(nil)
-        Rack::Lotus.any_instance.stubs(:session).returns({})
+        Nelumba::Authorization.stubs(:find_by_username).returns(nil)
+        Rack::Nelumba.any_instance.stubs(:session).returns({})
 
         auth = stub('Authorization')
         auth.stubs(:id).returns("ID")
@@ -240,7 +240,7 @@ describe Rack::Lotus do
 
         auth.stubs(:person).returns(person)
 
-        Lotus::Authorization.stubs(:create!).returns(auth)
+        Nelumba::Authorization.stubs(:create!).returns(auth)
 
         post '/authorizations', "username" => "wilkie", "password" => "foobar"
 

@@ -1,5 +1,5 @@
 module Rack
-  class Lotus
+  class Nelumba
     # Contains methods to coordinate API routes and host-meta.
     module API
       # Retrieves a Hash of all routes on the system as URI templates. Keys
@@ -18,7 +18,7 @@ module Rack
         # Get the domain from the first authorized account
         # It is a strange way to not have to provide the host name
         # I don't know how much I like it. :)
-        identity = ::Lotus::Authorization.first.identity
+        identity = ::Nelumba::Authorization.first.identity
 
         url = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
 

@@ -1,5 +1,5 @@
 module Rack
-  class Lotus
+  class Nelumba
     # Login form
     get '/login' do
       render :haml, :"authorizations/login"
@@ -7,7 +7,7 @@ module Rack
 
     # Authenticate
     post '/login' do
-      authorization = ::Lotus::Authorization.first(:username => /#{Regexp.escape(params["username"])}/i)
+      authorization = ::Nelumba::Authorization.first(:username => /#{Regexp.escape(params["username"])}/i)
       if authorization && authorization.authenticated?(params["password"])
         session[:user_id]   = authorization.id
         session[:person_id] = authorization.person.id
@@ -36,7 +36,7 @@ module Rack
       username = params["username"]
       password = params["password"]
 
-      if ::Lotus::Authorization.find_by_username /^#{Regexp.escape(username)}$/i
+      if ::Nelumba::Authorization.find_by_username /^#{Regexp.escape(username)}$/i
         status 404
         return
       end
@@ -44,7 +44,7 @@ module Rack
       # Create authorization
       params[:domain] = request.host
       params[:ssl]    = request.ssl?
-      authorization = ::Lotus::Authorization.create!(params)
+      authorization = ::Nelumba::Authorization.create!(params)
 
       # Sign in
       session[:user_id]   = authorization.id

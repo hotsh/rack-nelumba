@@ -1,21 +1,21 @@
 module Rack
-  class Lotus
+  class Nelumba
     # Get a listing of the people on this server.
     get '/people' do
-      people = ::Lotus::Person.all
+      people = ::Nelumba::Person.all
       render :haml, :"people/index", :locals => {
         :people => people
       }
     end
 
-    # Get a field to discover a new Lotus::Person.
+    # Get a field to discover a new Nelumba::Person.
     get '/people/discover' do
       haml :"people/discover"
     end
 
-    # Discover a new Lotus::Person.
+    # Discover a new Nelumba::Person.
     post '/people/discover' do
-      author = ::Lotus::Person.discover!(params["account"])
+      author = ::Nelumba::Person.discover!(params["account"])
 
       if author
         redirect "/people/#{author.id}"
@@ -24,9 +24,9 @@ module Rack
       end
     end
 
-    # Edit a known Lotus::Person
+    # Edit a known Nelumba::Person
     get '/people/:id/edit' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       if person.nil?
         status 404
       else
@@ -36,16 +36,16 @@ module Rack
       end
     end
 
-    # Update a known Lotus::Person
+    # Update a known Nelumba::Person
     post '/people/:id' do
       params = params() # Can't pass it unless it is a hash
 
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       if person.nil? || current_person.nil? || (person.id != current_person.id)
         # Do not allow creation
         status 404
       else
-        params = ::Lotus::Person.sanitize_params(params)
+        params = ::Nelumba::Person.sanitize_params(params)
         person.update_attributes!(params)
 
         redirect "/people/#{person.id}"
@@ -54,7 +54,7 @@ module Rack
 
     # Get the public profile for this person.
     get '/people/:id' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       # Set up HTTP link for LRDD
@@ -81,7 +81,7 @@ module Rack
 
     # Edit the author avatar
     get '/people/:id/avatar/edit' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       if person.nil?
         status 404
       else
@@ -92,9 +92,9 @@ module Rack
       end
     end
 
-    # Update an avatar for a known Lotus::Person
+    # Update an avatar for a known Nelumba::Person
     post '/people/:id/avatar' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       if person.nil? || current_person.nil? || (person.id != current_person.id)
         # Do not allow creation
         status 404
@@ -110,7 +110,7 @@ module Rack
 
     # Get the public feed for our timeline.
     get '/people/:id/timeline' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       timeline = person.timeline.ordered
@@ -139,7 +139,7 @@ module Rack
 
     # Get the public feed for our timeline.
     get '/people/:id/activities' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       activities = person.activities.ordered
@@ -163,7 +163,7 @@ module Rack
 
     # Get the public feed for our mentions.
     get '/people/:id/mentions' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       mentions = person.mentions.ordered
@@ -192,7 +192,7 @@ module Rack
 
     # Get the public feed for our replies.
     get '/people/:id/replies' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       replies = person.replies.ordered
@@ -202,7 +202,7 @@ module Rack
 
     # Get the public feed for somebody's favorites.
     get '/people/:id/favorites' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       favorites = person.favorites.ordered
@@ -228,7 +228,7 @@ module Rack
 
     # Get the public feed for somebody's feed of shared posts.
     get '/people/:id/shared' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       shared = person.shared.ordered
@@ -261,7 +261,7 @@ module Rack
 
     # Retrieve list of people we follow
     get '/people/:id/following' do
-      person = ::Lotus::Person.find_by_id(params["id"])
+      person = ::Nelumba::Person.find_by_id(params["id"])
       status 404 and return unless person
 
       following = person.following
@@ -274,7 +274,7 @@ module Rack
 
     # Retrieve a list of people who are following us.
     get '/people/:id/followers' do
-      person = ::Lotus::Person.find_by_id(params["id"])
+      person = ::Nelumba::Person.find_by_id(params["id"])
       status 404 and return unless person
 
       followers = person.followers
@@ -291,9 +291,9 @@ module Rack
                                    current_person.id.to_s == params["id"]
 
       if params["author_id"]
-        author = ::Lotus::Person.find_by_id(params["author_id"])
+        author = ::Nelumba::Person.find_by_id(params["author_id"])
       elsif params["discover"]
-        author = ::Lotus::Person.discover!(params["discover"])
+        author = ::Nelumba::Person.discover!(params["discover"])
       end
 
       status 404 and return unless author
@@ -316,7 +316,7 @@ module Rack
       status 404 and return unless current_person &&
                                    current_person.id.to_s == params["id"]
 
-      activity = ::Lotus::Activity.find_by_id(params["activity_id"])
+      activity = ::Nelumba::Activity.find_by_id(params["activity_id"])
 
       status 404 and return unless activity
 
@@ -329,7 +329,7 @@ module Rack
       status 404 and return unless current_person &&
                                    current_person.id.to_s == params["id"]
 
-      activity = ::Lotus::Activity.find_by_id(params["activity_id"])
+      activity = ::Nelumba::Activity.find_by_id(params["activity_id"])
 
       status 404 and return unless activity
 
@@ -339,19 +339,19 @@ module Rack
 
     # External delivery to our own stream.
     post '/people/:id/timeline' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
     # External delivery of followed activity streams.
     post '/people/:id/inbox' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
     # External delivery of direct messages.
     post '/people/:id/direct' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
     end
 
@@ -363,16 +363,16 @@ module Rack
       object =
         case params["type"]
         when "note", "status"
-          ::Lotus::Note.new(:title     => "New Status",
+          ::Nelumba::Note.new(:title     => "New Status",
                             :author_id => current_person.id,
                             :text      => params["content"])
         when "article"
-          ::Lotus::Article.new(:title     => params["title"],
+          ::Nelumba::Article.new(:title     => params["title"],
                                :author_id => current_person.id,
                                :content   => params["content"],
                                :markdown  => params["markdown"])
         when "image"
-          ::Lotus::Image.from_blob!(current_person,
+          ::Nelumba::Image.from_blob!(current_person,
                                     params["file"][:tempfile].read,
                                     :text         => params["content"],
                                     :title        => params["title"],
@@ -392,14 +392,14 @@ module Rack
 
     # Handle a salmon payload
     post '/people/:id/salmon' do
-      person = ::Lotus::Person.find_by_id(params[:id])
+      person = ::Nelumba::Person.find_by_id(params[:id])
       status 404 and return if person.nil?
 
       # Form the notification
-      notification = ::Lotus::Notification.from_xml(request.body.read)
+      notification = ::Nelumba::Notification.from_xml(request.body.read)
 
       # If it already exists, this will update
-      activity = ::Lotus::Activity.find_from_notification(notification)
+      activity = ::Nelumba::Activity.find_from_notification(notification)
 
       if activity
         activity = activity.update_from_notification!(notification)
@@ -408,7 +408,7 @@ module Rack
         status 403 and return if activity.nil?
         success = 200
       else
-        activity = ::Lotus::Activity.create_from_notification!(notification)
+        activity = ::Nelumba::Activity.create_from_notification!(notification)
 
         # Failure to verify (Bad Request)
         status 400 and return if activity.nil?

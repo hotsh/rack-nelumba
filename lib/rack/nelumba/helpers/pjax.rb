@@ -1,5 +1,5 @@
 module Rack
-  class Lotus
+  class Nelumba
     module PJAXHelpers
       def pjax?
         env['HTTP_X_PJAX'] || request["_pjax"]

@@ -1,8 +1,8 @@
 GIT
-  remote: git://github.com/hotsh/lotus-mongodb.git
-  revision: 321a8ce5aed229d0eaa2afadfc718b7fc19ae444
+  remote: git://github.com/hotsh/nelumba-mongodb.git
+  revision: 79f8ae206fcf3e1cc404431bd5ad36e6d0524213
   specs:
-    lotus-mongodb (0.0.1)
+    nelumba-mongodb (0.0.1)
       bcrypt-ruby
       bson_ext
       mongo_mapper
@@ -10,10 +10,10 @@ GIT
       rmagick
 
 GIT
-  remote: git://github.com/hotsh/lotus.git
-  revision: 7ca66030da468505b60a413c9929eb1c6b87b225
+  remote: git://github.com/hotsh/nelumba.git
+  revision: c942b94a4600a3ed67f615f78ab438087d15a5a2
   specs:
-    lotus (0.0.12)
+    nelumba (0.0.13)
       nokogiri
       ratom
       rsa
@@ -32,7 +32,7 @@ GIT
 PATH
   remote: .
   specs:
-    rack-lotus (0.0.1)
+    rack-nelumba (0.0.1)
       bcrypt-ruby
       bson_ext
       haml
@@ -325,12 +325,12 @@ DEPENDENCIES
   ansi
   awesome_print
   json
-  lotus!
-  lotus-mongodb!
   minitest (= 4.7.0)
   mocha
+  nelumba!
+  nelumba-mongodb!
   racc
-  rack-lotus!
+  rack-nelumba!
   rack-test
   rake
   redfinger!

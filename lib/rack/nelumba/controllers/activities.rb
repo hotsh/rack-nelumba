@@ -1,8 +1,8 @@
 module Rack
-  class Lotus
+  class Nelumba
     # Retrieve the public activity.
     get '/activities/:id' do
-      activity = ::Lotus::Activity.find_by_id(params[:id])
+      activity = ::Nelumba::Activity.find_by_id(params[:id])
       status 404 and return if activity.nil?
 
       format = request.preferred_type(['text/html', 'application/json', 'application/atom+xml', 'application/xml'])
@@ -26,7 +26,7 @@ module Rack
 
     # Update the given activity if you own it.
     put '/activities/:id' do
-      activity = ::Lotus::Activity.find_by_id(params[:id])
+      activity = ::Nelumba::Activity.find_by_id(params[:id])
       status 404 and return if activity.nil?
     end
   end

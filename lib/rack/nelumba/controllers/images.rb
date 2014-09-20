@@ -1,8 +1,8 @@
 module Rack
-  class Lotus
-    # Retrieve a Lotus::Image
+  class Nelumba
+    # Retrieve a Nelumba::Image
     get '/images/:id' do
-      image = ::Lotus::Image.find_by_id(params["id"])
+      image = ::Nelumba::Image.find_by_id(params["id"])
       status 404 and return if image.nil?
 
       format = request.preferred_type(['image/*', 'text/html'])
@@ -30,7 +30,7 @@ module Rack
 
     # Explicitly get the full size of the raw image
     get '/images/:id/full' do
-      image = ::Lotus::Image.find_by_id(params["id"])
+      image = ::Nelumba::Image.find_by_id(params["id"])
       status 404 and return if image.nil?
 
       content_type image.content_type

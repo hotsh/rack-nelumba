@@ -7,9 +7,9 @@ end
 
 require "mocha/setup"
 
-require 'lotus'
-require 'lotus-mongodb'
-require './lib/rack/lotus'
+require 'nelumba'
+require 'nelumba-mongodb'
+require './lib/rack/nelumba'
 
 require "sinatra"
 
@@ -17,7 +17,7 @@ require "sinatra"
 # every time I open the class. So, let's make sure the class inherits the right
 # thing.
 module Rack
-  class Lotus < Sinatra::Base
+  class Nelumba < Sinatra::Base
   end
 end
 
@@ -30,12 +30,12 @@ include Rack::Test::Methods
 
 # Let the testing methods know what the app class is
 def app
-  Rack::Lotus
+  Rack::Nelumba
 end
 
 # Convenience function to load the controller source.
 def require_controller(name)
-  require_relative "../lib/rack/lotus/controllers/#{name}"
+  require_relative "../lib/rack/nelumba/controllers/#{name}"
 end
 
 # Convenience method to 'sign in' as the given username
@@ -50,7 +50,7 @@ def login_as(username, person = nil)
     person.stubs(:display_name).returns(username)
   end
 
-  Rack::Lotus.any_instance.stubs(:current_person).returns(person)
+  Rack::Nelumba.any_instance.stubs(:current_person).returns(person)
 
   person
 end
@@ -66,7 +66,7 @@ def accept(type)
 end
 
 module Rack
-  class Lotus
+  class Nelumba
     # Default current_person to nil
     def current_person
       nil

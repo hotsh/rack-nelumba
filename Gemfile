@@ -17,9 +17,9 @@ group :test do
   gem "rack-test"
 end
 
-# Specify your gem's dependencies in rack-lotus.gemspec
+# Specify your gem's dependencies in rack-nelumba.gemspec
 gemspec
 
-gem "lotus",         :git => "git://github.com/hotsh/lotus.git"
-gem "lotus-mongodb", :git => "git://github.com/hotsh/lotus-mongodb.git"
+gem "nelumba",         :git => "git://github.com/hotsh/nelumba.git"
+gem "nelumba-mongodb", :git => "git://github.com/hotsh/nelumba-mongodb.git"
 gem "redfinger",     :git => "git://github.com/hotsh/redfinger.git"

@@ -1,19 +1,19 @@
 require_relative 'helper'
 require_controller 'avatars'
 
-class  Lotus::Avatar; end
-module Lotus;  end
+class  Nelumba::Avatar; end
+module Nelumba;  end
 
-describe Rack::Lotus do
+describe Rack::Nelumba do
   before do
     # Do not render
-    Rack::Lotus.any_instance.stubs(:render).returns("html")
+    Rack::Nelumba.any_instance.stubs(:render).returns("html")
   end
 
   describe "Avatars Controller" do
     describe "GET /avatars/:id/:size" do
       it "should return 404 if the avatar does not exist" do
-        Lotus::Avatar.stubs(:find_by_id).returns(nil)
+        Nelumba::Avatar.stubs(:find_by_id).returns(nil)
 
         get '/avatars/bogus_id/48x48'
         last_response.status.must_equal 404
@@ -23,7 +23,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read)
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         content_type.must_equal("image/some_image_type")
@@ -33,7 +33,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.expects(:read).with([48, 48])
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
       end
@@ -42,7 +42,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         last_response.body.must_equal "DATA"
@@ -52,7 +52,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns(nil)
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/1x4800'
         last_response.status.must_equal 404
@@ -62,7 +62,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/48x48'
         last_response.status.must_equal 200
@@ -72,7 +72,7 @@ describe Rack::Lotus do
         avatar = stub('Avatar')
         avatar.stubs(:content_type).returns("image/some_image_type")
         avatar.stubs(:read).returns("DATA")
-        Lotus::Avatar.stubs(:find_by_id).returns(avatar)
+        Nelumba::Avatar.stubs(:find_by_id).returns(avatar)
 
         get '/avatars/valid_id/bogus'
         last_response.status.must_equal 404

@@ -1,31 +1,31 @@
 require_relative 'helper'
 require_controller 'activities'
 
-describe Rack::Lotus do
+describe Rack::Nelumba do
   before do
     # Do not render
-    Rack::Lotus.any_instance.stubs(:render).returns("html")
+    Rack::Nelumba.any_instance.stubs(:render).returns("html")
   end
 
   describe "Activities Controller" do
     describe "GET /activities/:id" do
       it "should return 404 if the activity is not found" do
-        Lotus::Activity.stubs(:find_by_id).returns(nil)
+        Nelumba::Activity.stubs(:find_by_id).returns(nil)
 
         get '/activities/1234abcd'
         last_response.status.must_equal 404
       end
 
       it "should return 200 if the activity is found" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
 
         get '/activities/1234abcd'
         last_response.status.must_equal 200
       end
 
       it "should render activities/show" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"activities/show",
                                                        anything)
 
@@ -33,7 +33,7 @@ describe Rack::Lotus do
       end
 
       it "should return json when json is prioritized in accept" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
 
         accept "application/json"
         get '/activities/1234abcd'
@@ -42,7 +42,7 @@ describe Rack::Lotus do
       end
 
       it "should return atom when xml is prioritized in accept" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
 
         accept "application/xml"
         get '/activities/1234abcd'
@@ -51,7 +51,7 @@ describe Rack::Lotus do
       end
 
       it "should return atom when atom is prioritized in accept" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
 
         accept "application/atom+xml"
         get '/activities/1234abcd'
@@ -60,7 +60,7 @@ describe Rack::Lotus do
       end
 
       it "should return text/html by default" do
-        Lotus::Activity.stubs(:find_by_id).returns(Lotus::Activity.new)
+        Nelumba::Activity.stubs(:find_by_id).returns(Nelumba::Activity.new)
 
         get '/activities/1234abcd'
 
@@ -70,14 +70,14 @@ describe Rack::Lotus do
 
     describe "PUT /activities/:id" do
       it "should return 404 if the activity is not found" do
-        Lotus::Activity.stubs(:find_by_id).returns(nil)
+        Nelumba::Activity.stubs(:find_by_id).returns(nil)
 
         put '/activities/1234abcd'
         last_response.status.must_equal 404
       end
 
       it "should return 200 if the person is found" do
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         put '/activities/1234abcd'
         last_response.status.must_equal 200

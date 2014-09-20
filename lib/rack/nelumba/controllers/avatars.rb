@@ -1,8 +1,8 @@
 module Rack
-  class Lotus
+  class Nelumba
     # Get the avatar
     get '/avatars/:id/:size' do
-      avatar = ::Lotus::Avatar.find_by_id(params[:id])
+      avatar = ::Nelumba::Avatar.find_by_id(params[:id])
       status 404 and return unless avatar
 
       size = params["size"].split('x').map(&:to_i)

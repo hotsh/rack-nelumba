@@ -1,10 +1,10 @@
 module Rack
-  class Lotus
+  class Nelumba
     require 'json'
     require 'date'
     require 'nokogiri'
 
-    # Report a listing of all lotus routes.
+    # Report a listing of all nelumba routes.
     get '/api' do
       if request.preferred_type('application/json')
         content_type 'application/json'
@@ -27,14 +27,14 @@ module Rack
          request.preferred_type('application/xml')
         "xrd"
         content_type 'application/xrd+xml'
-        response = ::Lotus::Authorization.xrd params["acct"]
+        response = ::Nelumba::Authorization.xrd params["acct"]
       elsif request.preferred_type('application/jrd+json') ||
             request.preferred_type('application/json')
         "jrd"
         content_type 'application/jrd+json'
-        response = ::Lotus::Authorization.jrd params["acct"]
+        response = ::Nelumba::Authorization.jrd params["acct"]
       else
-        status 406 and return if ::Lotus::Authorization.xrd params["acct"]
+        status 406 and return if ::Nelumba::Authorization.xrd params["acct"]
         status 404 and return
       end
 

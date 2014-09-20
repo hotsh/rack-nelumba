@@ -1,27 +1,27 @@
-# Rack-Lotus
+# Rack-Nelumba
 
 **WORK IN PROGRESS**
 
 This is a federation framework built on top of Rack. This should work on top of
 a Sinatra or Rails application in order to provide a wide userbase and high
 amount of social interaction while allowing self-hosting, decentralization and
-replication of content. See the [Lotus project](https://github.com/hotsh/lotus)
+replication of content. See the [Nelumba project](https://github.com/hotsh/nelumba)
 for more information.
 
-This project builds off of the afforementioned Lotus project. The base project
+This project builds off of the afforementioned Nelumba project. The base project
 is simply immutable structures that are the result of querying a federated
 service. Therefore, build a server with this, and a client with the base found
 above.
 
 ## Database Backends
 
-Currently, Lotus supports only MongoDB through MongoMapper.
+Currently, Nelumba supports only MongoDB through MongoMapper.
 
 ## Usage
 
 Add the following to your Gemfile:
 
-`gem 'rack-lotus'`
+`gem 'rack-nelumba'`
 
 Bundle your application:
 
@@ -29,11 +29,11 @@ Bundle your application:
 
 And add the following to your config.ru or within your application:
 
-`use Rack::Lotus`
+`use Rack::Nelumba`
 
 ## API
 
-The minimum API that all Lotus applications will have:
+The minimum API that all Nelumba applications will have:
 
 ### People and the Social Graph
 

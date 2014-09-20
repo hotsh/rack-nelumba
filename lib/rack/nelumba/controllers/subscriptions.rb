@@ -1,20 +1,20 @@
 module Rack
   # Contains the Rack application responsible for federation routing.
-  class Lotus
-    require 'lotus/subscription'
+  class Nelumba
+    require 'nelumba/subscription'
 
     # PuSH subscription callback
     get '/subscriptions/:id' do
       # Only respond if there is a challenge
       if params["hub.challenge"]
         # Find the referenced feed
-        feed = ::Lotus::Feed.find_by_id(params[:id])
+        feed = ::Nelumba::Feed.find_by_id(params[:id])
 
         # Don't continue if the feed doesn't exist
         status 404 and return unless feed
 
         # Build a new subscription manager
-        sub = ::Lotus::Subscription.new(:callback_url => request.url,
+        sub = ::Nelumba::Subscription.new(:callback_url => request.url,
                                         :topic_url    => feed.url,
                                         :token        => feed.verification_token)
 
@@ -38,16 +38,16 @@ module Rack
     # Subscriber receives updates
     post '/subscriptions/:id.atom' do
       # Find the referenced feed
-      feed = ::Lotus::Feed.find_by_id(params[:id])
+      feed = ::Nelumba::Feed.find_by_id(params[:id])
       status 404 and return unless feed
 
       signature = request.env['HTTP_X_HUB_SIGNATURE']
-      sub = ::Lotus::Subscription.new(:callback_url => request.url,
+      sub = ::Nelumba::Subscription.new(:callback_url => request.url,
                                       :feed_url     => feed.url,
                                       :secret       => feed.secret)
 
       if sub.verify_content(request.body.read, signature)
-        incoming_feed = ::Lotus.feed_from_string(request.body,
+        incoming_feed = ::Nelumba.feed_from_string(request.body,
                                                  "application/atom+xml")
 
         feed.merge!(incoming_feed)

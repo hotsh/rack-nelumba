@@ -1,32 +1,32 @@
 require_relative 'helper'
 require_controller 'people'
 
-class  Lotus::Person;   end
-class  Lotus::Person;   end
-class  Lotus::Activity; end
+class  Nelumba::Person;   end
+class  Nelumba::Person;   end
+class  Nelumba::Activity; end
 class  Identity; end
-module Lotus;
+module Nelumba;
   class Notification; end
-  class Lotus::Activity; end
+  class Nelumba::Activity; end
 end
 
-describe Rack::Lotus do
+describe Rack::Nelumba do
   before do
     # Do not render
-    Rack::Lotus.any_instance.stubs(:render).returns("html")
+    Rack::Nelumba.any_instance.stubs(:render).returns("html")
   end
 
   describe "People Controller" do
     describe "GET /people" do
       it "should query for all people" do
-        Lotus::Person.expects(:all)
+        Nelumba::Person.expects(:all)
 
         get '/people'
       end
 
       it "should pass an array of people to renderer" do
-        Lotus::Person.stubs(:all).returns("persons")
-        Rack::Lotus.any_instance.expects(:render).with(
+        Nelumba::Person.stubs(:all).returns("persons")
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_entry(:locals, {:people => "persons"})
@@ -36,8 +36,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/index" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/index",
                                                        anything)
 
@@ -57,7 +57,7 @@ describe Rack::Lotus do
         @person.stubs(:id).returns("1234abcd")
         @person.stubs(:authorization).returns(auth)
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should contain an HTTP Link header that points to the XRD" do
@@ -66,7 +66,7 @@ describe Rack::Lotus do
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd'
         last_response.status.must_equal 404
@@ -78,7 +78,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -88,7 +88,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of links to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local_of_type(:links => Array)
@@ -98,7 +98,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an json alternative link to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local_includes(:links, {:rel => 'alternate',
@@ -110,7 +110,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an xml alternative link to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local_includes(:links, {:rel => 'alternate',
@@ -122,7 +122,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their timeline to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:timeline => "timeline")
@@ -132,8 +132,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/show" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/show",
                                                        anything)
 
@@ -150,11 +150,11 @@ describe Rack::Lotus do
         @person.stubs(:id).returns("1234abcd")
         feed.stubs(:ordered).returns("replies")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/replies'
         last_response.status.must_equal 404
@@ -166,7 +166,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -176,7 +176,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their replies to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:replies => "replies")
@@ -186,8 +186,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/replies" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/replies",
                                                        anything)
 
@@ -203,11 +203,11 @@ describe Rack::Lotus do
         @person.stubs(:mentions).returns(feed)
         feed.stubs(:ordered).returns("mentions")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/mentions'
         last_response.status.must_equal 404
@@ -219,7 +219,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -229,7 +229,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their mentions to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:mentions => "mentions")
@@ -239,8 +239,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/mentions" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/mentions",
                                                        anything)
 
@@ -256,11 +256,11 @@ describe Rack::Lotus do
         @person.stubs(:timeline).returns(feed)
         feed.stubs(:ordered).returns("timeline")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/timeline'
         last_response.status.must_equal 404
@@ -272,7 +272,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -282,7 +282,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their timeline to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:timeline => "timeline")
@@ -292,8 +292,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/timeline" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/timeline",
                                                        anything)
 
@@ -309,11 +309,11 @@ describe Rack::Lotus do
         @person.stubs(:activities).returns(feed)
         feed.stubs(:ordered).returns("activities")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/activities'
         last_response.status.must_equal 404
@@ -325,7 +325,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -335,7 +335,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their activities to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:activities => "activities")
@@ -345,8 +345,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/activities" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/activities",
                                                        anything)
 
@@ -362,11 +362,11 @@ describe Rack::Lotus do
         @person.stubs(:favorites).returns(feed)
         feed.stubs(:ordered).returns("favorites")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/favorites'
         last_response.status.must_equal 404
@@ -378,7 +378,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -388,7 +388,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their favorites to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:favorites => "favorites")
@@ -398,8 +398,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/favorites" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/favorites",
                                                        anything)
 
@@ -415,11 +415,11 @@ describe Rack::Lotus do
         @person.stubs(:shared).returns(feed)
         feed.stubs(:ordered).returns("shared")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/shared'
         last_response.status.must_equal 404
@@ -431,7 +431,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -441,7 +441,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of entries from their shares to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:shared => "shared")
@@ -451,8 +451,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/shared" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/shared",
                                                        anything)
 
@@ -465,11 +465,11 @@ describe Rack::Lotus do
         @person = stub('Person')
         @person.stubs(:following).returns("following")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/following'
         last_response.status.must_equal 404
@@ -481,7 +481,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -491,7 +491,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of people they follow to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:following => "following")
@@ -501,8 +501,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/following" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/following",
                                                        anything)
 
@@ -515,11 +515,11 @@ describe Rack::Lotus do
         @person = stub('Person')
         @person.stubs(:followers).returns("followers")
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/followers'
         last_response.status.must_equal 404
@@ -531,7 +531,7 @@ describe Rack::Lotus do
       end
 
       it "should pass person to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:person => @person)
@@ -541,7 +541,7 @@ describe Rack::Lotus do
       end
 
       it "should pass an array of people that follow them to renderer" do
-        Rack::Lotus.any_instance.expects(:render).with(
+        Rack::Nelumba.any_instance.expects(:render).with(
           anything,
           anything,
           has_local(:followers => "followers")
@@ -551,8 +551,8 @@ describe Rack::Lotus do
       end
 
       it "should render people/followers" do
-        Lotus::Person.stubs(:all)
-        Rack::Lotus.any_instance.expects(:render).with(anything,
+        Nelumba::Person.stubs(:all)
+        Rack::Nelumba.any_instance.expects(:render).with(anything,
                                                        :"people/followers",
                                                        anything)
 
@@ -583,7 +583,7 @@ describe Rack::Lotus do
       it "should look up the activity from the given activity_id parameter" do
         login_as "wilkie"
 
-        Lotus::Activity.expects(:find_by_id).with("foo")
+        Nelumba::Activity.expects(:find_by_id).with("foo")
 
         post '/people/current_person/shared', "activity_id" => "foo"
       end
@@ -592,7 +592,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:share!)
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/shared'
         last_response.status.must_equal 302
@@ -602,7 +602,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:share!)
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/shared'
         last_response.location.must_equal "http://example.org/"
@@ -611,7 +611,7 @@ describe Rack::Lotus do
       it "should share the given activity" do
         person = login_as "wilkie"
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         person.expects(:share!).with("something")
 
@@ -642,7 +642,7 @@ describe Rack::Lotus do
       it "should look up the activity from the given activity_id parameter" do
         login_as "wilkie"
 
-        Lotus::Activity.expects(:find_by_id).with("foo")
+        Nelumba::Activity.expects(:find_by_id).with("foo")
 
         post '/people/current_person/favorites', "activity_id" => "foo"
       end
@@ -651,7 +651,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:favorite!)
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/favorites'
         last_response.status.must_equal 302
@@ -662,7 +662,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:favorite!)
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         post '/people/current_person/favorites'
         last_response.location.must_equal "http://example.org/"
@@ -671,7 +671,7 @@ describe Rack::Lotus do
       it "should favorite the given activity" do
         person = login_as "wilkie"
 
-        Lotus::Activity.stubs(:find_by_id).returns("something")
+        Nelumba::Activity.stubs(:find_by_id).returns("something")
 
         person.expects(:favorite!).with("something")
 
@@ -696,7 +696,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Person.expects(:find_by_id).with("foobar")
+        Nelumba::Person.expects(:find_by_id).with("foobar")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -704,7 +704,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Person.expects(:discover!).with("foobar")
+        Nelumba::Person.expects(:discover!).with("foobar")
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -726,7 +726,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Person.stubs(:find_by_id)
+        Nelumba::Person.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 404
       end
@@ -735,7 +735,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Lotus::Person.stubs(:find_by_id)
+        Nelumba::Person.stubs(:find_by_id)
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -743,7 +743,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!)
 
-        Lotus::Person.stubs(:discover!)
+        Nelumba::Person.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
         last_response.status.must_equal 404
       end
@@ -752,7 +752,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).never
 
-        Lotus::Person.stubs(:discover!)
+        Nelumba::Person.stubs(:discover!)
         post '/people/current_person/following', "discover" => "foobar"
       end
 
@@ -760,7 +760,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:find_by_id).returns("somebody")
+        Nelumba::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
       end
 
@@ -768,7 +768,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.expects(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:discover!).returns("somebody")
+        Nelumba::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
       end
 
@@ -776,7 +776,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:find_by_id).returns("somebody")
+        Nelumba::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.status.must_equal 302
       end
@@ -785,7 +785,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:find_by_id).returns("somebody")
+        Nelumba::Person.stubs(:find_by_id).returns("somebody")
         post '/people/current_person/following', "author_id" => "foobar"
         last_response.location.must_equal "http://example.org/"
       end
@@ -794,7 +794,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:discover!).returns("somebody")
+        Nelumba::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.status.must_equal 302
       end
@@ -803,7 +803,7 @@ describe Rack::Lotus do
         person = login_as "wilkie"
         person.stubs(:follow!).with("somebody")
 
-        Lotus::Person.stubs(:discover!).returns("somebody")
+        Nelumba::Person.stubs(:discover!).returns("somebody")
         post '/people/current_person/following', "discover" => "someone"
         last_response.location.must_equal "http://example.org/"
       end
@@ -854,8 +854,8 @@ describe Rack::Lotus do
 
       it "should pass along the created object" do
         person = login_as "wilkie"
-        obj = mock('Lotus::Note')
-        Lotus::Note.stubs(:new)
+        obj = mock('Nelumba::Note')
+        Nelumba::Note.stubs(:new)
                    .with(has_entry(:text, "my words"))
                    .returns(obj)
         person.expects(:post!).with(has_entry(:object, obj))
@@ -864,10 +864,10 @@ describe Rack::Lotus do
                                                   "content" => "my words"
       end
 
-      it "should create a Lotus::Article for article types" do
+      it "should create a Nelumba::Article for article types" do
         person = login_as "wilkie"
-        obj = mock('Lotus::Note')
-        Lotus::Article.stubs(:new)
+        obj = mock('Nelumba::Note')
+        Nelumba::Article.stubs(:new)
                       .with(has_entry(:content, "my words"))
                       .returns(obj)
         person.expects(:post!).with(has_entry(:object, obj))
@@ -876,10 +876,10 @@ describe Rack::Lotus do
                                                   "content" => "my words"
       end
 
-      it "should create a Lotus::Note for note types" do
+      it "should create a Nelumba::Note for note types" do
         person = login_as "wilkie"
-        obj = mock('Lotus::Note')
-        Lotus::Note.stubs(:new)
+        obj = mock('Nelumba::Note')
+        Nelumba::Note.stubs(:new)
                    .with(has_entry(:text, "my words"))
                    .returns(obj)
         person.expects(:post!).with(has_entry(:object, obj))
@@ -913,39 +913,39 @@ describe Rack::Lotus do
         @person.stubs(:followed_by!)
         @person.stubs(:unfollowed_by!)
 
-        Lotus::Person.stubs(:find_by_id).returns(@person)
+        Nelumba::Person.stubs(:find_by_id).returns(@person)
 
-        activity = Lotus::Activity.new
+        activity = Nelumba::Activity.new
         activity.stubs(:verb).returns(:follow)
         activity.stubs(:id).returns("ID")
 
-        @internal_activity = Lotus::Activity.new
+        @internal_activity = Nelumba::Activity.new
         @internal_activity.stubs(:verb).returns(:follow)
         @internal_activity.stubs(:url).returns("http://example.com/activities/1")
-        Lotus::Activity.stubs(:create!).returns(@internal_activity)
-        Lotus::Activity.stubs(:find_by_uid).returns(nil)
-        Lotus::Activity.stubs(:find_from_notification).returns(nil)
-        Lotus::Activity.stubs(:create_from_notification!).returns(@internal_activity)
+        Nelumba::Activity.stubs(:create!).returns(@internal_activity)
+        Nelumba::Activity.stubs(:find_by_uid).returns(nil)
+        Nelumba::Activity.stubs(:find_from_notification).returns(nil)
+        Nelumba::Activity.stubs(:create_from_notification!).returns(@internal_activity)
 
-        author = Lotus::Person.new
+        author = Nelumba::Person.new
 
         identity = Identity.new
         identity.stubs(:return_or_discover_public_key).returns("RSA_PUBLIC_KEY")
         identity.stubs(:discover_author!)
         identity.stubs(:author).returns(author)
 
-        Lotus::Notification.stubs(:from_xml).returns(@notification)
+        Nelumba::Notification.stubs(:from_xml).returns(@notification)
       end
 
       it "should return 404 if the person is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         post '/people/bogus/salmon'
         last_response.status.must_equal 404
       end
 
       it "should return 403 if the person exists and message is not updated" do
-        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Nelumba::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.stubs(:update_from_notification!).returns(nil)
 
         post '/people/1234abcd/salmon', "foo"
@@ -953,14 +953,14 @@ describe Rack::Lotus do
       end
 
       it "should update if the person is found and verified" do
-        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Nelumba::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.expects(:update_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
       end
 
       it "should return 200 if the person is found and message is updated" do
-        Lotus::Activity.stubs(:find_from_notification).returns(@internal_activity)
+        Nelumba::Activity.stubs(:find_from_notification).returns(@internal_activity)
         @internal_activity.stubs(:update_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
@@ -968,7 +968,7 @@ describe Rack::Lotus do
       end
 
       it "should create if the person is found and verified" do
-        Lotus::Activity.expects(:create_from_notification!).returns(@internal_activity)
+        Nelumba::Activity.expects(:create_from_notification!).returns(@internal_activity)
 
         post '/people/1234abcd/salmon', "foo"
       end
@@ -979,7 +979,7 @@ describe Rack::Lotus do
       end
 
       it "should return 400 when reciprient is found but the access is rejected" do
-        Lotus::Activity.stubs(:create_from_notification!).returns(nil)
+        Nelumba::Activity.stubs(:create_from_notification!).returns(nil)
 
         post '/people/1234abcd/salmon', "foo"
         last_response.status.must_equal 400
@@ -991,7 +991,7 @@ describe Rack::Lotus do
       end
 
       it "should handle the given payload" do
-        Lotus::Notification.expects(:from_xml)
+        Nelumba::Notification.expects(:from_xml)
                            .with("foo")
                            .returns(@notification)
 
@@ -1002,7 +1002,7 @@ describe Rack::Lotus do
     describe "POST /people/discover" do
       it "should attempt to discover the author in 'account' field" do
         acct = "acct:wilkie@rstat.us"
-        Lotus::Person.expects(:discover!).with(acct).returns(nil)
+        Nelumba::Person.expects(:discover!).with(acct).returns(nil)
 
         post '/people/discover', "account" => acct
       end
@@ -1011,7 +1011,7 @@ describe Rack::Lotus do
         acct = "acct:wilkie@rstat.us"
         author = stub('Person')
         author.stubs(:id).returns("ID")
-        Lotus::Person.stubs(:discover!).with(acct).returns(author)
+        Nelumba::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
         last_response.status.must_equal 302
@@ -1019,7 +1019,7 @@ describe Rack::Lotus do
 
       it "should return 404 when the author is not discovered" do
         acct = "acct:noexists@rstat.us"
-        Lotus::Person.stubs(:discover!).with(acct).returns(nil)
+        Nelumba::Person.stubs(:discover!).with(acct).returns(nil)
 
         post '/people/discover', "account" => acct
         last_response.status.must_equal 404
@@ -1027,9 +1027,9 @@ describe Rack::Lotus do
 
       it "should redirect when the author is discovered but exists" do
         acct = "acct:wilkie@rstat.us"
-        author = stub('::Lotus::Person')
+        author = stub('::Nelumba::Person')
         author.stubs(:id).returns("ID")
-        Lotus::Person.stubs(:discover!).with(acct).returns(author)
+        Nelumba::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
         last_response.status.must_equal 302
@@ -1037,9 +1037,9 @@ describe Rack::Lotus do
 
       it "should redirect to the author when discovered but exists" do
         acct = "acct:wilkie@rstat.us"
-        author = stub('::Lotus::Person')
+        author = stub('::Nelumba::Person')
         author.stubs(:id).returns("ID")
-        Lotus::Person.stubs(:discover!).with(acct).returns(author)
+        Nelumba::Person.stubs(:discover!).with(acct).returns(author)
 
         post '/people/discover', "account" => acct
         last_response.location.must_equal "http://example.org/people/ID"
@@ -1048,14 +1048,14 @@ describe Rack::Lotus do
 
     describe "GET /people/:id/edit" do
       it "should return 404 when the author is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/edit'
         last_response.status.must_equal 404
       end
 
       it "should return 200 when the author is found" do
-        Lotus::Person.stubs(:find_by_id).returns(stub('author'))
+        Nelumba::Person.stubs(:find_by_id).returns(stub('author'))
 
         get '/people/1234abcd/edit'
         last_response.status.must_equal 200
@@ -1064,7 +1064,7 @@ describe Rack::Lotus do
 
     describe "POST /people/:id" do
       it "should return 404 when the author is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         post '/people/1234abcd'
         last_response.status.must_equal 404
@@ -1075,8 +1075,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
-        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+        Nelumba::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:sanitize_params).returns({:id => author.id})
 
         login_as("wilkie", author)
 
@@ -1089,8 +1089,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
-        Lotus::Person.stubs(:sanitize_params).returns({"id" => author.id})
+        Nelumba::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:sanitize_params).returns({"id" => author.id})
 
         login_as("wilkie", author)
 
@@ -1102,8 +1102,8 @@ describe Rack::Lotus do
         author = stub('Person')
         author.stubs(:id).returns("ID")
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
-        Lotus::Person.stubs(:sanitize_params).returns("sanitized")
+        Nelumba::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:sanitize_params).returns("sanitized")
 
         author.expects(:update_attributes!).with("sanitized")
 
@@ -1117,8 +1117,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
-        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+        Nelumba::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:sanitize_params).returns({:id => author.id})
 
         post "/people/#{author.id}"
         last_response.status.must_equal 404
@@ -1129,8 +1129,8 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_attributes!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
-        Lotus::Person.stubs(:sanitize_params).returns({:id => author.id})
+        Nelumba::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:sanitize_params).returns({:id => author.id})
 
         login_as("intruder")
 
@@ -1141,14 +1141,14 @@ describe Rack::Lotus do
 
     describe "GET /people/:id/avatar/edit" do
       it "should return 404 when the author is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         get '/people/1234abcd/avatar/edit'
         last_response.status.must_equal 404
       end
 
       it "should return 200 when the author is found" do
-        Lotus::Person.stubs(:find_by_id).returns(stub('author'))
+        Nelumba::Person.stubs(:find_by_id).returns(stub('author'))
 
         get '/people/1234abcd/avatar/edit'
         last_response.status.must_equal 200
@@ -1157,7 +1157,7 @@ describe Rack::Lotus do
 
     describe "POST /people/:id/avatar" do
       it "should return 404 when the author is not found" do
-        Lotus::Person.stubs(:find_by_id).returns(nil)
+        Nelumba::Person.stubs(:find_by_id).returns(nil)
 
         post '/people/1234abcd/avatar'
         last_response.status.must_equal 404
@@ -1168,7 +1168,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:find_by_id).returns(author)
 
         login_as("wilkie", author)
 
@@ -1181,7 +1181,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:find_by_id).returns(author)
 
         login_as("wilkie", author)
 
@@ -1193,7 +1193,7 @@ describe Rack::Lotus do
         author = stub('Person')
         author.stubs(:id).returns("ID")
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:find_by_id).returns(author)
 
         author.expects(:update_avatar!).with("AVATAR_URL")
 
@@ -1207,7 +1207,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:find_by_id).returns(author)
 
         post "/people/#{author.id}/avatar"
         last_response.status.must_equal 404
@@ -1218,7 +1218,7 @@ describe Rack::Lotus do
         author.stubs(:id).returns("ID")
         author.stubs(:update_avatar!)
 
-        Lotus::Person.stubs(:find_by_id).returns(author)
+        Nelumba::Person.stubs(:find_by_id).returns(author)
 
         login_as("intruder")
 

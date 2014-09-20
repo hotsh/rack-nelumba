@@ -2,12 +2,12 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "rack-lotus"
+  s.name        = "rack-nelumba"
   s.version     = "0.0.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Hackers of the Severed Hand']
   s.email       = ['hotsh@xomb.org']
-  s.homepage    = "http://github.com/hotsh/rack-lotus"
+  s.homepage    = "http://github.com/hotsh/rack-nelumba"
   s.summary     = %q{Rack extension that provides a generalized federated system backend for social networks with ActivityStreams/OStatus/pump.io.}
   s.description = %q{This gem allows easier implementation and utilization of rack-based web services that are distributed and federated.}
 
