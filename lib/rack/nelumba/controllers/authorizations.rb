@@ -43,6 +43,7 @@ module Rack
 
       # Create authorization
       params[:domain] = request.host
+      params[:port]   = request.port == 80 ? nil : request.port
       params[:ssl]    = request.ssl?
       authorization = ::Nelumba::Authorization.create!(params)
 

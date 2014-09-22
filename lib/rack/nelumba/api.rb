@@ -20,7 +20,7 @@ module Rack
         # I don't know how much I like it. :)
         identity = ::Nelumba::Authorization.first.identity
 
-        url = "http#{identity.ssl ? "s" : ""}://#{identity.domain}"
+        url = "http#{identity.ssl ? "s" : ""}://#{identity.domain}#{identity.port ? ":#{identity.port}" : ""}"
 
         routes = self.routes
         routes.keys.each do |k|

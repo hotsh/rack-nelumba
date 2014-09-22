@@ -364,20 +364,20 @@ module Rack
         case params["type"]
         when "note", "status"
           ::Nelumba::Note.new(:title     => "New Status",
-                            :author_id => current_person.id,
-                            :text      => params["content"])
+                              :author_id => current_person.id,
+                              :text      => params["content"])
         when "article"
           ::Nelumba::Article.new(:title     => params["title"],
-                               :author_id => current_person.id,
-                               :content   => params["content"],
-                               :markdown  => params["markdown"])
+                                 :author_id => current_person.id,
+                                 :content   => params["content"],
+                                 :markdown  => params["markdown"])
         when "image"
           ::Nelumba::Image.from_blob!(current_person,
-                                    params["file"][:tempfile].read,
-                                    :text         => params["content"],
-                                    :title        => params["title"],
-                                    :sizes        => [[650,160]],
-                                    :content_type => params["file"][:type])
+                                      params["file"][:tempfile].read,
+                                      :text         => params["content"],
+                                      :title        => params["title"],
+                                      :sizes        => [[650,160]],
+                                      :content_type => params["file"][:type])
         else
           nil
         end
