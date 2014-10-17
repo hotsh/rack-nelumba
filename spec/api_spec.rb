@@ -385,6 +385,7 @@ describe Rack::Nelumba do
         identity = stub('Nelumba::Identity')
         identity.stubs(:ssl).returns(true)
         identity.stubs(:domain).returns("www.example.com")
+        identity.stubs(:port).returns(nil)
 
         auth = stub('Nelumba::Authorization')
         auth.stubs(:identity).returns(identity)
@@ -404,6 +405,7 @@ describe Rack::Nelumba do
         identity = stub('Nelumba::Identity')
         identity.stubs(:ssl).returns(true)
         identity.stubs(:domain).returns("www.example.com")
+        identity.stubs(:port).returns(nil)
 
         auth = stub('Nelumba::Authorization')
         auth.stubs(:identity).returns(identity)

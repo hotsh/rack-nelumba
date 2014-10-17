@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/hotsh/nelumba-mongodb.git
-  revision: dba99e904ed45d83f8d530079da117668a79ef1e
+  revision: 121d038808690e1815c71f0138af750bc6a6c407
   specs:
     nelumba-mongodb (0.0.1)
       bcrypt-ruby
@@ -11,11 +11,11 @@ GIT
 
 GIT
   remote: git://github.com/hotsh/nelumba.git
-  revision: fabacd7f996cd2d20614eb331918851abe4184e7
+  revision: f4a1def9483edccb48444dbbda769a164af700c6
   specs:
     nelumba (0.0.13)
+      libxml-ruby (~> 2.6.0)
       nokogiri
-      ratom
       rsa
       ruby-hmac
       time-lord
@@ -70,7 +70,7 @@ GEM
     json (1.8.1)
     libxml-ruby (2.6.0)
     metaclass (0.0.4)
-    mime-types (2.3)
+    mime-types (2.4.2)
     mini_portile (0.6.0)
     minitest (4.7.0)
     mocha (1.1.0)
@@ -83,7 +83,7 @@ GEM
       mongo (~> 1.8)
       plucky (~> 0.6.5)
     multi_json (1.10.1)
-    netrc (0.7.7)
+    netrc (0.8.0)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     plucky (0.6.6)
@@ -95,9 +95,7 @@ GEM
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.3.2)
-    ratom (0.8.2)
-      libxml-ruby (~> 2.6.0)
-    redcarpet (3.1.2)
+    redcarpet (3.2.0)
     rest-client (1.7.2)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
