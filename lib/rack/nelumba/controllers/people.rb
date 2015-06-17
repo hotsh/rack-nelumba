@@ -88,7 +88,6 @@ module Rack
         render :haml, :"people/edit_avatar", :locals => {
           :person   => person
         }
-        haml :"people/edit_avatar"
       end
     end
 
