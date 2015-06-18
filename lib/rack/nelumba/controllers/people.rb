@@ -143,7 +143,12 @@ module Rack
 
       activities = person.activities.ordered
 
-      if request.preferred_type('text/html')
+      if pjax?
+        render :haml, :"people/_activities", :locals => {
+          :person => person,
+          :activities => activities
+        }, :layout => false
+      elsif request.preferred_type('text/html')
         render :haml, :"people/activities", :locals => {
           :person => person,
           :activities => activities
@@ -265,10 +270,18 @@ module Rack
 
       following = person.following
 
-      render :haml, :"people/following", :locals => {
-        :person => person,
-        :following => following
-      }
+      if pjax?
+        render :haml, :"people/_following", :locals => {
+          :person    => person,
+          :following => following
+        }, :layout => false
+      else
+        # TODO: html/json/etc
+        render :haml, :"people/following", :locals => {
+          :person    => person,
+          :following => following
+        }
+      end
     end
 
     # Retrieve a list of people who are following us.
@@ -278,10 +291,18 @@ module Rack
 
       followers = person.followers
 
-      render :haml, :"people/followers", :locals => {
-        :person => person,
-        :followers => followers
-      }
+      if pjax?
+        render :haml, :"people/_followers", :locals => {
+          :person    => person,
+          :followers => followers
+        }, :layout => false
+      else
+        # TODO: html/json/etc
+        render :haml, :"people/followers", :locals => {
+          :person => person,
+          :followers => followers
+        }
+      end
     end
 
     # Follow a person
